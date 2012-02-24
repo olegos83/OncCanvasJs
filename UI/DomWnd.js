@@ -220,3 +220,12 @@ var DomWnd = function(title, x, y, width, height) {
         for (var i = 0; i < len; i++) this.removeControl(children[i]);
     }
     
+    /**
+     * Returns a string representation of this object.
+     * @method toString
+     * @return {String} a string representation of this object.
+     **/
+    DomWnd.prototype.toString = function() {
+        return "[Domwnd(id:" + this._wnd.id + ")]";
+    }
+    
