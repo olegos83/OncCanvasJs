@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>OlegoS canvas example</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="lib/rgbcolor.js"></script>
+    <script type="text/javascript" src="lib/canvg.js"></script>
+
+    <script type="text/javascript" src="UI/Events.js"></script>
+    <script type="text/javascript" src="UI/Dom.js"></script>
+
+    <script type="text/javascript" src="Geometry/Matrix.js"></script>
+    <script type="text/javascript" src="Geometry/Point.js"></script>
+    <script type="text/javascript" src="Geometry/Rectangle.js"></script>
+    <script type="text/javascript" src="Geometry/Line.js"></script>
+    <script type="text/javascript" src="Geometry/PolyLine.js"></script>
+    <script type="text/javascript" src="Geometry/Polygon.js"></script>
+
+    <script type="text/javascript" src="Rendering/CtxOptions.js"></script>
+    <script type="text/javascript" src="Rendering/Layer.js"></script>
+    <script type="text/javascript" src="Rendering/Shaper.js"></script>
+    
+    <script type="text/javascript" src="UI/DomWnd.js"></script>
+    <script type="text/javascript" src="UI/ColorPicker/ColorPicker.js"></script>
+    
+    <script type="text/javascript" src="editorTools.js"></script>
+    <script type="text/javascript" src="editorStage.js"></script>
+    <script type="text/javascript" src="editorTransform.js"></script>
+    <script type="text/javascript" src="editorMain.js"></script>
+  </head>
+
+  <body id="main">
+      <script type="text/javascript">
+          //init stage
+          var stageWidth = 1000;
+          var stageHeight = 440;
+          var stage = createStage(stageWidth, stageHeight);
+          
+          //init player and add him to stage
+          var player = createPlayer('Player');
+          stage.addObject(player);
+          var rotation = Math.PI / 2;
+          
+          //init keyboard
+          initEvents();
+          
+          //start the game
+          start();
+          
+          //FUNCTIONS
+          //create stage
+          function createStage(stageWidth, stageHeight) {
+            var body = document.getElementById('main');
+
+            var stage = Dom().create('div', 'stage', 'absolute', 170, 10, stageWidth, stageHeight);
+            Dom(stage).css('border', '1px solid');
+            body.appendChild(stage);
+
+            var layer = new Layer('game_area', stage, 0, 0, stageWidth, stageHeight);
+            return layer;
+          }
+          
+          //create player
+          function createPlayer(name) {
+            var playerShape = createArrow();
+            playerShape.scale(5, 10, playerShape.getCenter());
+            playerShape.move(100, 100);
+
+            var player = new Shaper(name, playerShape, {stroke:'#000000', fill:'#333333'});
+            return player;
+          }
+          
+          //init events to move player across the stage
+          var up = false;
+          var down = false;
+          var left = false
+          var right = false;
+          
+          function initEvents() {
+              document.addEventListener('keydown', onKeyDown, false);
+              document.addEventListener('keyup', onKeyUp, false);
+          }
+          
+          function onKeyDown(e) {
+              switch (e.keyCode) {
+                  case 87:
+                      up = true;
+                  break;
+                  
+                  case 83:
+                      down = true;
+                  break;
+                  
+                  case 65:
+                      left = true;
+                  break;
+                  
+                  case 68:
+                      right = true;
+                  break;
+              }
+          }
+          
+          function onKeyUp(e) {
+              switch (e.keyCode) {
+                  case 87:
+                      up = false;
+                  break;
+                  
+                  case 83:
+                      down = false;
+                  break;
+                  
+                  case 65:
+                      left = false;
+                  break;
+                  
+                  case 68:
+                      right = false;
+                  break;
+              }
+          }
+          
+          //player moves
+          function movePlayer() {
+              var sh = player.shape;
+              
+              if (left) {
+                  sh.rotate(-0.08, sh.getCenter());
+                  rotation += 0.08;
+              }
+              if (right) {
+                  sh.rotate(0.08, sh.getCenter());
+                  rotation -= 0.08;
+              }
+              
+              if (up) sh.moveDir(5, rotation)
+              if (down) sh.moveDir(-3, rotation);
+          }
+          
+          //start the game
+          function start() {
+              setInterval(function() {
+                  movePlayer();
+                  stage.forceRedraw();
+              }, 1000 / 30);
+          }
+      </script>
+  </body>
+
+</html>
