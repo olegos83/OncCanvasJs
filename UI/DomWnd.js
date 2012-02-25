@@ -91,7 +91,7 @@ var DomWnd = function(title, x, y, width, height) {
     * @private
     **/
     this._closeBtn = Dom().create('img', '', 'relative', width - this._titleText.offsetWidth - 23, 2, 15, 15);
-    Dom(this._closeBtn).attr("src", "img/close_btn.png");
+    Dom(this._closeBtn).attr("src", "UI/close_btn.png");
     this._title.appendChild(this._closeBtn);
     
     this._closeBtn.addEventListener("click", function(e) {

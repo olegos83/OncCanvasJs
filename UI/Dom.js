@@ -38,6 +38,7 @@
 * Also, it can work with events.
 * 
 * @class Dom
+* @static
 * @author OlegoS
 *
 * @constructor
@@ -45,27 +46,8 @@
 *                                 some functions.
 **/
 var Dom = function(el) {
-    //if not el return emty Dom_func
-    if (!el) return new _dom(null);
-    
-    //get element
-    if (typeof(el) == 'string') el = document.getElementById(el);
-    
-    //init functions internal class, give it an element and return it
-    return new _dom(el);
-}
-
-
-/**
- * It is internal class for Dom function, in which implemented all Dom functionality.
- *
- * @class _dom
- * @internal
- * 
- * @construtor
- **/
-var _dom = function(el) {
-    this.el = el;
+    if (typeof(el) == 'string') Dom.el = document.getElementById(el); else Dom.el = el;
+    return Dom;
 }
 
 
@@ -73,6 +55,7 @@ var _dom = function(el) {
     /**
      * Create new DOM element. To ommit params, use '' and default style would be set.
      * @method create
+     * @static
      * @param {String} tag - HTML tag, for example 'div' or 'img'.
      * @param {String} id - element id.
      * @param {String} position - css position.
@@ -84,7 +67,7 @@ var _dom = function(el) {
      * @param {String} overflow - css overflow.
      * @return {Element} created element.
      **/
-    _dom.prototype.create = function(tag, id, position, x, y, width, height, display, overflow) {
+    Dom.create = function(tag, id, position, x, y, width, height, display, overflow) {
         if (tag == "") return null;
         this.el = document.createElement(tag);
         
@@ -106,36 +89,39 @@ var _dom = function(el) {
     /**
      * Set DOM element CSS style.
      * @method css
+     * @static
      * @param {String} style - css style.
      * @param {String} value - value to set.
      * @return {Dom} this - can be chained.
      **/
-    _dom.prototype.css = function(style, value) {
-        this.el.style[style] = value;
+    Dom.css = function(style, value) {
+    	this.el.style[style] = value;
         return this;
     }
     
     /**
      * Set DOM element attribute.
      * @method attr
+     * @static
      * @param {String} attr - html attribute.
      * @param {String} value - value to set.
      * @return {Dom} this - can be chained.
      **/
-    _dom.prototype.attr = function(attr, value) {
-        this.el.setAttribute(attr, value);
+    Dom.attr = function(attr, value) {
+    	this.el.setAttribute(attr, value);
         return this;
     }
     
     /**
      * Set DOM element attribute.
      * @method prop
+     * @static
      * @param {String} prop - element property.
      * @param {String} value - value to set.
      * @return {Dom} this - can be chained.
      **/
-    _dom.prototype.prop = function(prop, value) {
-        this.el[prop] = value;
+    Dom.prop = function(prop, value) {
+    	this.el[prop] = value;
         return this;
     }
     
