@@ -147,10 +147,28 @@ var Shaper = function(id, shape, color) {
     /**
      * Get center point.
      * @method getCenter
-     * @return {Point} - center of shape.
+     * @return {Point} - center of shaper.
      **/
     Shaper.prototype.getCenter = function() {
         return this.getBoundRect().getCenter();
+    }
+    
+    /**
+     * Get width.
+     * @method getWidth
+     * @return {Number} - width of shaper.
+     **/
+    Shaper.prototype.getWidth = function() {
+        return this.getBoundRect().getWidth();
+    }
+    
+    /**
+     * Get height.
+     * @method getHeight
+     * @return {Number} - height of shaper.
+     **/
+    Shaper.prototype.getHeight = function() {
+        return this.getBoundRect().getHeight();
     }
     
     /**

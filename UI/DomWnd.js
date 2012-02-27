@@ -186,7 +186,7 @@ var DomWnd = function(title, x, y, width, height) {
      **/
     DomWnd.prototype.close = function() {
         var body = document.getElementsByTagName("body")[0];
-        body.removeChild(this._wnd);
+        try { body.removeChild(this._wnd); } catch (err) {}
     }
 
     /**
