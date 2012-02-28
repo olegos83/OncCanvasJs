@@ -205,6 +205,20 @@ var Point = function(x, y) {
     Point.prototype.isEqualTo = function(to) {
         return ( (this.x == to.x) && (this.y == to.y) );
     }
+    
+    /**
+     * Test if point is in bounds and if out - place it into.
+     * @method checkBounds
+     * @param {Point} from - bounds from.
+     * @param {Point} to - bounds to test.
+     **/
+    Point.prototype.checkBounds = function(from, to) {
+    	if (this.x < from.x) this.x = from.x;
+    	if (this.y < from.y) this.y = from.y;
+    	
+    	if (this.x > to.x) this.x = to.x;
+    	if (this.y > to.y) this.y = to.y;
+    }
 
     /**
      * Return a clone of this Point.

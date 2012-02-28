@@ -125,3 +125,72 @@ var Dom = function(el) {
         return this;
     }
     
+    /**
+     * Place DOM element to specified position.
+     * @method placeTo
+     * @static
+     * @param {Point} pos - position.
+     * @return {Dom} this - can be chained.
+     **/
+    Dom.placeTo = function(pos) {
+    	this.css('left', pos.x + 'px').css('top', pos.y + 'px');
+        return this;
+    }
+    
+    /**
+     * Add event listener to DOM element.
+     * @method addEvent
+     * @static
+     * @param {String} eventName - name of event.
+     * @param {Function} listener - event handler.
+     * @return {Dom} this - can be chained.
+     **/
+    Dom.addEvent = function(eventName, listener) {
+    	if (this.el.addEventListener) this.el.addEventListener(eventName, listener, false);
+    	else if (this.el.attachEvent) this.el.attachEvent("on" + eventName, listener);
+    	return this;
+    }
+    
+    /**
+     * Remove event listener to DOM element.
+     * @method removeEvent
+     * @static
+     * @param {String} eventName - name of event.
+     * @param {Function} listener - event handler.
+     * @return {Dom} this - can be chained.
+     **/
+    Dom.removeEvent = function(eventName, listener) {
+    	if (this.el.removeEventListener) this.el.removeEventListener(eventName, listener, false);
+    	else if (this.el.detachEvent) this.el.detachEvent("on" + eventName, listener);
+    	return this;
+    }
+    
+    /**
+     * Cancel default browser handler of event. Also it cancels event bubbling.
+     * @method cancelEvent
+     * @static
+     * @param {Event} e - event.
+     * @return {Boolean} always false for browser.
+     **/
+    Dom.cancelEvent = function(e) {
+    	e = e ? e : window.event;
+    	if (e.stopPropagation) e.stopPropagation();
+    	if (e.preventDefault) e.preventDefault();
+    	e.cancelBubble = true;
+    	e.cancel = true;
+    	e.returnValue = false;
+    	return false;
+    }
+    
+    /**
+     * Get target element from event.
+     * @method getEventTarget
+     * @static
+     * @param {Event} e - event.
+     * @return {Element} e.target or e.srcElement for IE.
+     **/
+     Dom.getEventTarget = function(e) {
+    	e = e ? e : window.event;
+    	return e.target ? e.target : e.srcElement;
+     }
+     
