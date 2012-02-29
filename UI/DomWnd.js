@@ -204,7 +204,7 @@ var DomWnd = function(title, x, y, width, height) {
      * @param {Elem} elem - control to remove.
      **/
     DomWnd.prototype.removeControl = function(elem) {
-        this._body.removeChild(elem);
+        try { this._body.removeChild(elem); } catch (err) {}
     }
     
     /**

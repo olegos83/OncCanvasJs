@@ -87,6 +87,26 @@ var Dom = function(el) {
     }
 
     /**
+     * Create combobox.
+     * @method createComboBox
+     * @static
+     * @param {Array} optArr - selection options array.
+     * @return {Element} created combobox.
+     **/
+    Dom.createComboBox = function(optArr) {
+    	var combo = this.create('select');
+    	this.css('height', '24px').css('fontFamily', 'Verdana').css('fontSize', '12px');
+    	
+    	if (optArr) for(var i = 0; i < optArr.length; i++) {
+    		var opt = this.create('option');
+    		this.prop('innerHTML', optArr[i]);
+    		combo.appendChild(opt);
+    	}
+    	
+    	return combo;
+    }
+    
+    /**
      * Set DOM element CSS style.
      * @method css
      * @static

@@ -538,7 +538,7 @@ function numberToCssColor(n) {
 	return tmp;
 }
 
-function buildSafePalette(type, el, selFn) {
+function buildSafePalette(type, el, selFn, sz) {
 	//init drwItem function
 	function drawItem(x, y, c, el, selFn) {
 		var dv = Dom().create('div', '', 'absolute', x, y, ht, wd);
@@ -551,7 +551,6 @@ function buildSafePalette(type, el, selFn) {
 		});
 		
 		if (selFn) Dom(dv).prop('onclick', selFn);
-		
 		el.appendChild(dv);
 	}
 	
@@ -559,7 +558,7 @@ function buildSafePalette(type, el, selFn) {
 	var lineColors = [0x000000, 0x333333, 0x666666, 0x999999, 0xCCCCCC, 0xFFFFFF, 
 	                  0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0x00FFFF, 0xFF00FF];
 	
-	var wd = 16; var ht = 16;
+	var wd = sz || 16; var ht = sz || 16;
 	var x = 0; var y = 0; var i = 0; var j = 0;
 	var d; var it; var it2; var clr;
 	
@@ -613,7 +612,7 @@ function buildSafePalette(type, el, selFn) {
 			clr = numberToCssColor((Math.floor(x / 6) * 51) << 16 | (x % 6 * 51) << 8 | y * 51);				
 			x = j * wd; y = i * ht;
 			
-			drawItem(x + d, y, clr, el, selFn);						
+			drawItem(x + d, y, clr, el, selFn);
 		}
 	}
 }
