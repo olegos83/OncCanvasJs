@@ -521,3 +521,99 @@ function attachColorPicker(method, initialColor) {
     new dragObject("circle", "gradientBox", circleLowBounds, circleUpBounds, circleDown, circleMoved, endMovement);
     colorChanged('box');
 }
+
+//SAFE COLOR PALETTE
+function numberToCssColor(n) {
+	var tmp = n.toString(16);
+	var len = 6 - tmp.length;
+	
+	if (len > 0) {
+		var a = '';
+		for (var i = 0; i < len; i++) a += '0';
+		tmp = '#' + a + tmp;
+	} else {
+		tmp = '#' + tmp;
+	}
+	
+	return tmp;
+}
+
+function buildSafePalette(type, el, selFn) {
+	//init drwItem function
+	function drawItem(x, y, c, el, selFn) {
+		var dv = Dom().create('div', '', 'absolute', x, y, ht, wd);
+		Dom(dv).css('border', '1px solid').css('backgroundColor', c).css('cursor', 'pointer');
+		
+		Dom(dv).prop('onmouseover', function(e){
+			Dom(e.target).css('borderColor', '#fff').css('zIndex', 20000);
+		}).prop('onmouseout', function(e){
+			Dom(e.target).css('borderColor', '#000').css('zIndex', '');
+		});
+		
+		if (selFn) Dom(dv).prop('onclick', selFn);
+		
+		el.appendChild(dv);
+	}
+	
+	//init vars
+	var lineColors = [0x000000, 0x333333, 0x666666, 0x999999, 0xCCCCCC, 0xFFFFFF, 
+	                  0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0x00FFFF, 0xFF00FF];
+	
+	var wd = 16; var ht = 16;
+	var x = 0; var y = 0; var i = 0; var j = 0;
+	var d; var it; var it2; var clr;
+	
+	//init type dependencies
+	switch (type) {
+		case 0:
+			d = 2 * wd; it = 12; it2 = 18;
+		break;
+		
+		case 1:
+			d = 3 * wd; it = 6; it2 = 36;
+		break;
+	}
+	
+	//draw items
+	for (i = 0; i < it; i++) {
+		y = i * ht;
+		clr = numberToCssColor(lineColors[i]);			
+		drawItem(x, y, clr, el, selFn);	
+	}
+	
+	if (type == 1) for (i = 0; i < it; i++) {
+		x = wd; y = i * ht;
+		clr = numberToCssColor(lineColors[i + 6]);
+		drawItem(x, y, clr, el, selFn);
+	}
+	
+	for (i = 0; i < it; i++) {
+		if (type == 0) x = wd; else x = 2 * wd; 
+		y = i * ht;
+		clr = '#000';	
+		drawItem(x, y, clr, el, selFn);
+	}		
+	
+	for (i = 0; i < it; i++) {
+		for (j = 0; j < it2; j++) {
+			switch (type) {
+				case 0:
+					if (i > 5) {
+						x = j + 18; y = i - 6;
+					} else {
+						x = j; y = i;
+					}
+				break;
+				
+				case 1:
+					x = j; y = i;
+				break;
+		    }
+			
+			clr = numberToCssColor((Math.floor(x / 6) * 51) << 16 | (x % 6 * 51) << 8 | y * 51);				
+			x = j * wd; y = i * ht;
+			
+			drawItem(x + d, y, clr, el, selFn);						
+		}
+	}
+}
