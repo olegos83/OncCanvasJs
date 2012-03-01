@@ -181,8 +181,8 @@ var Rectangle = function(from, to) {
      * @param {Number} dist - distance from center to sides.
      **/
     Rectangle.prototype.placeAroundPoint = function(pt, dist) {
-        this.from.x = pt.x - dist;this.from.y = pt.y - dist;
-        this.to.x = pt.x + dist;this.to.y = pt.y + dist;
+    	this.from.x = this.to.x = pt.x; this.from.y = this.to.y = pt.y; 
+        this.from.move(-dist, -dist); this.to.move(dist, dist);
     }
     
     /**
