@@ -516,7 +516,14 @@ function attachColorPicker(method, initialColor) {
     setColorMethod = method;
     fixGradientImg();
     
-    currentColor = Colors.ColorFromHex(initialColor);
+    if (initialColor == '') initialColor = '#ffffff';
+    if (initialColor.charAt(0) == '#') {
+    	currentColor = Colors.ColorFromHex(initialColor);
+    } else {
+    	var c = initialColor.split('(')[1].split(',');
+    	currentColor = Colors.ColorFromRGB(c[0], c[1], parseInt(c[2]));
+    }
+    
     new dragObject("arrows", "hueBarDiv", arrowsLowBounds, arrowsUpBounds, arrowsDown, arrowsMoved, endMovement);
     new dragObject("circle", "gradientBox", circleLowBounds, circleUpBounds, circleDown, circleMoved, endMovement);
     colorChanged('box');
