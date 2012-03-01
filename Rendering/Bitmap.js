@@ -70,7 +70,7 @@ delete Bitmap.prototype._eventListener;
 
 //public methods:
     /**
-     * Draw function. Is called by layer to draw this Shaper.
+     * Draw function. Is called by layer to draw this Bitmap.
      * @method draw
      **/
     Bitmap.prototype.draw = function() {
@@ -90,9 +90,9 @@ delete Bitmap.prototype._eventListener;
     
     
     /**
-     * Returns a clone of this Shaper.
+     * Returns a clone of this Bitmap.
      * @method clone
-     * @return {Shaper} a clone of this Shaper.
+     * @return {Bitmap} a clone of this Bitmap.
      **/
     Bitmap.prototype.clone = function() {
         var b = new Bitmap('copy_' + this.id, this.image.src, this.image.width, this.image.height);
