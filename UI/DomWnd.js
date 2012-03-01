@@ -81,7 +81,7 @@ var DomWnd = function(title, x, y, width, height) {
     * @private
     **/
     this._titleText = Dom().create('span');
-    Dom(this._titleText).prop('innerHTML', title).css('marginLeft', '4px');
+    Dom(this._titleText).prop('innerHTML', title).css('marginLeft', '4px').css('cursor', 'default');
     this._title.appendChild(this._titleText);
    
     /**
