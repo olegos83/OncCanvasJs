@@ -95,7 +95,11 @@ var Dom = function(el) {
      **/
     Dom.createComboBox = function(optArr) {
     	var combo = this.create('select');
-    	this.css('height', '24px').css('fontFamily', 'Verdana').css('fontSize', '12px');
+    	
+    	this.css({ height:'24px',
+    			   fontFamily:'Verdana',
+    			   fontSize:'12px'
+    			 });
     	
     	if (optArr) for(var i = 0; i < optArr.length; i++) {
     		var opt = this.create('option');
@@ -107,41 +111,56 @@ var Dom = function(el) {
     }
     
     /**
-     * Set DOM element CSS style.
+     * Set DOM element CSS style or set of styles as Object.
      * @method css
      * @static
-     * @param {String} style - css style.
+     * @param {Object} style - css style or set of styles.
      * @param {String} value - value to set.
      * @return {Dom} this - can be chained.
      **/
     Dom.css = function(style, value) {
-    	this.el.style[style] = value;
-        return this;
+    	if (typeof(style) == 'object') {
+    		for (var p in style) this.el.style[p] = style[p];
+    	} else {
+        	this.el.style[style] = value;
+    	}
+    	
+    	return this;
     }
     
     /**
-     * Set DOM element attribute.
+     * Set DOM element attribute or set of attributes as Object.
      * @method attr
      * @static
-     * @param {String} attr - html attribute.
+     * @param {Object} attr - html attribute or set of attributes.
      * @param {String} value - value to set.
      * @return {Dom} this - can be chained.
      **/
     Dom.attr = function(attr, value) {
-    	this.el.setAttribute(attr, value);
+    	if (typeof(attr) == 'object') {
+    		for (var p in attr) this.el.setAttribute(p, attr[p]);
+    	} else {
+    		this.el.setAttribute(attr, value);
+    	}
+    	
         return this;
     }
     
     /**
-     * Set DOM element attribute.
+     * Set DOM element property or set of properties as Object.
      * @method prop
      * @static
-     * @param {String} prop - element property.
+     * @param {Object} prop - element property or set of properties.
      * @param {String} value - value to set.
      * @return {Dom} this - can be chained.
      **/
     Dom.prop = function(prop, value) {
-    	this.el[prop] = value;
+    	if (typeof(prop) == 'object') {
+    		for (var p in prop) this.el[p] = prop[p];
+    	} else {
+    		this.el[prop] = value;
+    	}
+    	
         return this;
     }
     
@@ -153,7 +172,7 @@ var Dom = function(el) {
      * @return {Dom} this - can be chained.
      **/
     Dom.placeTo = function(pos) {
-    	this.css('left', pos.x + 'px').css('top', pos.y + 'px');
+    	this.css({left: pos.x + 'px', top: pos.y + 'px'});
         return this;
     }
     
