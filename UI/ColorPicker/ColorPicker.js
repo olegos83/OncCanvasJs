@@ -219,7 +219,7 @@ function dragObject(element, attachElement, lowerBound, upperBound, startCallbac
     elementStartPos = new Point(parseInt(element.style.left), parseInt(element.style.top));
     
     Dom(document).addEvent(MouseEvent.MOVE, dragGo).addEvent(MouseEvent.UP, dragStopHook);
-    return Dom().cancelEvent(eventObj);
+    return Dom.cancelEvent(eventObj);
   }
   
   function dragGo(eventObj) {
@@ -232,12 +232,12 @@ function dragObject(element, attachElement, lowerBound, upperBound, startCallbac
     Dom(element).placeTo(newPos);
     
     if(moveCallback != null) moveCallback(newPos, element);
-    return Dom().cancelEvent(eventObj); 
+    return Dom.cancelEvent(eventObj); 
   }
   
   function dragStopHook(eventObj) {
     dragStop();
-    return Dom().cancelEvent(eventObj);
+    return Dom.cancelEvent(eventObj);
   }
   
   function dragStop() {
@@ -288,7 +288,7 @@ function dragObject(element, attachElement, lowerBound, upperBound, startCallbac
 //COLORPICKER
 function arrowsDown(e, arrows) {
   var pos = getMousePos(e);
-  if(Dom().getEventTarget(e) == arrows) pos.y += parseInt(arrows.style.top);
+  if(Dom.getEventTarget(e) == arrows) pos.y += parseInt(arrows.style.top);
   
   pos.move(-arrowsOffset.x, -arrowsOffset.y);
   pos.checkBounds(arrowsLowBounds, arrowsUpBounds);
@@ -300,7 +300,7 @@ function arrowsDown(e, arrows) {
 function circleDown(e, circle) {
   var pos = getMousePos(e);
   
-  if(Dom().getEventTarget(e) == circle) {
+  if(Dom.getEventTarget(e) == circle) {
     pos.x += parseInt(circle.style.left);
     pos.y += parseInt(circle.style.top);
   }
@@ -424,77 +424,75 @@ function initColorPicker(path) {
 	//add table row
 	function addColorDataRow(table, text, id, onchange) {
 	    //add tr
-	    var tr = Dom().create("tr");
+	    var tr = Dom.create("tr");
 	    table.appendChild(tr);
 	    
 	    //add text td
-	    var td = Dom().create("td");
+	    var td = Dom.create("td");
 	    Dom(td).prop('innerHTML', text);
 	    tr.appendChild(td);
 	    
 	    //add input td
-	    var td2 = Dom().create("td");
+	    var td2 = Dom.create("td");
 	    tr.appendChild(td2);
 	    
-	    var input = Dom().create("input", id, '', '', '', 75, 12);
-	    Dom(input).attr("type", "text").attr("size", "8").attr("onchange", onchange);
-	    Dom(input).css('margin', '0.3em').css('fontFamily', 'Verdana').css('fontSize', '12px');
+	    var input = Dom.create("input", id, '', '', '', 75, 12);
+	    Dom(input).attr({ type: "text", size: "8", onchange: onchange}).css({margin: '0.3em', fontFamily: 'Verdana', fontSize: '12px'});
 	    td2.appendChild(input);
 	}
 	
     //picker itself
-    var picker = Dom().create("div", "", "relative", 0, 0, 482, 274);
+    var picker = Dom.create("div", "", "relative", 0, 0, 482, 274);
     
     //gradient box
-    var gradientBox = Dom().create("div", "gradientBox", "absolute", 5, 5, 256, 256);
+    var gradientBox = Dom.create("div", "gradientBox", "absolute", 5, 5, 256, 256);
     Dom(gradientBox).css('cursor', 'crosshair');
     picker.appendChild(gradientBox);
     
     //gradient image
-    var gradientImg = Dom().create("img", "gradientImg", "", 0, 0, 256, 256, 'block');
+    var gradientImg = Dom.create("img", "gradientImg", "", 0, 0, 256, 256, 'block');
     Dom(gradientImg).prop("src", path + "color_picker_gradient.png");
     gradientBox.appendChild(gradientImg);
 
     //circle to select color
-    var circle = Dom().create("img", "circle", "absolute", 0, 0, 11, 11);
+    var circle = Dom.create("img", "circle", "absolute", 0, 0, 11, 11);
     Dom(circle).prop("src", path + "color_picker_circle.gif");
     gradientBox.appendChild(circle);
 
     //hue bar division
-    var hueBarDiv = Dom().create("div", "hueBarDiv", "absolute", 270, 5, 35, 256);
+    var hueBarDiv = Dom.create("div", "hueBarDiv", "absolute", 270, 5, 35, 256);
     picker.appendChild(hueBarDiv);
     
     //color picker bar
-    var colorPickerBar = Dom().create("img", "", "absolute", 8, 0, 19, 256);
+    var colorPickerBar = Dom.create("img", "", "absolute", 8, 0, 19, 256);
     Dom(colorPickerBar).prop("src", path + "color_picker_bar.png");
     hueBarDiv.appendChild(colorPickerBar);
     
     //arrows to select color
-    var arrows = Dom().create("img", "arrows", "absolute", 0, 0, 35, 9);
+    var arrows = Dom.create("img", "arrows", "absolute", 0, 0, 35, 9);
     Dom(arrows).prop("src", path + "color_picker_arrows.gif");
     hueBarDiv.appendChild(arrows);
     
     //table and colorview container
-    var tableContainer = Dom().create("div", "", "absolute", 315, 5, 145, 256);
+    var tableContainer = Dom.create("div", "", "absolute", 315, 5, 145, 256);
     picker.appendChild(tableContainer);
     
     //colorview
-    var colorview = Dom().create("div", "", "absolute", 3, 0, 120, 30);
+    var colorview = Dom.create("div", "", "absolute", 3, 0, 120, 30);
     Dom(colorview).css('border', '1px solid black');
     tableContainer.appendChild(colorview);
     
     //quick color
-    var quickColor = Dom().create("div", "quickColor", "absolute", 0, 0, 60, 30);
+    var quickColor = Dom.create("div", "quickColor", "absolute", 0, 0, 60, 30);
     colorview.appendChild(quickColor);
 
     //static color
-    var staticColor = Dom().create("div", "staticColor", "absolute", 60, 0, 60, 30);
+    var staticColor = Dom.create("div", "staticColor", "absolute", 60, 0, 60, 30);
     colorview.appendChild(staticColor);
     
     //table with color values
-    var table = Dom().create('table', '', 'absolute', '', 30, '', 240);
-    Dom(table).attr("width", "100%").attr("cellspacing", "0").attr("cellspadding", "0");
-    Dom(table).css('fontFamily', 'Verdana').css('fontSize', '12px');
+    var table = Dom.create('table', '', 'absolute', '', 30, '', 240);
+    Dom(table).attr({width: "100%", cellspacing: "0", cellspadding: "0"}).css({fontFamily: 'Verdana', fontSize: '12px'});
     tableContainer.appendChild(table);
     
     //add table rows
@@ -548,14 +546,17 @@ function numberToCssColor(n) {
 function buildSafePalette(type, el, selFn, sz) {
 	//init drwItem function
 	function drawItem(x, y, c, el, selFn) {
-		var dv = Dom().create('div', '', 'absolute', x, y, ht, wd);
-		Dom(dv).css('border', '1px solid').css('backgroundColor', c).css('cursor', 'pointer');
+		var dv = Dom.create('div', '', 'absolute', x, y, ht, wd);
+		Dom(dv).css({border: '1px solid', backgroundColor: c, cursor: 'pointer'});
 		
-		Dom(dv).prop('onmouseover', function(e){
-			Dom(e.target).css('borderColor', '#fff').css('zIndex', 20000);
-		}).prop('onmouseout', function(e){
-			Dom(e.target).css('borderColor', '#000').css('zIndex', '');
-		});
+		Dom(dv).prop({
+						onmouseover: function(e) {
+							Dom(e.target).css({borderColor: '#fff', zIndex: '20000'});
+						},
+						onmouseout: function(e) {
+							Dom(e.target).css({borderColor: '#000', zIndex: ''});
+						}
+					 });
 		
 		if (selFn) Dom(dv).prop('onclick', selFn);
 		el.appendChild(dv);
