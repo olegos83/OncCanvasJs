@@ -60,7 +60,7 @@ var DomWnd = function(title, x, y, width, height) {
     * @type Elem
     * @private
     **/
-	this._wnd = Dom().create('div', title, 'absolute', x, y, width, height + 20);
+	this._wnd = Dom.create('div', title, 'absolute', x, y, width, height + 20);
 	Dom(this._wnd).css('border', '1px solid');
 	body.appendChild(this._wnd);
 
@@ -70,7 +70,7 @@ var DomWnd = function(title, x, y, width, height) {
     * @type Elem
     * @private
     **/
-	this._title = Dom().create('div', '', '', 0, 0, width, 20, 'block');
+	this._title = Dom.create('div', '', '', 0, 0, width, 20, 'block');
 	Dom(this._title).css('backgroundColor', '#cccccc');
 	this._wnd.appendChild(this._title);
     
@@ -80,8 +80,8 @@ var DomWnd = function(title, x, y, width, height) {
     * @type Elem
     * @private
     **/
-    this._titleText = Dom().create('span');
-    Dom(this._titleText).prop('innerHTML', title).css('marginLeft', '4px').css('cursor', 'default');
+    this._titleText = Dom.create('span');
+    Dom(this._titleText).prop('innerHTML', title).css({marginLeft: '4px', cursor: 'default'});
     this._title.appendChild(this._titleText);
    
     /**
@@ -90,7 +90,7 @@ var DomWnd = function(title, x, y, width, height) {
     * @type Elem
     * @private
     **/
-    this._closeBtn = Dom().create('img', '', 'relative', width - this._titleText.offsetWidth - 23, 2, 15, 15);
+    this._closeBtn = Dom.create('img', '', 'relative', width - this._titleText.offsetWidth - 23, 2, 15, 15);
     Dom(this._closeBtn).attr("src", "UI/close_btn.png");
     this._title.appendChild(this._closeBtn);
     
@@ -104,7 +104,7 @@ var DomWnd = function(title, x, y, width, height) {
     * @type Elem
     * @private
     **/
-    this._body = Dom().create('div', '', 'absolute', 0, 20, width, parseInt(this._wnd.style.height) - 20, 'block');
+    this._body = Dom.create('div', '', 'absolute', 0, 20, width, parseInt(this._wnd.style.height) - 20, 'block');
     Dom(this._body).css('backgroundColor', '#eeeeee');
     this._wnd.appendChild(this._body);
     
@@ -149,7 +149,7 @@ var DomWnd = function(title, x, y, width, height) {
      * @param {Point} pos - position of the window.
      **/
     DomWnd.prototype.setPosition = function(pos) {
-    	Dom(this._wnd).css('left', pos.x + 'px').css('top', pos.y + 'px');
+    	Dom(this._wnd).placeTo(pos);
     }
 
     /**
