@@ -70,7 +70,7 @@ Stage.prototype.stageMouseDown = function(e) {
         
         stage.start_x = mx;
         stage.start_y = my;
-        stage.state = 'drawingRect';
+        stage.state = 'drawing';
         
     //new arrow
     } else if (stage.state == 'newArrow') {
@@ -81,7 +81,7 @@ Stage.prototype.stageMouseDown = function(e) {
         
         stage.start_x = mx;
         stage.start_y = my;
-        stage.state = 'drawingRect';
+        stage.state = 'drawing';
         
     //clear selection
     } else if (!stage.layer.getObjectUnderPoint({x:mx, y:my})) stage.transformBox.unset();
@@ -103,7 +103,7 @@ Stage.prototype.stageMouseMove = function(e) {
         trBox.rotate(a2 - a1, c, true);
         
     //new rectangle
-    } else if (stage.state == 'drawingRect') {
+    } else if (stage.state == 'drawing') {
         var r = new Rectangle(new Point(stage.start_x, stage.start_y), new Point(mx, my));
         r.normalize();
         

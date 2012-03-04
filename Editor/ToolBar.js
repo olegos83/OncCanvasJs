@@ -13,7 +13,7 @@ function onUpPanelClick(event) {
 
 //create new arrow
 function createArrow() {
-    var pArr = [new Point(0, 1), new Point(1, 1), new Point(1, 0), 
+    var pArr = [new Point(0, 1), new Point(1, 1), new Point(1, 0),
                 new Point(2, 2),
                 new Point(1, 4), new Point(1, 3), new Point(0, 3)];
     
