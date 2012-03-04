@@ -48,7 +48,7 @@ EditTransform.prototype.initEvents = function() {
         
         this['ro' + i].addEventListener(MouseEvent.DOWN, function(e) {
                 box.rotatePoint = e.target._pos;
-                stage.state = 'rotateObj';
+                stage.state = 'rotating';
         });
     }
     

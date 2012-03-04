@@ -95,7 +95,7 @@ Stage.prototype.stageMouseMove = function(e) {
     var my = e.pageY - stage.layer.canvas.offsetTop;
 
     //rotation
-    if (stage.state == 'rotateObj') {
+    if (stage.state == 'rotating') {
         var trBox = stage.transformBox;
         var c = trBox.getCenter();
         var a1 = trBox.rotatePoint.angleTo(c);
@@ -117,11 +117,11 @@ Stage.prototype.stageMouseUp = function(e) {
     //console.log('stage mouseUp', stage.state);
     
     //new rectangle
-    if (stage.state == 'drawingRect') {
+    if (stage.state == 'drawing') {
         stage.transformBox.apply(stage.selectedObject);
         
     //rotation
-    } else if (stage.state == 'rotateObj') stage.transformBox.updateRects();
+    } else if (stage.state == 'rotating') stage.transformBox.updateRects();
 
     stage.state = '';
 }
