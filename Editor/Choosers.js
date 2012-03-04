@@ -190,7 +190,7 @@ var ColorChooser = function(type) {
 	
     //setup window
     if (ColorChooser.wnd) ColorChooser.wnd.close();
-    var wnd = ColorChooser.wnd = new DomWnd(titleStr, 5, 5, 482, 330);
+    var wnd = ColorChooser.wnd = new DomWnd(titleStr, 200, 60, 482, 330);
 	
     //create combo box
     var combo = Dom.create('div', '', 'absolute', 5, 5);
