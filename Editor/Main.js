@@ -10,5 +10,5 @@ function main() {
     stage = new Stage();
     
     //init transformer
-    stage.transformBox = new EditTransform();
+    stage.trBox = new EditTransform();
 }

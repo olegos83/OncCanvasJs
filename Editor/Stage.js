@@ -6,7 +6,6 @@
 //constructor and initialization
 var Stage = function() {
     //init properties
-    this.selectedObject = null;
     this.selectedFill = '#FFFFFF';
     this.selectedStroke = '#000000';
 
@@ -20,7 +19,7 @@ var Stage = function() {
     this.layer.setFps(24);
     this.stageWidth = this.layer.canvas.width;
     this.stageHeight = this.layer.canvas.height;
-    this.transformBox = null;
+    this.trBox = null;
     
     //set canvas events
     this.layer.canvas.addEventListener(MouseEvent.DOWN, this.stageMouseDown, false);
@@ -40,7 +39,7 @@ Stage.prototype.addObject = function(obj) {
     obj.addEventListener('mousedown', function(e) {
         stage.selectedStroke = e.target.color.stroke;
         stage.selectedFill = e.target.color.fill;
-        stage.transformBox.apply(e.target);
+        stage.trBox.apply(e.target);
     });
 }
 
@@ -52,7 +51,7 @@ Stage.prototype.removeObject = function(obj) {
 //clear all objects and reset stage
 Stage.prototype.clear = function() {
     this.state = '';
-    this.transformBox.unset();
+    this.trBox.unset();
     this.layer.clear();
 }
 
@@ -65,8 +64,8 @@ Stage.prototype.stageMouseDown = function(e) {
     //new rectangle
     if (stage.state == 'newRect') {
         var r = new Rectangle(new Point(mx, my), new Point(mx + 1, my + 1)).toPolygon();
-        stage.selectedObject = new Shaper("newRect", r, {stroke:stage.selectedStroke, fill:stage.selectedFill});
-        stage.addObject(stage.selectedObject);
+        stage.newObj = new Shaper("newRect", r, {stroke:stage.selectedStroke, fill:stage.selectedFill});
+        stage.addObject(stage.newObj);
         
         stage.start_x = mx;
         stage.start_y = my;
@@ -76,15 +75,15 @@ Stage.prototype.stageMouseDown = function(e) {
     } else if (stage.state == 'newArrow') {
         var r = createArrow();
         r.move(mx, my);
-        stage.selectedObject = new Shaper("newArrow", r, {stroke:stage.selectedStroke, fill:stage.selectedFill});
-        stage.addObject(stage.selectedObject);
+        stage.newObj = new Shaper("newArrow", r, {stroke:stage.selectedStroke, fill:stage.selectedFill});
+        stage.addObject(stage.newObj);
         
         stage.start_x = mx;
         stage.start_y = my;
         stage.state = 'drawing';
         
     //clear selection
-    } else if (!stage.layer.getObjectUnderPoint({x:mx, y:my})) stage.transformBox.unset();
+    } else if (!stage.layer.getObjectUnderPoint({x:mx, y:my})) stage.trBox.unset();
     
 }
 
@@ -96,7 +95,7 @@ Stage.prototype.stageMouseMove = function(e) {
 
     //rotation
     if (stage.state == 'rotating') {
-        var trBox = stage.transformBox;
+        var trBox = stage.trBox;
         var c = trBox.getCenter();
         var a1 = trBox.rotatePoint.angleTo(c);
         var a2 = new Point(mx, my).angleTo(c);
@@ -107,7 +106,7 @@ Stage.prototype.stageMouseMove = function(e) {
         var r = new Rectangle(new Point(stage.start_x, stage.start_y), new Point(mx, my));
         r.normalize();
         
-        stage.selectedObject.shape.placeIntoRect(r);
+        stage.newObj.shape.placeIntoRect(r);
         stage.layer.forceRedraw();
     }
 }
@@ -118,10 +117,10 @@ Stage.prototype.stageMouseUp = function(e) {
     
     //new rectangle
     if (stage.state == 'drawing') {
-        stage.transformBox.apply(stage.selectedObject);
+        stage.trBox.apply(stage.newObj);
         
     //rotation
-    } else if (stage.state == 'rotating') stage.transformBox.updateRects();
+    } else if (stage.state == 'rotating') stage.trBox.updateRects();
 
     stage.state = '';
 }

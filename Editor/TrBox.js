@@ -3,6 +3,9 @@
  */
 //UNIVERSAL EDITABLE OBJECT
 var EditTransform = function() {
+	//init vars
+	this.selected = null;
+	
     //init points, rects and objects
     this.init();
     
@@ -103,7 +106,7 @@ EditTransform.prototype.initEvents = function() {
     
     function scaleObj() {
         //init vars
-        var s = stage.selectedObject; //.shape;
+        var s = stage.trBox.selected;
         
         //mirror shape if needed
         var pos = checkPointsPos();
@@ -124,8 +127,8 @@ EditTransform.prototype.apply = function(obj) {
     this.unset();
     
     //setup selection
-    stage.selectedObject = obj;
-    var box = stage.transformBox;
+    this.selected = obj;
+    var box = stage.trBox;
     
     obj.addEventListener(MouseEvent.DRAG, function(e) {
         box.updateRects();
@@ -139,8 +142,8 @@ EditTransform.prototype.apply = function(obj) {
 //setup transform rects
 EditTransform.prototype.updateRects = function() {
     //init vars
-    var box = stage.transformBox;
-    var r = stage.selectedObject.getBoundRect();
+    var box = stage.trBox;
+    var r = box.selected.getBoundRect();
     
     //setup points
     box.p1.x = box.p4.x = r.from.x;
@@ -175,8 +178,8 @@ EditTransform.prototype.removeObjects = function() {
 //unset box
 EditTransform.prototype.unset = function() {
     //clear selection
-    if (stage.selectedObject) stage.selectedObject.removeEventListener(MouseEvent.DRAG);
-    stage.selectedObject = null;
+    if (stage.trBox.selected) stage.trBox.selected.removeEventListener(MouseEvent.DRAG);
+    stage.trBox.selected = null;
     this.removeObjects();
 }
 
@@ -188,14 +191,14 @@ EditTransform.prototype.getCenter = function() {
 
 //rotate
 EditTransform.prototype.rotate = function(angle, pivot, rotateObj) {
-    if (!stage.selectedObject) return;
+    if (!stage.trBox.selected) return;
 
     //rotate box
     var box = this;
     for (var i = 1; i <= 4; i++) box['p' + i].rotate(angle, pivot);
     
     //rotate object if rotateObj is true
-    if (rotateObj) stage.selectedObject.rotate(angle, pivot);
+    if (rotateObj) stage.trBox.selected.rotate(angle, pivot);
     
     //redraw layer
     stage.layer.forceRedraw();
@@ -203,23 +206,23 @@ EditTransform.prototype.rotate = function(angle, pivot, rotateObj) {
 
 //scale
 EditTransform.prototype.scale = function(scx, scy, pivot) {
-    if (!stage.selectedObject) return;
-    stage.selectedObject.scale(scx, scy, pivot);
+    if (!stage.trBox.selected) return;
+    stage.trBox.selected.scale(scx, scy, pivot);
     this.updateRects();
 }
 
 //align
 EditTransform.prototype.align = function(base) {
-    if (!stage.selectedObject) return;
+    if (!stage.trBox.selected) return;
     var r = new Rectangle(new Point(0, 0), new Point(stage.stageWidth, stage.stageHeight));
-    stage.selectedObject.align(base, r);
+    stage.trBox.selected.align(base, r);
     this.updateRects();
 }
 
 //mirror
 EditTransform.prototype.mirror = function(base) {
-    if (!stage.selectedObject) return;
-    stage.selectedObject.mirror(base);
+    if (!stage.trBox.selected) return;
+    stage.trBox.selected.mirror(base);
     this.updateRects();
 }
 

@@ -23,9 +23,9 @@ function createArrow() {
 //tool clicked
 function onToolClick(event) {
     var id = event.target.id;
-    var box = stage.transformBox;
+    var box = stage.trBox;
     var layer = stage.layer;
-    var obj = stage.selectedObject;
+    var obj = box.selected;
 
     //drawing tools
     if (id == 'clear_tool') stage.clear();

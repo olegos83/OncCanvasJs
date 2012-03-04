@@ -53,7 +53,7 @@ var ClipChooser = function() {
 	    	var im = new Bitmap("img", selectedClip.src, 200, 150);
 	        stage.addObject(im);
 	        im.move(stage.stageWidth / 2 - im.getWidth() / 2, stage.stageHeight / 2 - im.getHeight() / 2);
-	        stage.transformBox.apply(im);
+	        stage.trBox.apply(im);
 	        
 	        imgListWnd.close();
     	}
@@ -175,13 +175,13 @@ var ColorChooser = function(type) {
 	
 	function setStrokeColor(c) {
 	    stage.selectedStroke = c;
-	    if (stage.selectedObject) stage.selectedObject.color.stroke = c;
+	    if (stage.trBox.selected) stage.trBox.selected.color.stroke = c;
 	    stage.layer.forceRedraw();
 	}
 
 	function setFillColor(c) {
 	    stage.selectedFill = c;
-	    if (stage.selectedObject) stage.selectedObject.color.fill = c;
+	    if (stage.trBox.selected) stage.trBox.selected.color.fill = c;
 	    stage.layer.forceRedraw();
 	}
 	
