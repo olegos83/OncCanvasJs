@@ -174,13 +174,13 @@ var ColorChooser = function(type) {
 	}
 	
 	function setStrokeColor(c) {
-	    stage.selectedStroke = c;
+	    stage.color.stroke = c;
 	    if (stage.trBox.selected) stage.trBox.selected.color.stroke = c;
 	    stage.layer.forceRedraw();
 	}
 
 	function setFillColor(c) {
-	    stage.selectedFill = c;
+	    stage.color.fill = c;
 	    if (stage.trBox.selected) stage.trBox.selected.color.fill = c;
 	    stage.layer.forceRedraw();
 	}
@@ -209,8 +209,8 @@ var ColorChooser = function(type) {
     		wnd.removeControl(colorSelect);
     	    wnd.addControl(picker);
     	    
-    	    if (type == 1) attachColorPicker(setFillColor, stage.selectedFill);
-    	    else attachColorPicker(setStrokeColor, stage.selectedStroke);
+    	    if (type == 1) attachColorPicker(setFillColor, stage.color.fill);
+    	    else attachColorPicker(setStrokeColor, stage.color.stroke);
     	}
     }).prop('value', 'Colors');
     

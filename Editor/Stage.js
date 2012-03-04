@@ -6,8 +6,7 @@
 //constructor and initialization
 var Stage = function() {
     //init properties
-    this.selectedFill = '#FFFFFF';
-    this.selectedStroke = '#000000';
+	this.color = {stroke:'#000000', fill:'#FFFFFF'};
 
     //state of stage
     this.state = '';
@@ -34,10 +33,10 @@ Stage.prototype.addObject = function(obj) {
     stage.layer.addObject(obj);
     
     //add events
-    obj.draggable();
+    //obj.draggable();
     obj.addEventListener('mousedown', function(e) {
-        stage.selectedStroke = e.target.color.stroke;
-        stage.selectedFill = e.target.color.fill;
+        stage.color.stroke = e.target.color.stroke;
+        stage.color.fill = e.target.color.fill;
         stage.trBox.apply(e.target);
     });
 }
@@ -63,7 +62,7 @@ Stage.prototype.stageMouseDown = function(e) {
     //new rectangle
     if (stage.state == 'newRect') {
         var r = new Rectangle(new Point(mx, my), new Point(mx + 1, my + 1)).toPolygon();
-        stage.newObj = new Shaper("newRect", r, {stroke:stage.selectedStroke, fill:stage.selectedFill});
+        stage.newObj = new Shaper("newRect", r, {stroke:stage.color.stroke, fill:stage.color.fill});
         stage.addObject(stage.newObj);
         
         stage.start_x = mx;
@@ -74,7 +73,7 @@ Stage.prototype.stageMouseDown = function(e) {
     } else if (stage.state == 'newArrow') {
         var r = createArrow();
         r.move(mx, my);
-        stage.newObj = new Shaper("newArrow", r, {stroke:stage.selectedStroke, fill:stage.selectedFill});
+        stage.newObj = new Shaper("newArrow", r, {stroke:stage.color.stroke, fill:stage.color.fill});
         stage.addObject(stage.newObj);
         
         stage.start_x = mx;
