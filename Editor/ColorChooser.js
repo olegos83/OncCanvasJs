@@ -50,7 +50,7 @@ var ColorChooser = function(type) {
     wnd.addControl(combo);
     
     //create color select
-    var colorSelect = Dom().create('div', '', 'absolute', 5, 35);
+    var colorSelect = Dom.create('div', '', 'absolute', 5, 35);
     buildSafePalette(0, colorSelect, function(e) {
     	setColor(type, e.target.style.backgroundColor);
     }, 21);
@@ -62,9 +62,13 @@ var ColorChooser = function(type) {
     Dom(picker).placeTo({x:0, y:30});
     
     //create buttons
-    var selectBtn = Dom().create('button', '', 'absolute', 5, wnd.getHeight() - 30, 100, 25);
-    Dom(selectBtn).prop('innerHTML', 'Ok').prop('onclick', function(e) {
-    	wnd.close();
+    var selectBtn = Dom.create('button', '', 'absolute', 5, wnd.getHeight() - 30, 100, 25);
+    
+    Dom(selectBtn).prop({
+    	innerHTML: 'Ok',
+    	onclick: function(e) {
+    		wnd.close();
+    	}
     });
     
     wnd.addControl(selectBtn);
