@@ -86,6 +86,14 @@ var Layer = function(id, elem, x, y, width, height) {
          * @private
          **/
          this._objArr = new Array();
+         
+         /**
+          * Event listener instance - to workout events
+          * @property _eventListener
+          * @type EventListener
+          * @private
+          **/
+          this._eventListener = new EventListener();
         
         
 //public properties:
@@ -103,18 +111,10 @@ var Layer = function(id, elem, x, y, width, height) {
          **/
         this.canvas = document.getElementById(id);
         
-        //if no canvas with specified id
+        //if no canvas with specified id - create new one
         if (!this.canvas) {
-            //create new one
-            this.canvas = document.createElement("canvas");
-            this.canvas.setAttribute('id', id);
-            
-            //set position and size
-            this.canvas.style.position = 'absolute';
-            this.setPosition({x:x, y:y});
+            this.canvas = Dom.create('canvas', id, 'absolute', x, y); 
             this.setSize(width, height);
-            
-            //append canvas to elem container
             elem.appendChild(this.canvas);
         }
         
@@ -130,112 +130,144 @@ var Layer = function(id, elem, x, y, width, height) {
         
         //mouse down
         var onMouseDown = function(e) {
+        	//prepare event object
             var mx = e.pageX - self.canvas.offsetLeft;
             var my = e.pageY - self.canvas.offsetTop;
+ 
+            var event_obj = {
+                event:e,
+                pos:{x:mx, y:my}
+            };
             
-            //provess object event
-            var obj = self.getObjectUnderPoint({x:mx, y: my});
-            if (obj) {
-                var event_obj = {
-                    event:e,
-                    pos:{x:mx, y: my},
-                    target:obj
-                };
-                
-                obj.processEvent(MouseEvent.DOWN, event_obj);
-            }
+            //provess event
+            var obj = self.getObjectUnderPoint({x:mx, y: my}) || self;
+        	event_obj.target = obj;
+            obj.processEvent(MouseEvent.DOWN, event_obj);
         }
         
         //mouse move
         var onMouseMove = function(e) {
-            var mx = e.pageX - self.canvas.offsetLeft;
+        	//process draggable
+        	Draggable.onmousemove(e);
+        	
+            //prepare event object
+        	var mx = e.pageX - self.canvas.offsetLeft;
             var my = e.pageY - self.canvas.offsetTop;
             
-            //provess object event
-            var obj = self.getObjectUnderPoint({x:mx, y: my});
-            if (obj) {
-                var event_obj = {
-                    event:e,
-                    pos:{x:mx, y:my},
-                    target:obj
-                };
-                
-                obj.processEvent(MouseEvent.MOVE, event_obj);
-            }
+            var event_obj = {
+                event:e,
+                pos:{x:mx, y:my}
+            };
+            
+            //provess event
+            var obj = self.getObjectUnderPoint({x:mx, y: my}) || self;
+        	event_obj.target = obj;
+            obj.processEvent(MouseEvent.MOVE, event_obj);
         }
         
         //mouse up
         var onMouseUp = function(e) {
+        	//process draggable
+        	Draggable.onmouseup(e);
+        	
+        	//prepare event object
             var mx = e.pageX - self.canvas.offsetLeft;
             var my = e.pageY - self.canvas.offsetTop;
             
-            //provess object event
-            var obj = self.getObjectUnderPoint({x:mx, y: my});
-            if (obj) {
-                var event_obj = {
-                    event:e,
-                    pos:{x:mx, y: my},
-                    target:obj
-                };
-                
-                obj.processEvent(MouseEvent.UP, event_obj);
-            }
+            var event_obj = {
+                event:e,
+                pos:{x:mx, y:my}
+            };
+            
+            //provess event
+            var obj = self.getObjectUnderPoint({x:mx, y: my}) || self;
+        	event_obj.target = obj;
+            obj.processEvent(MouseEvent.UP, event_obj);
         }
         
         //mouse click
         var onClick = function(e) {
+        	//prepare event object
             var mx = e.pageX - self.canvas.offsetLeft;
             var my = e.pageY - self.canvas.offsetTop;
             
-            //provess object event
-            var obj = self.getObjectUnderPoint({x:mx, y: my});
-            if (obj) {
-                var event_obj = {
-                    event:e,
-                    pos:{x:mx, y: my},
-                    target:obj
-                };
-                
-                obj.processEvent(MouseEvent.CLICK, event_obj);
-            }
+            var event_obj = {
+                event:e,
+                pos:{x:mx, y:my}
+            };
+            
+            //provess event
+            var obj = self.getObjectUnderPoint({x:mx, y: my}) || self;
+        	event_obj.target = obj;
+            obj.processEvent(MouseEvent.CLICK, event_obj);
         }
         
         //mouse dblclick
         var onDblClick = function(e) {
+        	//prepare event object
             var mx = e.pageX - self.canvas.offsetLeft;
             var my = e.pageY - self.canvas.offsetTop;
             
-            //provess object event
-            var obj = self.getObjectUnderPoint({x:mx, y: my});
-            if (obj) {
-                var event_obj = {
-                    event:e,
-                    pos:{x:mx, y: my},
-                    target:obj
-                };
-                
-                obj.processEvent(MouseEvent.DBLCLICK, event_obj);
-            }
+            var event_obj = {
+                event:e,
+                pos:{x:mx, y:my},
+            };
+            
+            //provess event
+            var obj = self.getObjectUnderPoint({x:mx, y: my}) || self;
+        	event_obj.target = obj;
+            obj.processEvent(MouseEvent.DBLCLICK, event_obj);
         }
         
         //start events processing
-        this.canvas.addEventListener(MouseEvent.DOWN, onMouseDown, false);
-        this.canvas.addEventListener(MouseEvent.MOVE, onMouseMove, false);
-        this.canvas.addEventListener(MouseEvent.UP, onMouseUp, false);
-        this.canvas.addEventListener(MouseEvent.CLICK, onClick, false);
-        this.canvas.addEventListener(MouseEvent.DBLCLICK, onDblClick, false);
+        Dom(this.canvas).addEvents({
+        	mousedown: onMouseDown,
+        	mousemove: onMouseMove,
+        	mouseup: onMouseUp,
+        	click: onClick,
+        	dblclick: onDblClick
+        });
 }
 
 
 //public methods:
+	/**
+	 * Add event listener for specified event type.
+	 * @method addEventListener
+	 * @param {String} eventType - type of event.
+	 * @param {Function} listener - event handler.
+	 **/
+	Layer.prototype.addEventListener = function(eventType, listener) {
+	    this._eventListener.addEventListener(eventType, listener);
+	}
+	
+	/**
+	 * Remove event listener for specified event type.
+	 * @method removeEventListener
+	 * @param {String} eventType - type of event.
+	 * @param {Function} listener - event handler.
+	 **/
+	Layer.prototype.removeEventListener = function(eventType, listener) {
+	    this._eventListener.removeEventListener(eventType, listener);
+	}
+	
+	/**
+	 * Call listeners for specified event type.
+	 * @method processEvent
+	 * @param {String} eventType - type of event.
+	 * @param {String} arg - argument for event listener.
+	 **/
+	Layer.prototype.processEvent = function(eventType, arg) {
+	    this._eventListener.processEvent(eventType, arg);
+	}
+
     /**
      * Set layer position.
      * @method setPosition
      * @param {Point} pos - position of the layer.
      **/
     Layer.prototype.setPosition = function(pos) {
-        this.canvas.style.left = pos.x + 'px';
-        this.canvas.style.top = pos.y + 'px';
+        Dom(this.canvas).placeTo(pos);
     }
 
     /**
@@ -254,9 +286,7 @@ var Layer = function(id, elem, x, y, width, height) {
      * @param {Number} height - height.
      **/
     Layer.prototype.setSize = function(width, height) {
-        this.canvas.width = width;
-        this.canvas.height = height;
-        
+    	Dom(this.canvas).prop({width: width, height: height});
         this._dirty = true;
     }
 

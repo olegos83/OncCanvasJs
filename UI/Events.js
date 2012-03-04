@@ -70,59 +70,62 @@ var KeyBoardEvent = {
  **/
 var Draggable = {
     //init vars
+	drag: false,
     obj: null,
     startx: 0,
     starty: 0,
     
     //mouse down
     onmousedown: function(e) {
-        Draggable.startx = e.pos.x;
+    	Draggable.drag = true;
+    	Draggable.startx = e.pos.x;
         Draggable.starty = e.pos.y;
-        
         Draggable.obj = e.target;
         Draggable.obj.processEvent(MouseEvent.DRAGSTART, e);
     },
 
     //mouse move
     onmousemove: function(e) {
-        if (Draggable.obj) {
-            var mx = e.pageX - Draggable.obj.layer.canvas.offsetLeft;
-            var my = e.pageY - Draggable.obj.layer.canvas.offsetTop;
+    	if (!Draggable.drag) return;
+        if (!Draggable.obj) return;
 
-            var event_obj = {
-                event:e,
-                pos:{x:mx, y:my},
-                target:Draggable.obj
-            };
+        var mx = e.pageX - Draggable.obj.layer.canvas.offsetLeft;
+        var my = e.pageY - Draggable.obj.layer.canvas.offsetTop;
 
-            Draggable.obj.processEvent(MouseEvent.DRAG, event_obj);
+        var event_obj = {
+            event:e,
+            pos:{x:mx, y:my},
+            target:Draggable.obj
+        };
 
-            var dx = mx - Draggable.startx;
-            var dy = my - Draggable.starty;
+        var dx = mx - Draggable.startx;
+        var dy = my - Draggable.starty;
 
-            Draggable.obj.move(dx, dy);
-            Draggable.obj.layer.forceRedraw();
+        Draggable.obj.move(dx, dy);
+        Draggable.obj.layer.forceRedraw();
 
-            Draggable.startx += dx;
-            Draggable.starty += dy;
-        }
+        Draggable.startx += dx;
+        Draggable.starty += dy;
+        
+        Draggable.obj.processEvent(MouseEvent.DRAG, event_obj);
     },
 
     //mouse up
     onmouseup: function(e) {
-        if (Draggable.obj) {
-            var mx = e.pageX - Draggable.obj.layer.canvas.offsetLeft;
-            var my = e.pageY - Draggable.obj.layer.canvas.offsetTop;
+    	Draggable.drag = false;
+        if (!Draggable.obj) return;
+        
+        var mx = e.pageX - Draggable.obj.layer.canvas.offsetLeft;
+        var my = e.pageY - Draggable.obj.layer.canvas.offsetTop;
 
-            var event_obj = {
-                event:e,
-                pos:{x:mx, y:my},
-                target:Draggable.obj
-            };
+        var event_obj = {
+            event:e,
+            pos:{x:mx, y:my},
+            target:Draggable.obj
+        };
 
-            Draggable.obj.processEvent(MouseEvent.DRAGEND, event_obj);
-            Draggable.obj = null;
-        }
+        Draggable.obj.processEvent(MouseEvent.DRAGEND, event_obj);
+        Draggable.obj = null;
     }
 };
 
@@ -183,7 +186,10 @@ var EventListener = function() {
         
         if (listener) {
             for (var i = 0; i < len; i++) {
-                if (eventsArr[i] == listener) eventsArr.splice(i, 1);
+                if (eventsArr[i] == listener) {
+                	eventsArr.splice(i, 1);
+                	return;
+                }
             }
         } else this._events[eventType] = [];
     }

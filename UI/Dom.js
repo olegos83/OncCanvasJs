@@ -191,6 +191,18 @@ var Dom = function(el) {
     }
     
     /**
+    * Add many event listeners to DOM element, packed in object.
+    * @method addEvents
+    * @static
+    * @param {Object} listeners - event listeners object like {eventName: listener, ...}
+    * @return {Dom} this - can be chained.
+    **/
+    Dom.addEvents = function(listeners) {
+    	for (var event in listeners) this.addEvent(event, listeners[event]);
+   	    return this;
+    }
+    
+    /**
      * Remove event listener to DOM element.
      * @method removeEvent
      * @static

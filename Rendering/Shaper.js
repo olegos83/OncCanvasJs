@@ -134,6 +134,22 @@ var Shaper = function(id, shape, color) {
     }
     
     /**
+     * Make object draggable.
+     * @method draggable
+     **/
+    Shaper.prototype.draggable = function() {
+        this.addEventListener(MouseEvent.DOWN, Draggable.onmousedown);
+    }
+    
+    /**
+     * Stop object draggable ability.
+     * @method stopDrag
+     **/
+    Shaper.prototype.stopDrag = function() {
+        this.removeEventListener(MouseEvent.DOWN, Draggable.onmousedown);
+    }
+    
+    /**
      * Get bounding rectangle.
      * @method getBoundRect
      * @return {Rectangle} - bounding rectangle.
@@ -302,16 +318,6 @@ var Shaper = function(id, shape, color) {
         ctx.setTransform(m[0][0], m[0][1], m[1][0], m[1][1], m[2][0], m[2][1]);
         this.layer.drawShape(this.color.stroke, this.color.fill, this.shape);
         ctx.restore();
-    }
-
-    /**
-     * Make object draggable. Here is defined special Draggable object.
-     * @method draggable
-     **/
-    Shaper.prototype.draggable = function() {
-        this.addEventListener(MouseEvent.DOWN, Draggable.onmousedown);
-        this.layer.canvas.addEventListener(MouseEvent.MOVE, Draggable.onmousemove, false);
-        this.layer.canvas.addEventListener(MouseEvent.UP, Draggable.onmouseup, false);
     }
 
     /**
