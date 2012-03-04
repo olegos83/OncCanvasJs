@@ -33,11 +33,11 @@ Stage.prototype.addObject = function(obj) {
     stage.layer.addObject(obj);
     
     //add events
-    //obj.draggable();
     obj.addEventListener('mousedown', function(e) {
+    	if (stage.state != '') return;
         stage.color.stroke = e.target.color.stroke;
         stage.color.fill = e.target.color.fill;
-        stage.trBox.apply(e.target);
+        stage.trBox.apply(e.target, e.pos);
     });
 }
 
@@ -99,7 +99,7 @@ Stage.prototype.stageMouseMove = function(e) {
         var a2 = new Point(mx, my).angleTo(c);
         trBox.rotate(a2 - a1, c, true);
         
-    //new rectangle
+    //new drawing
     } else if (stage.state == 'drawing') {
         var r = new Rectangle(new Point(stage.start_x, stage.start_y), new Point(mx, my));
         r.normalize();
@@ -113,7 +113,7 @@ Stage.prototype.stageMouseMove = function(e) {
 Stage.prototype.stageMouseUp = function(e) {
     //console.log('stage mouseUp', stage.state);
     
-    //new rectangle
+    //new drawing
     if (stage.state == 'drawing') {
         stage.trBox.apply(stage.newObj);
         

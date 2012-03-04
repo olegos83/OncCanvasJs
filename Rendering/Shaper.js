@@ -137,7 +137,7 @@ var Shaper = function(id, shape, color) {
      * Make object draggable.
      * @method draggable
      **/
-    Shaper.prototype.draggable = function() {
+    Shaper.prototype.startDrag = function() {
         this.addEventListener(MouseEvent.DOWN, Draggable.onmousedown);
     }
     

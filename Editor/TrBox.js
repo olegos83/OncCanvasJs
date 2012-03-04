@@ -43,7 +43,7 @@ EditTransform.prototype.initEvents = function() {
 
     //make scale objects draggable and init rotate events for rotation objects
     for (var i = 1; i <= 4; i++) {
-        this['so' + i].draggable();
+        this['so' + i].startDrag();
         this['so' + i].addEventListener(MouseEvent.DRAGEND, function(e) {
             lastPos.h = 'L';lastPos.v = 'U';
             box.updateRects();
@@ -122,7 +122,7 @@ EditTransform.prototype.initEvents = function() {
 }
 
 //apply to object
-EditTransform.prototype.apply = function(obj) {
+EditTransform.prototype.apply = function(obj, dragStartPos) {
     //unset box
     this.unset();
     
@@ -130,6 +130,8 @@ EditTransform.prototype.apply = function(obj) {
     this.selected = obj;
     var box = stage.trBox;
     
+    obj.startDrag(); 
+    if (dragStartPos) Draggable.onmousedown({pos:dragStartPos, target:obj});
     obj.addEventListener(MouseEvent.DRAG, function(e) {
         box.updateRects();
     });
@@ -178,7 +180,11 @@ EditTransform.prototype.removeObjects = function() {
 //unset box
 EditTransform.prototype.unset = function() {
     //clear selection
-    if (stage.trBox.selected) stage.trBox.selected.removeEventListener(MouseEvent.DRAG);
+    if (stage.trBox.selected) {
+    	stage.trBox.selected.stopDrag();
+    	stage.trBox.selected.removeEventListener(MouseEvent.DRAG);
+    }
+    
     stage.trBox.selected = null;
     this.removeObjects();
 }
