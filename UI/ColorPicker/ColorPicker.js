@@ -544,6 +544,11 @@ function numberToCssColor(n) {
 }
 
 function buildSafePalette(type, el, selFn, sz) {
+	//init params and vars
+	var wd = sz || 16; var ht = sz || 16;
+	var x = 0; var y = 0; var i = 0; var j = 0;
+	var d = 0; var it = 0; var it2 = 0; var clr = 0;
+	
 	//init drwItem function
 	function drawItem(x, y, c, el, selFn) {
 		var dv = Dom.create('div', '', 'absolute', x, y, ht, wd);
@@ -566,9 +571,6 @@ function buildSafePalette(type, el, selFn, sz) {
 	var lineColors = [0x000000, 0x333333, 0x666666, 0x999999, 0xCCCCCC, 0xFFFFFF, 
 	                  0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0x00FFFF, 0xFF00FF];
 	
-	var wd = sz || 16; var ht = sz || 16;
-	var x = 0; var y = 0; var i = 0; var j = 0;
-	var d; var it; var it2; var clr;
 	
 	//init type dependencies
 	switch (type) {
