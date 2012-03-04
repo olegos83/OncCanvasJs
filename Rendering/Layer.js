@@ -219,14 +219,20 @@ var Layer = function(id, elem, x, y, width, height) {
             obj.processEvent(MouseEvent.DBLCLICK, event_obj);
         }
         
+        //mouse out
+        var onMouseOut = function(e) {
+        	Draggable.onmouseup(e);
+        }
+        
         //start events processing
-        Dom(this.canvas).addEvents({
-        	mousedown: onMouseDown,
-        	mousemove: onMouseMove,
-        	mouseup: onMouseUp,
-        	click: onClick,
-        	dblclick: onDblClick
-        });
+        var events = {};
+        events[MouseEvent.DOWN] = onMouseDown;
+        events[MouseEvent.MOVE] = onMouseMove;
+        events[MouseEvent.UP] = onMouseUp;
+        events[MouseEvent.CLICK] = onClick;
+        events[MouseEvent.DBLCLICK] = onDblClick;
+        events[MouseEvent.OUT] = onMouseOut;
+        Dom(this.canvas).addEvents(events);
 }
 
 

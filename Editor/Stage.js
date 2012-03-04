@@ -11,8 +11,6 @@ var Stage = function() {
 
     //state of stage
     this.state = '';
-    this.start_x = 0;
-    this.start_y = 0;
 
     //init main layer
     this.layer = new Layer("edit_area");
@@ -22,10 +20,11 @@ var Stage = function() {
     this.trBox = null;
     
     //set canvas events
-    this.layer.canvas.addEventListener(MouseEvent.DOWN, this.stageMouseDown, false);
-    this.layer.canvas.addEventListener(MouseEvent.UP, this.stageMouseUp, false);
-    this.layer.canvas.addEventListener(MouseEvent.MOVE, this.stageMouseMove, false);
-    this.layer.canvas.addEventListener(MouseEvent.OUT, this.stageMouseUp, false);
+    var events = {};
+    events[MouseEvent.DOWN] = this.stageMouseDown;
+    events[MouseEvent.MOVE] = this.stageMouseMove;
+    events[MouseEvent.UP] = events[MouseEvent.OUT] = this.stageMouseUp;
+    Dom(this.layer.canvas).addEvents(events);
 }
 
 //add object to stage, set its base events and push it to objects array
@@ -60,7 +59,7 @@ Stage.prototype.stageMouseDown = function(e) {
     //console.log('stage mouseDown', stage.state);
     var mx = e.pageX - stage.layer.canvas.offsetLeft;
     var my = e.pageY - stage.layer.canvas.offsetTop;
-
+	
     //new rectangle
     if (stage.state == 'newRect') {
         var r = new Rectangle(new Point(mx, my), new Point(mx + 1, my + 1)).toPolygon();
