@@ -210,7 +210,7 @@ var Layer = function(id, elem, x, y, width, height) {
             
             var event_obj = {
                 event:e,
-                pos:{x:mx, y:my},
+                pos:{x:mx, y:my}
             };
             
             //provess event
