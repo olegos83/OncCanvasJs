@@ -50,9 +50,10 @@ var ClipChooser = function() {
     	onclick: function(e) {
 	    	if (!selectedClip) return;
 	    	
-	    	var im = new Bitmap("img", selectedClip.src, 150, 150);
+	    	var im = new Bitmap("img", selectedClip.src, 200, 150);
 	        stage.addObject(im);
 	        im.move(stage.stageWidth / 2 - im.getWidth() / 2, stage.stageHeight / 2 - im.getHeight() / 2);
+	        stage.transformBox.apply(im);
 	        
 	        imgListWnd.close();
     	}
