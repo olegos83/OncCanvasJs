@@ -26,7 +26,7 @@ EditTransform.prototype.init = function() {
     this.rotatePoint = null;
     
     //shapes
-    for (var i = 1; i <= 4; i++) {
+    for (var i = 1; i <= 8; i++) {
         //transform points
         this['p' + i] = new Point(-10, -10);
         
@@ -57,29 +57,44 @@ EditTransform.prototype.initEvents = function() {
     
     //init scale points events
     this.so1.addEventListener(MouseEvent.DRAG, function(e) {
-        box.p1.x = box.p4.x = e.pos.x;
-        box.p1.y = box.p2.y = e.pos.y;
+        box.p1.x = box.p4.x = box.p8.x = e.pos.x;
+        box.p1.y = box.p2.y = box.p5.y = e.pos.y;
+        
+        setMiddlePoints();
         scaleObj();
     });
 
     this.so2.addEventListener(MouseEvent.DRAG, function(e) {
-        box.p2.x = box.p3.x = e.pos.x;
-        box.p2.y = box.p1.y = e.pos.y;
+        box.p2.x = box.p3.x = box.p6.x = e.pos.x;
+        box.p2.y = box.p1.y = box.p5.y = e.pos.y;
+        
+        setMiddlePoints();
         scaleObj();
     });
 
     this.so3.addEventListener(MouseEvent.DRAG, function(e) {
-        box.p3.x = box.p2.x = e.pos.x;
-        box.p3.y = box.p4.y = e.pos.y;
+        box.p3.x = box.p2.x = box.p6.x = e.pos.x;
+        box.p3.y = box.p4.y = box.p7.y = e.pos.y;
+        
+        setMiddlePoints();
         scaleObj();
     });
 
     this.so4.addEventListener(MouseEvent.DRAG, function(e) {
-        box.p4.x = box.p1.x = e.pos.x;
-        box.p4.y = box.p3.y = e.pos.y;
+        box.p4.x = box.p1.x = box.p8.x = e.pos.x;
+        box.p4.y = box.p3.y = box.p7.y = e.pos.y;
+        
+        setMiddlePoints();
         scaleObj();
     });
-
+    
+    //middle points correction
+    function setMiddlePoints() {
+    	var c = box.getCenter();
+        box.p5.x = box.p7.x = c.x;
+        box.p6.y = box.p8.y = c.y;
+    }
+    
     //scale obj functions
     function checkPointsPos() {
         var fr = box.p1;
@@ -146,12 +161,15 @@ EditTransform.prototype.updateRects = function() {
     //init vars
     var box = stage.trBox;
     var r = box.selected.getBoundRect();
+    var c = r.getCenter();
     
     //setup points
-    box.p1.x = box.p4.x = r.from.x;
-    box.p1.y = box.p2.y = r.from.y;
-    box.p3.x = box.p2.x = r.to.x;
-    box.p3.y = box.p4.y = r.to.y;
+    box.p1.x = box.p4.x = box.p8.x = r.from.x;
+    box.p1.y = box.p2.y = box.p5.y = r.from.y;
+    box.p3.x = box.p2.x = box.p6.x = r.to.x;
+    box.p3.y = box.p4.y = box.p7.y = r.to.y;
+    box.p5.x = box.p7.x = c.x;
+    box.p6.y = box.p8.y = c.y;
     
     //redraw
     stage.layer.forceRedraw();
@@ -162,7 +180,7 @@ EditTransform.prototype.placeObjects = function() {
     this.removeObjects();
     
     var layer = stage.layer;
-    for (var i = 1; i <= 4; i++) {
+    for (var i = 1; i <= 8; i++) {
         layer.addObject(this['ro' + i]);
         layer.addObject(this['so' + i]);
     }
@@ -171,7 +189,7 @@ EditTransform.prototype.placeObjects = function() {
 //remove transform controls
 EditTransform.prototype.removeObjects = function() {
     var layer = stage.layer;
-    for (var i = 1; i <= 4; i++) {
+    for (var i = 1; i <= 8; i++) {
         layer.removeObject(this['ro' + i]);
         layer.removeObject(this['so' + i]);
     }
@@ -201,7 +219,7 @@ EditTransform.prototype.rotate = function(angle, pivot, rotateObj) {
 
     //rotate box
     var box = this;
-    for (var i = 1; i <= 4; i++) box['p' + i].rotate(angle, pivot);
+    for (var i = 1; i <= 8; i++) box['p' + i].rotate(angle, pivot);
     
     //rotate object if rotateObj is true
     if (rotateObj) stage.trBox.selected.rotate(angle, pivot);
