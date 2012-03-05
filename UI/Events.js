@@ -59,7 +59,7 @@ var MouseEvent = {
 /**
  * Keyboard event types
  **/
-var KeyBoardEvent = {
+var KeyEvent = {
     KEYDOWN:'keydown',
     KEYUP:'keyup'
 };
@@ -70,34 +70,27 @@ var KeyBoardEvent = {
  **/
 var Draggable = {
     //init vars
-	drag: false,
     obj: null,
     startx: 0,
     starty: 0,
     
     //mouse down
     onmousedown: function(e) {
-    	Draggable.drag = true;
     	Draggable.startx = e.pos.x;
         Draggable.starty = e.pos.y;
         Draggable.obj = e.target;
-        Draggable.obj.processEvent(MouseEvent.DRAGSTART, e);
+        
+        e.type = MouseEvent.DRAGSTART;
+        Draggable.obj.processEvent(e);
     },
 
     //mouse move
     onmousemove: function(e) {
-    	if (!Draggable.drag) return;
         if (!Draggable.obj) return;
 
         var mx = e.pageX - Draggable.obj.layer.canvas.offsetLeft;
         var my = e.pageY - Draggable.obj.layer.canvas.offsetTop;
-
-        var event_obj = {
-            event:e,
-            pos:{x:mx, y:my},
-            target:Draggable.obj
-        };
-
+        
         var dx = mx - Draggable.startx;
         var dy = my - Draggable.starty;
 
@@ -107,24 +100,20 @@ var Draggable = {
         Draggable.startx += dx;
         Draggable.starty += dy;
         
-        Draggable.obj.processEvent(MouseEvent.DRAG, event_obj);
+        var evt = { pos:{x:mx, y:my}, target:Draggable.obj, type:MouseEvent.DRAG };
+        Draggable.obj.processEvent(evt);
     },
 
     //mouse up
     onmouseup: function(e) {
-    	Draggable.drag = false;
         if (!Draggable.obj) return;
         
         var mx = e.pageX - Draggable.obj.layer.canvas.offsetLeft;
         var my = e.pageY - Draggable.obj.layer.canvas.offsetTop;
 
-        var event_obj = {
-            event:e,
-            pos:{x:mx, y:my},
-            target:Draggable.obj
-        };
-
-        Draggable.obj.processEvent(MouseEvent.DRAGEND, event_obj);
+        var evt = { pos:{x:mx, y:my}, target:Draggable.obj, type:MouseEvent.DRAGEND };
+        Draggable.obj.processEvent(evt);
+        
         Draggable.obj = null;
     }
 };
@@ -148,17 +137,8 @@ var EventListener = function() {
         * @type Object
         * @private
         **/
-        this._events = new Object();
-        this._events.mousedown = new Array();
-        this._events.mousemove = new Array();
-        this._events.mouseup = new Array();
-        this._events.mouseover = new Array();
-        this._events.mouseout = new Array();
-        this._events.click = new Array();
-        this._events.dblclick = new Array();
-        this._events.dragstart = new Array();
-        this._events.drag = new Array();
-        this._events.dragend = new Array();
+        this._events = {};
+        for (var e in MouseEvent) this._events[MouseEvent[e]] = [];
 }
 
 
@@ -197,16 +177,15 @@ var EventListener = function() {
     /**
      * Call listeners for specified event type.
      * @method processEvent
-     * @param {String} eventType - type of event.
-     * @param {String} arg - argument for event listener.
+     * @param {Object} e - event object.
      **/
-    EventListener.prototype.processEvent = function(eventType, arg) {
-        var eventsArr = this._events[eventType];
+    EventListener.prototype.processEvent = function(e) {
+        var eventsArr = this._events[e.type];
         var len = eventsArr.length;
         if (len == 0) return;
         
         for (var i = 0; i < len; i++) {
-            eventsArr[i].call(this, arg);
+            eventsArr[i].call(this, e);
         }
     }
     

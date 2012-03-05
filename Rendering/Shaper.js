@@ -126,11 +126,10 @@ var Shaper = function(id, shape, color) {
     /**
      * Call listeners for specified event type.
      * @method processEvent
-     * @param {String} eventType - type of event.
-     * @param {String} arg - argument for event listener.
+     * @param {Object} e - event object.
      **/
-    Shaper.prototype.processEvent = function(eventType, arg) {
-        this._eventListener.processEvent(eventType, arg);
+    Shaper.prototype.processEvent = function(e) {
+        this._eventListener.processEvent(e);
     }
     
     /**

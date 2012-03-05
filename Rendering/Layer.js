@@ -86,14 +86,6 @@ var Layer = function(id, elem, x, y, width, height) {
          * @private
          **/
          this._objArr = new Array();
-         
-         /**
-          * Event listener instance - to workout events
-          * @property _eventListener
-          * @type EventListener
-          * @private
-          **/
-          this._eventListener = new EventListener();
         
         
 //public properties:
@@ -125,148 +117,35 @@ var Layer = function(id, elem, x, y, width, height) {
          **/
         this.ctx = this.canvas.getContext("2d");
         
-        //init event handlers
+        //init events handler
         var self = this;
         
-        //mouse down
-        var onMouseDown = function(e) {
-        	//prepare event object
-            var mx = e.pageX - self.canvas.offsetLeft;
-            var my = e.pageY - self.canvas.offsetTop;
- 
-            var event_obj = {
-                event:e,
-                pos:{x:mx, y:my}
-            };
-            
-            //provess event
-            var obj = self.getObjectUnderPoint({x:mx, y: my}) || self;
-        	event_obj.target = obj;
-            obj.processEvent(MouseEvent.DOWN, event_obj);
-        }
-        
-        //mouse move
-        var onMouseMove = function(e) {
+        var mouseHandler = function(e) {
         	//process draggable
-        	Draggable.onmousemove(e);
+        	if (e.type == MouseEvent.MOVE) Draggable.onmousemove(e);
+        	if ( (e.type == MouseEvent.UP) || (e.type == MouseEvent.OUT) ) Draggable.onmouseup(e);
         	
-            //prepare event object
+        	//get mouse coords
         	var mx = e.pageX - self.canvas.offsetLeft;
             var my = e.pageY - self.canvas.offsetTop;
             
-            var event_obj = {
-                event:e,
-                pos:{x:mx, y:my}
-            };
-            
-            //provess event
-            var obj = self.getObjectUnderPoint({x:mx, y: my}) || self;
-        	event_obj.target = obj;
-            obj.processEvent(MouseEvent.MOVE, event_obj);
-        }
-        
-        //mouse up
-        var onMouseUp = function(e) {
-        	//process draggable
-        	Draggable.onmouseup(e);
-        	
-        	//prepare event object
-            var mx = e.pageX - self.canvas.offsetLeft;
-            var my = e.pageY - self.canvas.offsetTop;
-            
-            var event_obj = {
-                event:e,
-                pos:{x:mx, y:my}
-            };
-            
-            //provess event
-            var obj = self.getObjectUnderPoint({x:mx, y: my}) || self;
-        	event_obj.target = obj;
-            obj.processEvent(MouseEvent.UP, event_obj);
-        }
-        
-        //mouse click
-        var onClick = function(e) {
-        	//prepare event object
-            var mx = e.pageX - self.canvas.offsetLeft;
-            var my = e.pageY - self.canvas.offsetTop;
-            
-            var event_obj = {
-                event:e,
-                pos:{x:mx, y:my}
-            };
-            
-            //provess event
-            var obj = self.getObjectUnderPoint({x:mx, y: my}) || self;
-        	event_obj.target = obj;
-            obj.processEvent(MouseEvent.CLICK, event_obj);
-        }
-        
-        //mouse dblclick
-        var onDblClick = function(e) {
-        	//prepare event object
-            var mx = e.pageX - self.canvas.offsetLeft;
-            var my = e.pageY - self.canvas.offsetTop;
-            
-            var event_obj = {
-                event:e,
-                pos:{x:mx, y:my}
-            };
-            
-            //provess event
-            var obj = self.getObjectUnderPoint({x:mx, y: my}) || self;
-        	event_obj.target = obj;
-            obj.processEvent(MouseEvent.DBLCLICK, event_obj);
-        }
-        
-        //mouse out
-        var onMouseOut = function(e) {
-        	Draggable.onmouseup(e);
+            //process event
+            var obj = self.getObjectUnderPoint({x:mx, y: my});
+            if (obj) {
+            	var evt = { pos:{x:mx, y:my}, target:obj, type:e.type };
+	            obj.processEvent(evt);
+            }
         }
         
         //start events processing
         var events = {};
-        events[MouseEvent.DOWN] = onMouseDown;
-        events[MouseEvent.MOVE] = onMouseMove;
-        events[MouseEvent.UP] = onMouseUp;
-        events[MouseEvent.CLICK] = onClick;
-        events[MouseEvent.DBLCLICK] = onDblClick;
-        events[MouseEvent.OUT] = onMouseOut;
+        events[MouseEvent.DOWN] = events[MouseEvent.MOVE] = events[MouseEvent.UP] = 
+        events[MouseEvent.CLICK] = events[MouseEvent.DBLCLICK] = events[MouseEvent.OUT] = mouseHandler;
         Dom(this.canvas).addEvents(events);
 }
 
 
 //public methods:
-	/**
-	 * Add event listener for specified event type.
-	 * @method addEventListener
-	 * @param {String} eventType - type of event.
-	 * @param {Function} listener - event handler.
-	 **/
-	Layer.prototype.addEventListener = function(eventType, listener) {
-	    this._eventListener.addEventListener(eventType, listener);
-	}
-	
-	/**
-	 * Remove event listener for specified event type.
-	 * @method removeEventListener
-	 * @param {String} eventType - type of event.
-	 * @param {Function} listener - event handler.
-	 **/
-	Layer.prototype.removeEventListener = function(eventType, listener) {
-	    this._eventListener.removeEventListener(eventType, listener);
-	}
-	
-	/**
-	 * Call listeners for specified event type.
-	 * @method processEvent
-	 * @param {String} eventType - type of event.
-	 * @param {String} arg - argument for event listener.
-	 **/
-	Layer.prototype.processEvent = function(eventType, arg) {
-	    this._eventListener.processEvent(eventType, arg);
-	}
-
     /**
      * Set layer position.
      * @method setPosition
