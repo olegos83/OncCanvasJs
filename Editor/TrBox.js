@@ -88,7 +88,7 @@ EditTransform.prototype.initEvents = function() {
         scaleObj();
     });
     
-    //set middle points events
+    //set middle scale points events
     this.so5.addEventListener(MouseEvent.DRAG, function(e) {
         box.p1.y = box.p2.y = box.p5.y = e.pos.y;
         
