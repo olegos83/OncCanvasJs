@@ -42,14 +42,14 @@ EditTransform.prototype.initEvents = function() {
     var lastPos = {h:'L', v:'U'};
 
     //make scale objects draggable and init rotate events for rotation objects
-    for (var i = 1; i <= 4; i++) {
+    for (var i = 1; i <= 8; i++) {
         this['so' + i].startDrag();
         this['so' + i].addEventListener(MouseEvent.DRAGEND, function(e) {
             lastPos.h = 'L';lastPos.v = 'U';
             box.updateRects();
         });
         
-        this['ro' + i].addEventListener(MouseEvent.DOWN, function(e) {
+        if (i <= 4) this['ro' + i].addEventListener(MouseEvent.DOWN, function(e) {
                 box.rotatePoint = e.target._pos;
                 stage.state = 'rotating';
         });
@@ -83,6 +83,35 @@ EditTransform.prototype.initEvents = function() {
     this.so4.addEventListener(MouseEvent.DRAG, function(e) {
         box.p4.x = box.p1.x = box.p8.x = e.pos.x;
         box.p4.y = box.p3.y = box.p7.y = e.pos.y;
+        
+        setMiddlePoints();
+        scaleObj();
+    });
+    
+    //set middle points events
+    this.so5.addEventListener(MouseEvent.DRAG, function(e) {
+        box.p1.y = box.p2.y = box.p5.y = e.pos.y;
+        
+        setMiddlePoints();
+        scaleObj();
+    });
+    
+    this.so6.addEventListener(MouseEvent.DRAG, function(e) {
+    	box.p3.x = box.p2.x = box.p6.x = e.pos.x;
+        
+        setMiddlePoints();
+        scaleObj();
+    });
+    
+    this.so7.addEventListener(MouseEvent.DRAG, function(e) {
+    	box.p4.y = box.p3.y = box.p7.y = e.pos.y;
+        
+        setMiddlePoints();
+        scaleObj();
+    });
+    
+    this.so8.addEventListener(MouseEvent.DRAG, function(e) {
+    	box.p4.x = box.p1.x = box.p8.x = e.pos.x;
         
         setMiddlePoints();
         scaleObj();
