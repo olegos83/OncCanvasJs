@@ -1,5 +1,5 @@
 /*
-* Polygon by OlegoS. Jan 4, 2012
+* Path by OlegoS. Jan 4, 2012
 *
 * Copyright (c) 2012 OlegoS
 *
@@ -14,19 +14,19 @@
 
 
 /**
-* Polygon class - Polygon implementation in 2D coordinate system.
-* Has an array of points, which are connected from 0 to last and then closepathed.
+* Path class - Path implementation in 2D coordinate system.
+* Has an array of points. It is base class for other shapes.
 *
-* @class Polygon
+* @class Path
 * @author OlegoS
 *
 * @constructor
 * @param {Array} pointsArr - points array. Default is empty array.
 **/
-var Polygon = function(pointsArr) {
+var Path = function(pointsArr) {
 //public properties:
     /**
-     * Polygon points array.
+     * Points array.
      * @property pointsArr
      * @type Array
      **/
@@ -36,12 +36,12 @@ var Polygon = function(pointsArr) {
 
 //public methods:
     /**
-     * Move Polygon by x/y deltas.
+     * Move Path points by x/y deltas.
      * @method move
      * @param {Number} dx - X delta.
      * @param {Number} dy - Y delta.
      **/
-    Polygon.prototype.move = function(dx, dy) {
+	Path.prototype.move = function(dx, dy) {
         //get points array
         var pt = this.pointsArr;
         var l = pt.length;
@@ -51,12 +51,12 @@ var Polygon = function(pointsArr) {
     }
 
     /**
-     * Move Polygon by distance in specified direction.
+     * Move Path points by distance in specified direction.
      * @method moveDir
      * @param {Number} dist - distance to move.
      * @param {Number} angle - direction (in radians).
      **/
-    Polygon.prototype.moveDir = function(dist, angle) {
+	Path.prototype.moveDir = function(dist, angle) {
         //get points array
         var pt = this.pointsArr;
         var l = pt.length;
@@ -66,12 +66,12 @@ var Polygon = function(pointsArr) {
     }
 
     /**
-     * Rotate Polygon around pivot by specified angle.
+     * Rotate Path points around pivot by specified angle.
      * @method rotate
      * @param {Number} angle - rotation angle (in radians).
      * @param {Point} pivot - pivot to rotate around.
      **/
-    Polygon.prototype.rotate = function(angle, pivot) {
+	Path.prototype.rotate = function(angle, pivot) {
         //get points array
         var pt = this.pointsArr;
         var l = pt.length;
@@ -81,13 +81,13 @@ var Polygon = function(pointsArr) {
     }
 
     /**
-     * Scale Polygon from pivot by specified scX/scY koefs.
+     * Scale Path points from pivot by specified scX/scY koefs.
      * @method scale
      * @param {Number} scX - x scale koef.
      * @param {Number} scY - y scale koef.
      * @param {Point} pivot - pivot to scale from.
      **/
-    Polygon.prototype.scale = function(scX, scY, pivot) {
+	Path.prototype.scale = function(scX, scY, pivot) {
         //get points array
         var pt = this.pointsArr;
         var l = pt.length;
@@ -97,11 +97,11 @@ var Polygon = function(pointsArr) {
     }
     
     /**
-     * Apply matrix transformation to Polygon.
+     * Apply matrix transformation to Path points.
      * @method matrixTransform
      * @param {Matrix} m - a transformation matrix.
      **/
-    Polygon.prototype.matrixTransform = function(m) {
+	Path.prototype.matrixTransform = function(m) {
         //get points array
         var pt = this.pointsArr;
         var l = pt.length;
@@ -111,11 +111,11 @@ var Polygon = function(pointsArr) {
     }
 
     /**
-     * Returns a bounding rectangle of this Polygon.
+     * Returns a bounding rectangle of this Path.
      * @method getBoundRect
-     * @return {Rectangle} a bounding rectangle of this Polygon.
+     * @return {Rectangle} a bounding rectangle.
      **/
-    Polygon.prototype.getBoundRect = function() {
+	Path.prototype.getBoundRect = function() {
         //get points array
         var pt = this.pointsArr;
         
@@ -140,21 +140,21 @@ var Polygon = function(pointsArr) {
     }
     
     /**
-     * Returns a center point of this Polygon.
+     * Returns a center point of this Path.
      * @method getCenter
-     * @return {Point} a center point of this Polygon.
+     * @return {Point} a center point.
      **/
-    Polygon.prototype.getCenter = function() {
+	Path.prototype.getCenter = function() {
         return this.getBoundRect().getCenter();
     }
     
     /**
-     * Returns a center point of this Polygon.
+     * Align Path by base in bounds of specified rectangle.
      * @method align
      * @param {String} base - align base: 'left', 'right', 'center', 'top', 'bottom', 'vert'.
      * @param {Rectangle} rect - align rectangle.
      **/
-    Polygon.prototype.align = function(base, rect) {
+	Path.prototype.align = function(base, rect) {
         //init vars
         var rectWidth = rect.getWidth();
         var rectHeight = rect.getHeight();
@@ -192,16 +192,16 @@ var Polygon = function(pointsArr) {
             break;
         }
 
-        //align object
+        //move object
         this.move(dx, dy);
     }
     
     /**
-     * Mirror Polygon acording to orientation.
+     * Mirror Path acording to orientation.
      * @method mirror
      * @param {String} orientation - 'horiz' - horizontal, 'vert' - vertical.
      **/
-    Polygon.prototype.mirror = function(orientation) {
+	Path.prototype.mirror = function(orientation) {
         var c = this.getCenter();
         
         switch(orientation) {
@@ -216,23 +216,23 @@ var Polygon = function(pointsArr) {
     }
     
     /**
-     * Place Polygon around specified Point.
+     * Place Path around specified Point.
      * @method placeAroundPoint
-     * @param {Point} pt - Center point of the Polygon.
+     * @param {Point} pt - center point.
      * @param {Number} dist - distance from center to sides.
      **/
-    Polygon.prototype.placeAroundPoint = function(pt, dist) {
+	Path.prototype.placeAroundPoint = function(pt, dist) {
         var r = new Rectangle();
         r.placeAroundPoint(pt, dist);
         this.placeIntoRect(r);
     }
     
     /**
-     * Place Polygon into specified rectangle.
+     * Place Path into specified rectangle.
      * @method placeIntoRect
      * @param {Rectangle} tR - the Rectangle.
      **/
-    Polygon.prototype.placeIntoRect = function(tR) {
+	Path.prototype.placeIntoRect = function(tR) {
         //Mirror shape if needed
         if (tR.from.isRightTo(tR.to)) this.mirror('horiz');
         if (tR.from.isDownTo(tR.to)) this.mirror('vert');
@@ -256,17 +256,21 @@ var Polygon = function(pointsArr) {
     }
 
     /**
-     * Returns a clone of this Polygon.
+     * Returns a clone of this Path.
      * @method clone
-     * @return {Polygon} a clone of this Polygon.
+     * @return {Path} a clone of this Path.
      **/
-    Polygon.prototype.clone = function() {
+	Path.prototype.clone = function() {
+		//get points array
+        var pt = this.pointsArr;
+        var l = pt.length;
+		
+        //clone points
         var tmpArr = new Array();
-
-        var l = this.pointsArr.length;
-        for (var i = 0; i < l; i++) tmpArr.push(this.pointsArr[i].clone());
-
-        return new Polygon(tmpArr);
+        for (var i = 0; i < l; i++) tmpArr.push(pt[i].clone());
+        
+        //clone Path
+        return new Path(tmpArr);
     }
 
     /**
@@ -274,7 +278,7 @@ var Polygon = function(pointsArr) {
      * @method toString
      * @return {String} a string representation of this object.
      **/
-    Polygon.prototype.toString = function() {
-        return "[Polygon(numPoints:" + this.pointsArr.length + ")]";
+	Path.prototype.toString = function() {
+        return "[Path(numPoints:" + this.pointsArr.length + ")]";
     }
     
