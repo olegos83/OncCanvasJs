@@ -43,6 +43,16 @@ var Point = function(x, y) {
 
 
 //public methods:
+	/**
+	 * Set Point coords equal to specified point.
+	 * @method set
+	 * @param {Point} to - destination point.
+	 **/
+	Point.prototype.set = function(to) {
+	    this.x = to.x;
+	    this.y = to.y;
+	}
+
     /**
      * Move Point by x/y deltas.
      * @method move
@@ -101,8 +111,8 @@ var Point = function(x, y) {
      * @param {Point} pivot - pivot to scale from.
      **/
     Point.prototype.scale = function(scX, scY, pivot) {
-        var delta = this.deltaTo(pivot);
-        this.move(scX * delta.dx - delta.dx, scY * delta.dy - delta.dy);
+        var d = this.deltaTo(pivot);
+        this.move(scX * d.dx - d.dx, scY * d.dy - d.dy);
     }
 
     /**
@@ -133,8 +143,8 @@ var Point = function(x, y) {
      * @return {Number} angle in radians.
      **/
     Point.prototype.angleTo = function(to) {
-        var delta = this.deltaTo(to);
-        return Math.atan2(delta.dy, delta.dx);
+        var d = this.deltaTo(to);
+        return Math.atan2(d.dy, d.dx);
     }
     
     /**
