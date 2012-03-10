@@ -14,7 +14,7 @@
 
 
 /**
-* Point class - base point implementation in 2D coordinate system.
+* Point implementation in 2D coordinate system.
 * Used in all geometry calculations and shapes.
 *
 * @class Point
@@ -212,9 +212,9 @@ var Point = function(x, y) {
     }
 
     /**
-     * Return a clone of this Point.
+     * Clone this Point.
      * @method clone
-     * @return {Point} a clone of this Point.
+     * @return {Point} a cloned Point.
      **/
     Point.prototype.clone = function() {
         return new Point(this.x, this.y);

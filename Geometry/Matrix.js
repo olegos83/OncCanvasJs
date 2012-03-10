@@ -14,7 +14,7 @@
 
 
 /**
-* Matrix class - matrix math implementation. Matrix inside is a 2d array.
+* Matrix math implementation. Matrix inside is a 2d array.
 * Used in geometry calculations.
 *
 * @class Matrix

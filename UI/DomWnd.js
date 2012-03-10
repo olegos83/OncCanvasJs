@@ -14,7 +14,7 @@
 
 
 /**
-* DomWnd class - Window implemented by divs. Can be used to construct interface.
+* Window implemented by divs. Can be used to construct interface.
 * Windows are always added as childs to body element in DOM tree.
 * You can add controls to window, controls are html elements, added to window body.
 *

@@ -14,7 +14,7 @@
 
 
 /**
-* Shaper class - Shaper is an object which represents geometry shape.
+* Shaper is an object which represents geometry shape.
 * Can be added to Layer.
 * 
 * @class Shaper
@@ -301,9 +301,9 @@ var Shaper = function(id, shape, color) {
     }
 
     /**
-     * Returns a clone of this Shaper.
+     * Clone this Shaper.
      * @method clone
-     * @return {Shaper} a clone of this Shaper.
+     * @return {Shaper} a cloned Shaper.
      **/
     Shaper.prototype.clone = function() {
         var sh = new Shaper('copy_' + this.id, this.shape.clone(), {stroke:this.color.stroke, fill:this.color.fill});

@@ -14,7 +14,7 @@
 
 
 /**
-* Layer class - Layer represents a canvas and takes its context to draw objects.
+* Layer represents a canvas and takes its context to draw objects.
 * Layer can contain objects and object groups. Also, it can be static or animatable.
 * You can assign layer to existing canvas or create new canvas for it.
 * Layer can draw shapes to its context and set context options.
@@ -401,9 +401,9 @@ var Layer = function(id, elem, x, y, width, height) {
     }
     
     /**
-     * Returns a clone of this Layer.
+     * Clone this Layer.
      * @method clone
-     * @return {Layer} a clone of this Layer.
+     * @return {Layer} a cloned Layer.
      **/
     Layer.prototype.clone = function() {
         var id = this.canvas.id + '_copy';

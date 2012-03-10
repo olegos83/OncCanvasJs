@@ -14,7 +14,7 @@
 
 
 /**
-* Path class - Path implementation in 2D coordinate system.
+* Path implementation in 2D coordinate system.
 * Has an array of points. It is base class for other shapes.
 *
 * @class Path
@@ -256,9 +256,9 @@ var Path = function(pointsArr) {
     }
 
     /**
-     * Returns a clone of Path pointsArr.
+     * Clone Path's points array.
      * @method clonePoints
-     * @return {Array} a clone of pointsArr.
+     * @return {Array} a cloned pointsArr.
      **/
 	Path.prototype.clonePoints = function() {
 		//get points array
@@ -274,9 +274,9 @@ var Path = function(pointsArr) {
     }
 	
     /**
-     * Returns a clone of this Path.
+     * Clone this Path.
      * @method clone
-     * @return {Path} a clone of this Path.
+     * @return {Path} a cloned Path.
      **/
 	Path.prototype.clone = function() {
         var pt = this.clonePoints();

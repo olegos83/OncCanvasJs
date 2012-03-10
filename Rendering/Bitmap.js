@@ -14,7 +14,7 @@
 
 
 /**
-* Bitmap class - Bitmap is an object which represents image. Extends from Shaper.
+* Bitmap is an object which represents image. Extends from Shaper.
 * Can be added to Layer.
 * 
 * @class Bitmap
@@ -71,9 +71,9 @@ delete Bitmap.prototype._eventListener;
     
     
     /**
-     * Returns a clone of this Bitmap.
+     * Clone this Bitmap.
      * @method clone
-     * @return {Bitmap} a clone of this Bitmap.
+     * @return {Bitmap} a cloned Bitmap.
      **/
     Bitmap.prototype.clone = function() {
         var b = new Bitmap('copy_' + this.id, this.image.src, this.image.width, this.image.height);
