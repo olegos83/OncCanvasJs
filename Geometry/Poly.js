@@ -30,7 +30,7 @@ var Polygon = function(pointsArr) {
     Path.call(this, pointsArr);
 }
 
-//extend from Shaper, set constructor and delete unnessesary properties
+//extend, set constructor and delete unnessesary properties
 Polygon.prototype = new Path();
 Polygon.prototype.constructor = Path;
 delete Polygon.prototype.pointsArr;
@@ -72,7 +72,7 @@ var PolyLine = function(pointsArr) {
     Path.call(this, pointsArr);
 }
 
-//extend from Shaper, set constructor and delete unnessesary properties
+//extend, set constructor and delete unnessesary properties
 PolyLine.prototype = new Path();
 PolyLine.prototype.constructor = Path;
 delete PolyLine.prototype.pointsArr;

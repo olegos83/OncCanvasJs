@@ -14,11 +14,12 @@
 
 
 /**
-* Rectangle class - base Rectangle implementation in 2D coordinate system.
+* Rectangle implementation in 2D coordinate system.
 * Has two points: from - up left point, to - bottom right point.
 * Rectangle is very important in geometry and rendering calculations.
 *
 * @class Rectangle
+* @super Path
 * @author OlegoS
 *
 * @constructor
@@ -40,65 +41,17 @@ var Rectangle = function(from, to) {
      * @type Point
      **/
 	this.to = (to == null ? new Point(0, 0) : to);
+	
+//initialize base class
+    Path.call(this, [this.from, this.to]);
 }
 
+//extend, set constructor and delete unnessesary properties
+Rectangle.prototype = new Path();
+Rectangle.prototype.constructor = Path;
+delete Rectangle.prototype.pointsArr;
 
 //public methods:
-    /**
-     * Move Rectangle by x/y deltas.
-     * @method move
-     * @param {Number} dx - X delta.
-     * @param {Number} dy - Y delta.
-     **/
-    Rectangle.prototype.move = function(dx, dy) {
-        this.from.move(dx, dy);
-        this.to.move(dx, dy);
-    }
-    
-    /**
-     * Move Rectangle by distance in specified direction.
-     * @method moveDir
-     * @param {Number} dist - distance to move.
-     * @param {Number} angle - direction (in radians).
-     **/
-    Rectangle.prototype.moveDir = function(dist, angle) {
-        this.from.moveDir(dist, angle);
-        this.to.moveDir(dist, angle);
-    }
-
-    /**
-     * Rotate Rectangle around pivot by specified angle.
-     * @method rotate
-     * @param {Number} angle - rotation angle (in radians).
-     * @param {Point} pivot - pivot to rotate around.
-     **/
-    Rectangle.prototype.rotate = function(angle, pivot) {
-        this.from.rotate(angle, pivot);
-        this.to.rotate(angle, pivot);
-    }
-
-    /**
-     * Scale Rectangle from pivot by specified scX/scY koefs.
-     * @method scale
-     * @param {Number} scX - x scale koef.
-     * @param {Number} scY - y scale koef.
-     * @param {Point} pivot - pivot to scale from.
-     **/
-    Rectangle.prototype.scale = function(scX, scY, pivot) {
-        this.from.scale(scX, scY, pivot);
-        this.to.scale(scX, scY, pivot);
-    }
-    
-    /**
-     * Apply matrix transformation to Rectangle.
-     * @method matrixTransform
-     * @param {Matrix} m - a transformation matrix.
-     **/
-    Rectangle.prototype.matrixTransform = function(m) {
-        this.from.matrixTransform(m);
-        this.to.matrixTransform(m);
-    }
-
     /**
      * Returns top right point of this Rectangle.
      * @method topRight
@@ -172,8 +125,7 @@ var Rectangle = function(from, to) {
      * @param {Rectangle} rect - the Rectangle.
      **/
     Rectangle.prototype.placeIntoRect = function(rect) {
-        this.from.x = rect.from.x;this.from.y = rect.from.y;
-        this.to.x = rect.to.x;this.to.y = rect.to.y;
+    	this.from.set(rect.from); this.to.set(rect.to);
     }
     
     /**
@@ -200,18 +152,18 @@ var Rectangle = function(from, to) {
     }
 
     /**
-     * Returns a clone of this Rectangle.
+     * Clone this Rectangle.
      * @method clone
-     * @return {Rectangle} a clone of this Rectangle.
+     * @return {Rectangle} a cloned Rectangle.
      **/
     Rectangle.prototype.clone = function() {
         return new Rectangle(this.from.clone(), this.to.clone());
     }
 
     /**
-     * Returns a Polygon representation of this Rectangle.
+     * Convert this Rectangle to Polygon.
      * @method toPolygon
-     * @return {Polygon} a Polygon representation of this Rectangle.
+     * @return {Polygon} result Polygon.
      **/
     Rectangle.prototype.toPolygon = function() {
         return new Polygon([this.from.clone(), this.topRight(), this.to.clone(), this.botLeft()]);
