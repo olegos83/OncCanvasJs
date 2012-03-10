@@ -256,11 +256,11 @@ var Path = function(pointsArr) {
     }
 
     /**
-     * Returns a clone of this Path.
-     * @method clone
-     * @return {Path} a clone of this Path.
+     * Returns a clone of Path pointsArr.
+     * @method clonePoints
+     * @return {Array} a clone of pointsArr.
      **/
-	Path.prototype.clone = function() {
+	Path.prototype.clonePoints = function() {
 		//get points array
         var pt = this.pointsArr;
         var l = pt.length;
@@ -269,8 +269,18 @@ var Path = function(pointsArr) {
         var tmpArr = new Array();
         for (var i = 0; i < l; i++) tmpArr.push(pt[i].clone());
         
-        //clone Path
-        return new Path(tmpArr);
+        //return cloned array
+        return tmpArr;
+    }
+	
+    /**
+     * Returns a clone of this Path.
+     * @method clone
+     * @return {Path} a clone of this Path.
+     **/
+	Path.prototype.clone = function() {
+        var pt = this.clonePoints();
+        return new Path(pt);
     }
 
     /**
