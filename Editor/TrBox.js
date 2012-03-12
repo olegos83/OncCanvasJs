@@ -2,7 +2,7 @@
  * Editor transformer class for transforming objects
  */
 //UNIVERSAL EDITABLE OBJECT
-var EditTransform = function() {
+var TrBox = function() {
 	//init vars
 	this.selected = null;
 	
@@ -17,13 +17,13 @@ var EditTransform = function() {
 }
 
 //init transform points and shapes
-EditTransform.prototype.init = function() {
+TrBox.prototype.init = function() {
     //colors
     var c = {stroke:"", fill:"gray"};
     var c2 = {stroke:"", fill:"#000000"};
     
     //rotation point
-    this.rotatePoint = null;
+    this.rotationPoint = null;
     
     //shapes
     for (var i = 1; i <= 8; i++) {
@@ -37,7 +37,7 @@ EditTransform.prototype.init = function() {
 }
 
 //init transform control events
-EditTransform.prototype.initEvents = function() {
+TrBox.prototype.initEvents = function() {
     var box = this;
     var lastPos = {h:'L', v:'U'};
 
@@ -50,7 +50,7 @@ EditTransform.prototype.initEvents = function() {
         });
         
         if (i <= 4) this['ro' + i].addEventListener(MouseEvent.DOWN, function(e) {
-                box.rotatePoint = e.target._pos;
+                box.rotationPoint = e.target._pos;
                 stage.state = 'rotating';
         });
     }
@@ -59,66 +59,50 @@ EditTransform.prototype.initEvents = function() {
     this.so1.addEventListener(MouseEvent.DRAG, function(e) {
         box.p1.x = box.p4.x = box.p8.x = e.pos.x;
         box.p1.y = box.p2.y = box.p5.y = e.pos.y;
-        
-        setMiddlePoints();
-        scaleObj();
+        scale();
     });
 
     this.so2.addEventListener(MouseEvent.DRAG, function(e) {
         box.p2.x = box.p3.x = box.p6.x = e.pos.x;
         box.p2.y = box.p1.y = box.p5.y = e.pos.y;
-        
-        setMiddlePoints();
-        scaleObj();
+        scale();
     });
 
     this.so3.addEventListener(MouseEvent.DRAG, function(e) {
         box.p3.x = box.p2.x = box.p6.x = e.pos.x;
         box.p3.y = box.p4.y = box.p7.y = e.pos.y;
-        
-        setMiddlePoints();
-        scaleObj();
+        scale();
     });
 
     this.so4.addEventListener(MouseEvent.DRAG, function(e) {
         box.p4.x = box.p1.x = box.p8.x = e.pos.x;
         box.p4.y = box.p3.y = box.p7.y = e.pos.y;
-        
-        setMiddlePoints();
-        scaleObj();
+        scale();
     });
     
     //set middle scale points events
     this.so5.addEventListener(MouseEvent.DRAG, function(e) {
         box.p1.y = box.p2.y = box.p5.y = e.pos.y;
-        
-        setMiddlePoints();
-        scaleObj();
+        scale();
     });
     
     this.so6.addEventListener(MouseEvent.DRAG, function(e) {
     	box.p3.x = box.p2.x = box.p6.x = e.pos.x;
-        
-        setMiddlePoints();
-        scaleObj();
+        scale();
     });
     
     this.so7.addEventListener(MouseEvent.DRAG, function(e) {
     	box.p4.y = box.p3.y = box.p7.y = e.pos.y;
-        
-        setMiddlePoints();
-        scaleObj();
+        scale();
     });
     
     this.so8.addEventListener(MouseEvent.DRAG, function(e) {
     	box.p4.x = box.p1.x = box.p8.x = e.pos.x;
-        
-        setMiddlePoints();
-        scaleObj();
+        scale();
     });
     
     //middle points correction
-    function setMiddlePoints() {
+    function setMidPoints() {
     	var c = box.getCenter();
         box.p5.x = box.p7.x = c.x;
         box.p6.y = box.p8.y = c.y;
@@ -148,7 +132,10 @@ EditTransform.prototype.initEvents = function() {
         return posChange;
     }
     
-    function scaleObj() {
+    function scale() {
+    	//set middle transform points position
+    	setMidPoints();
+    	
         //init vars
         var s = stage.trBox.selected;
         
@@ -166,7 +153,7 @@ EditTransform.prototype.initEvents = function() {
 }
 
 //apply to object
-EditTransform.prototype.apply = function(obj, dragStartPos) {
+TrBox.prototype.apply = function(obj, dragStartPos) {
     //unset box
     this.unset();
     
@@ -186,7 +173,7 @@ EditTransform.prototype.apply = function(obj, dragStartPos) {
 }
 
 //setup transform rects
-EditTransform.prototype.updateRects = function() {
+TrBox.prototype.updateRects = function() {
     //init vars
     var box = stage.trBox;
     var r = box.selected.getBoundRect();
@@ -205,7 +192,7 @@ EditTransform.prototype.updateRects = function() {
 }
 
 //place transform controls
-EditTransform.prototype.placeObjects = function() {
+TrBox.prototype.placeObjects = function() {
     this.removeObjects();
     
     var layer = stage.layer;
@@ -216,7 +203,7 @@ EditTransform.prototype.placeObjects = function() {
 }
 
 //remove transform controls
-EditTransform.prototype.removeObjects = function() {
+TrBox.prototype.removeObjects = function() {
     var layer = stage.layer;
     for (var i = 1; i <= 8; i++) {
         layer.removeObject(this['ro' + i]);
@@ -225,7 +212,7 @@ EditTransform.prototype.removeObjects = function() {
 }
 
 //unset box
-EditTransform.prototype.unset = function() {
+TrBox.prototype.unset = function() {
     //clear selection
     if (stage.trBox.selected) {
     	stage.trBox.selected.stopDrag();
@@ -237,13 +224,13 @@ EditTransform.prototype.unset = function() {
 }
 
 //get center of transform box
-EditTransform.prototype.getCenter = function() {
+TrBox.prototype.getCenter = function() {
     var r = new Rectangle(this.p1, this.p3);
     return r.getCenter();
 }
 
 //rotate
-EditTransform.prototype.rotate = function(angle, pivot, rotateObj) {
+TrBox.prototype.rotate = function(angle, pivot, rotateObj) {
     if (!stage.trBox.selected) return;
 
     //rotate box
@@ -258,14 +245,14 @@ EditTransform.prototype.rotate = function(angle, pivot, rotateObj) {
 }
 
 //scale
-EditTransform.prototype.scale = function(scx, scy, pivot) {
+TrBox.prototype.scale = function(scx, scy, pivot) {
     if (!stage.trBox.selected) return;
     stage.trBox.selected.scale(scx, scy, pivot);
     this.updateRects();
 }
 
 //align
-EditTransform.prototype.align = function(base) {
+TrBox.prototype.align = function(base) {
     if (!stage.trBox.selected) return;
     var r = new Rectangle(new Point(0, 0), new Point(stage.stageWidth, stage.stageHeight));
     stage.trBox.selected.align(base, r);
@@ -273,7 +260,7 @@ EditTransform.prototype.align = function(base) {
 }
 
 //mirror
-EditTransform.prototype.mirror = function(base) {
+TrBox.prototype.mirror = function(base) {
     if (!stage.trBox.selected) return;
     stage.trBox.selected.mirror(base);
     this.updateRects();

@@ -10,5 +10,14 @@ function main() {
     stage = new Stage();
     
     //init transformer
-    stage.trBox = new EditTransform();
+    stage.trBox = new TrBox();
+    
+    
+    //tests
+    /*var p = new Point(100, 100);
+    var r = new Rectangle();
+    r.placeAroundPoint(p, 30);
+    
+    var o = new Shaper('', r);
+    stage.addObject(o);*/
 }

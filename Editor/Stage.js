@@ -33,7 +33,7 @@ Stage.prototype.addObject = function(obj) {
     stage.layer.addObject(obj);
     
     //add events
-    obj.addEventListener('mousedown', function(e) {
+    obj.addEventListener(MouseEvent.DOWN, function(e) {
     	if (stage.state != '') return;
         stage.color.stroke = e.target.color.stroke;
         stage.color.fill = e.target.color.fill;
@@ -95,7 +95,7 @@ Stage.prototype.stageMouseMove = function(e) {
     if (stage.state == 'rotating') {
         var trBox = stage.trBox;
         var c = trBox.getCenter();
-        var a1 = trBox.rotatePoint.angleTo(c);
+        var a1 = trBox.rotationPoint.angleTo(c);
         var a2 = new Point(mx, my).angleTo(c);
         trBox.rotate(a2 - a1, c, true);
         
