@@ -229,7 +229,7 @@ function dragObject(element, attachElement, lowerBound, upperBound, startCallbac
     newPos.move(elementStartPos.x, elementStartPos.y);
     newPos.move(-cursorStartPos.x, -cursorStartPos.y);
     newPos.checkBounds(lowerBound, upperBound);
-    Dom(element).placeTo(newPos);
+    Dom(element).pos(newPos);
     
     if(moveCallback != null) moveCallback(newPos, element);
     return Dom.cancelEvent(eventObj); 
@@ -292,7 +292,7 @@ function arrowsDown(e, arrows) {
   
   pos.move(-arrowsOffset.x, -arrowsOffset.y);
   pos.checkBounds(arrowsLowBounds, arrowsUpBounds);
-  Dom(arrows).placeTo(pos);
+  Dom(arrows).pos(pos);
   
   arrowsMoved(pos);
 }
@@ -307,7 +307,7 @@ function circleDown(e, circle) {
   
   pos.move(-circleOffset.x, -circleOffset.y);
   pos.checkBounds(circleLowBounds, circleUpBounds);
-  Dom(circle).placeTo(pos);
+  Dom(circle).pos(pos);
     
   circleMoved(pos);
 }
@@ -349,7 +349,7 @@ function colorChanged(source) {
     var pos = new Point(currentColor.Value()*255, (1-currentColor.Saturation())*255);
     pos.move(-circleOffset.x, -circleOffset.y);
     
-    Dom("circle").placeTo(pos); 
+    Dom("circle").pos(pos); 
     endMovement();
   }
   

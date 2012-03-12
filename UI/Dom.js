@@ -146,15 +146,19 @@ var Dom = function(el) {
     }
     
     /**
-     * Place DOM element to specified position.
-     * @method placeTo
+     * Get/Set DOM element css position.
+     * @method pos
      * @static
      * @param {Point} pos - position.
-     * @return {Dom} this - can be chained.
+     * @return {Object} this - can be chained, but if no arguments are passed - return current element position.
      **/
-    Dom.placeTo = function(pos) {
-    	this.css({left: pos.x + 'px', top: pos.y + 'px'});
-        return this;
+    Dom.pos = function(pos) {
+    	if (pos) {
+        	this.css({left: pos.x + 'px', top: pos.y + 'px'});
+            return this;
+    	} else {
+    		return new Point(parseInt(this.el.style.left), parseInt(this.el.style.top));
+    	}
     }
     
     /**

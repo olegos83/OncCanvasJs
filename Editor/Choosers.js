@@ -227,7 +227,7 @@ var ColorChooser = function(type) {
     
     //create picker
     var picker = initColorPicker("UI/ColorPicker/");
-    Dom(picker).placeTo({x:0, y:30});
+    Dom(picker).pos({x:0, y:30});
     
     //create buttons
     var selectBtn = Dom.create('button', '', 'absolute', 5, wnd.getHeight() - 30, 100, 25);

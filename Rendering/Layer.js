@@ -86,7 +86,7 @@ var Layer = function(id, elem, x, y, width, height) {
         
         //if no canvas with specified id - create new one
         if (!this.canvas) {
-            this.canvas = Dom.create('canvas', id, 'absolute', x, y); 
+            this.canvas = Dom.create('canvas', id, 'absolute', x, y);
             this.setSize(width, height);
             elem.appendChild(this.canvas);
         }
@@ -128,21 +128,13 @@ var Layer = function(id, elem, x, y, width, height) {
 
 //public methods:
     /**
-     * Set layer position.
-     * @method setPosition
+     * Get/Set layer position.
+     * @method pos
      * @param {Point} pos - position of the layer.
+     * @return {Point} if no pos passed - return current position.
      **/
-    Layer.prototype.setPosition = function(pos) {
-        Dom(this.canvas).placeTo(pos);
-    }
-
-    /**
-     * Get layer position.
-     * @method getPosition
-     * @return {Point} - position of the layer.
-     **/
-    Layer.prototype.getPosition = function() {
-        return new Point(parseInt(this.canvas.style.left), parseInt(this.canvas.style.top));
+    Layer.prototype.pos = function(pos) {
+        if (pos) Dom(this.canvas).pos(pos); else return Dom(this.canvas).pos();
     }
     
     /**
@@ -408,7 +400,7 @@ var Layer = function(id, elem, x, y, width, height) {
     Layer.prototype.clone = function() {
         var id = this.canvas.id + '_copy';
         var elem = this.canvas.parentNode;
-        var pos = this.getPosition();
+        var pos = this.pos();
         var size = this.getSize();
         
         var newLayer = new Layer(id, elem, pos.x, pos.y, size.width, size.height);

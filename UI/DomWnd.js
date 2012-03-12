@@ -109,7 +109,7 @@ var DomWnd = function(title, x, y, width, height) {
         var dx = e.clientX - startX;
         var dy = e.clientY - startY;
         
-        self.setPosition({x:dx, y:dy});
+        self.pos({x:dx, y:dy});
     }
     
     //document mouseup handler
@@ -125,23 +125,15 @@ var DomWnd = function(title, x, y, width, height) {
 
 //public methods:
     /**
-     * Set window position.
-     * @method setPosition
+     * Get/Set window position.
+     * @method pos
      * @param {Point} pos - position of the window.
+     * @return {Point} if no pos passed - return current position.
      **/
-    DomWnd.prototype.setPosition = function(pos) {
-    	Dom(this._wnd).placeTo(pos);
+    DomWnd.prototype.pos = function(pos) {
+    	if (pos) Dom(this._wnd).pos(pos); else return Dom(this._wnd).pos();
     }
 
-    /**
-     * Get window position.
-     * @method getPosition
-     * @return {Point} - position of the window.
-     **/
-    DomWnd.prototype.getPosition = function() {
-        return new Point(parseInt(this._wnd.style.left), parseInt(this._wnd.style.top));
-    }
-    
     /**
      * Get window width.
      * @method getWidth
