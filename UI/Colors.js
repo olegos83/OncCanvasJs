@@ -18,175 +18,203 @@
 * The idea is to organize or color functions in one place.
 **/
 
-//COLOR OBJECT 
-function Color() {
-    //Stored as values between 0 and 1
-    var red = 0;
-    var green = 0;
-    var blue = 0;
-   
-    //Stored as values between 0 and 360
-    var hue = 0;
-   
-    //Strored as values between 0 and 1
-    var saturation = 0;
-    var value = 0;
-     
-this.SetRGB = function(r, g, b) {
-  if (isNaN(r) || isNaN(g) || isNaN(b)) return false;
-    
-  r = r/255.0;
-  red = r > 1 ? 1 : r < 0 ? 0 : r;
-  
-  g = g/255.0;
-  green = g > 1 ? 1 : g < 0 ? 0 : g;
-  
-  b = b/255.0;
-  blue = b > 1 ? 1 : b < 0 ? 0 : b;
-  
-  calculateHSV();
-  return true;
-}
-   
-this.Red = function() {
-	return Math.round(red*255);
-}
-   
-this.Green = function() {
-	return Math.round(green*255);
-}
-   
-this.Blue = function() {
-	return Math.round(blue*255);
-}
-   
-this.SetHSV = function(h, s, v) {
-  if (isNaN(h) || isNaN(s) || isNaN(v)) return false;
-    
-  hue = (h >= 360) ? 359.99 : (h < 0) ? 0 : h;
-  saturation = (s > 1) ? 1 : (s < 0) ? 0 : s;
-  value = (v > 1) ? 1 : (v < 0) ? 0 : v;
-  
-  calculateRGB();
-  return true;
-}
-     
-this.Hue = function() {
-	return hue;
-}
-     
-this.Saturation = function() {
-	return saturation;
-}
-     
-this.Value = function() {
-	return value;
-} 
-     
-this.SetHexString = function(hexString) {
-  if(hexString == null || typeof(hexString) != "string") return false;
-  if (hexString.substr(0, 1) == '#') hexString = hexString.substr(1);
-  if(hexString.length != 6) return false;
-     
-  var r = parseInt(hexString.substr(0, 2), 16);
-  var g = parseInt(hexString.substr(2, 2), 16);
-  var b = parseInt(hexString.substr(4, 2), 16);
-  
-  return this.SetRGB(r,g,b);
-}
- 
-this.HexString = function() {
-  var rStr = this.Red().toString(16);
-  if (rStr.length == 1) rStr = '0' + rStr;
-  
-  var gStr = this.Green().toString(16);
-  if (gStr.length == 1) gStr = '0' + gStr;
-  
-  var bStr = this.Blue().toString(16);
-  if (bStr.length == 1) bStr = '0' + bStr;
-  
-  return ('#' + rStr + gStr + bStr).toUpperCase();
-}
-   
-function calculateHSV() {
-  var max = Math.max(Math.max(red, green), blue);
-  var min = Math.min(Math.min(red, green), blue);
- 
-  value = max;
-  saturation = 0;
-  if(max != 0) saturation = 1 - min/max;
-   
-  hue = 0;
-  if(min == max) return;
- 
-  var delta = (max - min);
-  if (red == max) hue = (green - blue) / delta;
-  else if (green == max) hue = 2 + ((blue - red) / delta); else hue = 4 + ((red - green) / delta);
-  
-  hue = hue * 60;
-  if(hue <0) hue += 360;
-}
-   
-function calculateRGB() {
-  red = value;
-  green = value;
-  blue = value;
- 
-  if(value == 0 || saturation == 0)
-    return;
- 
-  var tHue = (hue / 60);
-  var i = Math.floor(tHue);
-  var f = tHue - i;
-  var p = value * (1 - saturation);
-  var q = value * (1 - saturation * f);
-  var t = value * (1 - saturation * (1 - f));
-  switch(i) {
-    case 0:
-      red = value;green = t;blue = p;
-    break;
-    
-    case 1:
-      red = q;green = value;blue = p;
-    break;
-    
-    case 2:
-      red = p;green = value;blue = t;
-    break;
-    
-    case 3:
-      red = p;green = q;blue = value;
-    break;
-    
-    case 4:
-      red = t;green = p;blue = value;
-    break;
-    
-    default:
-      red = value;green = p;blue = q;
-    break;
-  }
-}
 
+/**
+ * Color implementation. Can calculate RGB and HSV values. Used in ColorPicker.
+ * Can be initialized from RGB, HSV or HEX if specified.
+ * 
+ * @class Color
+ * @author OlegoS
+ *
+ * @constructor
+ * @param {String} type - initialization type. Can be 'RGB', 'HSV' or 'HEX'.
+ * @param {Object} val - initial value: {r: red, g: green, b: blue}, {h: hue, s: saturation, v: value} or '#rrggbb'.
+ **/
+var Color = function(type, val) {
+    //DO NOT USE PRIVATE PROPERTIES DIRECTLY - RESULT IS UNPREDICTABLE
+    //private properties:
+        /**
+         * RGB values for inner calculations. Stored as values between 0 and 1.
+         * @property _rgb
+         * @type Object
+         * @private
+         **/
+         this._rgb = {r: 0, g: 0, b: 0};
+
+        /**
+         * HSV values for inner calculations. Stored as values between 0 and 1.
+         * H is between 0 and 360.
+         * @property _hsv
+         * @type Object
+         * @private
+         **/
+         this._hsv = {h: 0, s: 0, v: 0};
+         
+         //init color if needed
+         if (type) {
+        	 switch (type) {
+		   		case 'RGB':
+		   			this.RGB(val.r, val.g, val.b);
+				break;
+				  
+				case 'HSV':
+					this.HSV(val.h, val.s, val.v);
+				break;
+				  
+				case 'HEX':
+					this.HEX(val);
+				break;
+        	 }
+         }
 }
+   
 
-//COLORS
-var Colors = new function() {
-  this.ColorFromHSV = function(hue, sat, val) {
-    var color = new Color();
-    color.SetHSV(hue,sat,val);
-    return color;
-  }
+//private methods:
+	/**
+	 * Calculate inner HSV values.
+	 * @method _calcHSV
+	 * @private
+	 **/
+	Color.prototype._calcHSV = function() {
+		var rgb = this._rgb;
+		var hsv = this._hsv;
+		
+		var max = Math.max(Math.max(rgb.r, rgb.g), rgb.b);
+		var min = Math.min(Math.min(rgb.r, rgb.g), rgb.b);
+		
+		hsv.v = max;
+		hsv.s = 0; if(max != 0) hsv.s = 1 - min/max;
+		hsv.h = 0;
+		
+		if(min == max) return;
+		var delta = (max - min);
+		
+		if (rgb.r == max) hsv.h = (rgb.g - rgb.b) / delta;
+		else if (rgb.g == max) hsv.h = 2 + ((rgb.b - rgb.r) / delta);
+		else hsv.h = 4 + ((rgb.r - rgb.g) / delta);
+		  
+		hsv.h = hsv.h * 60; if (hsv.h < 0) hsv.h += 360;
+	}
+	
+	/**
+	 * Calculate inner RGB values.
+	 * @method _calcRGB
+	 * @private
+	 **/
+	Color.prototype._calcRGB = function() {
+		var rgb = this._rgb;
+		var hsv = this._hsv;
+		
+		rgb.r = rgb.g = rgb.b = hsv.v;
+		if(hsv.v == 0 || hsv.s == 0) return;
+		 
+		var tHue = hsv.h / 60;
+		var i = Math.floor(tHue);
+		var f = tHue - i;
+		var p = hsv.v * (1 - hsv.s);
+		var q = hsv.v * (1 - hsv.s * f);
+		var t = hsv.v * (1 - hsv.s * (1 - f));
+		
+		switch(i) {
+		  case 0:
+			  rgb.r = hsv.v; rgb.g = t; rgb.b = p;
+		  break;
+		  
+		  case 1:
+			  rgb.r = q; rgb.g = hsv.v; rgb.b = p;
+		  break;
+		  
+		  case 2:
+			  rgb.r = p; rgb.g = hsv.v; rgb.b = t;
+		  break;
+		  
+		  case 3:
+			  rgb.r = p; rgb.g = q; rgb.b = hsv.v;
+		  break;
+		  
+		  case 4:
+			  rgb.r = t; rgb.g = p; rgb.b = hsv.v;
+		  break;
+		  
+		  default:
+			  rgb.r = hsv.v; rgb.g = p; rgb.b = q;
+		  break;
+		}
+	}
 
-  this.ColorFromRGB = function(r, g, b) {
-    var color = new Color();
-    color.SetRGB(r,g,b);
-    return color;
-  }
 
-  this.ColorFromHex = function(hexStr) {
-    var color = new Color();
-    color.SetHexString(hexStr);
-    return color;
-  }
-}
+//public methods:
+	/**
+	 * GET/SET color from RGB values.
+	 * @method RGB
+	 * @param {Number} r - red.
+	 * @param {Number} g - green.
+	 * @param {Number} b - blue.
+	 * @return {Object} if no args - return current RGB values as {r: red, g: green, b: blue}.
+	 **/
+	Color.prototype.RGB = function(r, g, b) {
+		var rgb = this._rgb;
+		
+		if (arguments.length == 0) return {r: Math.round(rgb.r * 255), g: Math.round(rgb.g * 255), b: Math.round(rgb.b * 255)};
+		if (isNaN(r) || isNaN(g) || isNaN(b)) return;
+		
+		r = r / 255.0;
+		rgb.r = r > 1 ? 1 : r < 0 ? 0 : r;
+		
+		g = g / 255.0;
+		rgb.g = g > 1 ? 1 : g < 0 ? 0 : g;
+		
+		b = b / 255.0;
+		rgb.b = b > 1 ? 1 : b < 0 ? 0 : b;
+		  
+		this._calcHSV();
+	}
+
+	/**
+	 * GET/SET color from HSV values.
+	 * @method HSV
+	 * @param {Number} h - hue.
+	 * @param {Number} s - saturation.
+	 * @param {Number} v - value.
+	 * @return {Object} if no args - return current HSV values as {h: hue, s: saturation, v: value}.
+	 **/
+	Color.prototype.HSV = function(h, s, v) {
+		var hsv = this._hsv;
+		
+		if (arguments.length == 0) return {h: hsv.h, s: hsv.s, v: hsv.v};
+		if (isNaN(h) || isNaN(s) || isNaN(v)) return;
+		
+		hsv.h = (h >= 360) ? 359.99 : (h < 0) ? 0 : h;
+		hsv.s = (s > 1) ? 1 : (s < 0) ? 0 : s;
+		hsv.v = (v > 1) ? 1 : (v < 0) ? 0 : v;
+		
+		this._calcRGB();
+	}
+     
+     
+	/**
+	 * GET/SET color from HEX string.
+	 * @method HEX
+	 * @param {String} hex - hue.
+	 * @return {String} if no args - return current HEX value as '#rrggbb'.
+	 **/
+	Color.prototype.HEX = function(hex) {
+		if (arguments.length == 0)  {
+			var rgb = this._rgb;
+			
+			var rr = rgb.r.toString(16); if (rr.length == 1) rr = '0' + rr;
+			var gg = rgb.g.toString(16); if (gg.length == 1) gg = '0' + gg;
+			var bb = rgb.b.toString(16); if (bb.length == 1) bb = '0' + bb;
+			  
+			return ('#' + rr + gg + bb);
+		} else {
+			if (hex.substr(0, 1) == '#') hex = hex.substr(1);
+			if (hex.length != 6) return;
+			    
+			var r = parseInt(hex.substr(0, 2), 16);
+			var g = parseInt(hex.substr(2, 2), 16);
+			var b = parseInt(hex.substr(4, 2), 16);
+			 
+			this.SetRGB(r, g, b);
+		}
+	}
