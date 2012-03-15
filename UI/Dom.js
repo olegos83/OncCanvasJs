@@ -262,17 +262,27 @@ var Dom = function(el) {
       * Start element drag ability.
       * @method startDrag
       * @static
+      * @param {Element} attached - element, attached to drag on.
+	  * @param {Rectangle} bounds - drag bounds.
+	  * @param {Function} startCallback - startdrag handler.
+	  * @param {Function} moveCallback - drag handler.
+	  * @param {Function} endCallback - dragend handler.
+      * @return {Dom} this - can be chained.
       **/
-      Dom.startDrag = function() {
-    	  this.addEvent(MouseEvent.DOWN, DomDrag.onmousedown);
+      Dom.startDrag = function(attached, bounds, startCallback, moveCallback, endCallback) {
+    	  if (this.el._domdrag) return this;
+    	  this.el._domdrag = new DomDrag(this.el, attached, bounds, startCallback, moveCallback, endCallback);
+    	  return this;
       }
       
       /**
        * Stop element drag ability.
        * @method stopDrag
        * @static
+       * @return {Dom} this - can be chained.
        **/
        Dom.stopDrag = function() {
-    	   this.removeEvent(MouseEvent.DOWN, DomDrag.onmousedown);
+    	  if (this.el._domdrag) delete this.el._domdrag;
+    	  return this;
        }
        

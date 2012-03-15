@@ -55,174 +55,63 @@ var KeyEvent = {
  *
  * @constructor
  * @param {Element} element - element to drag.
+ * @param {Element} attached - element, attached to drag on.
+ * @param {Rectangle} bounds - drag bounds.
  * @param {Function} startCallback - startdrag handler.
  * @param {Function} moveCallback - drag handler.
  * @param {Function} endCallback - dragend handler.
- * @param {Element} attachElement - element, attached to drag on.
- * @param {Rectangle} bounds - drag bounds.
  **/
-var DomDrag = function(element, startCallback, moveCallback, endCallback, attachElement, bounds) {
-//DO NOT USE PRIVATE PROPERTIES DIRECTLY - RESULT IS UNPREDICTABLE
-//private properties:
-    /**
-     * Drag element.
-     * @property _element
-     * @type {Element}
-     * @private
-     **/
-    this._element = element;
+var DomDrag = function(element, attached, bounds, startCallback, moveCallback, endCallback) {
+    //init vars
+	var pos = {cursor: null, element: null};
+    var drag = false;
     
-    /**
-     * Attached element to drag on.
-     * @property _attached
-     * @type {Element}
-     * @private
-     **/
-    this._attached = attachElement;
-    
-    /**
-     * Drag handlers.
-     * @property _handlers
-     * @type {Object}
-     * @private
-     **/
-    this._handlers = {start: startCallback, drag: moveCallback, stop: endCallback};
-    
-    /**
-     * Drag bounds.
-     * @property _bounds
-     * @type {Rectangle}
-     * @private
-     **/
-    this._bounds = bounds;
-    
-    /**
-     * Positions.
-     * @property _pos
-     * @type {Object}
-     * @private
-     **/
-    this._pos = {cursor: null, element: null};
-    
-    /**
-     * Drag flag.
-     * @property _drag
-     * @type {Boolean}
-     * @private
-     **/
-    this._drag = false;
+    if (typeof(attached) == "string") attached = document.getElementById(attached);
+    if (!attached) attached = element;
     
     //init drag
-	if(!this._attached) this._attached = this._element;
-	Dom(this._attached).addEvent(MouseEvent.DOWN, this.dragStart);
-	var self = this;
+	Dom(attached).addEvent(MouseEvent.DOWN, start);
 
-//private methods:
-	/**
-	 * Drag start handler.
-	 * @method _start
-	 * @param {Event} e - event.
-	 * @return {Boolean} false for browser.
-	 **/
-	this._start = function(e) {
-		if (self._drag) return;
-		dragging = true;
+	//Drag start handler.
+	function start(e) {
+		if (drag) return;
+		drag = true;
+		
+		if (startCallback) startCallback(e, element);
+		pos.cursor = Dom.absEventMousePos(e);
+		pos.element = Dom(element).pos();
 
-		if(startCallback != null) startCallback(eventObj, element);
-
-		cursorStartPos = Dom.absEventMousePos(eventObj);
-		elementStartPos = Dom(element).pos();
-
-		Dom(document).addEvent(MouseEvent.MOVE, dragGo).addEvent(MouseEvent.UP, dragStop);
-		return Dom.cancelEvent(eventObj);
+		Dom(document).addEvent(MouseEvent.MOVE, go).addEvent(MouseEvent.UP, stop);
+		return Dom.cancelEvent(e);
 	}
 	
-	/**
-	 * Drag go handler.
-	 * @method _go
-	 * @param {Event} e - event.
-	 * @return {Boolean} false for browser.
-	 **/
-	this._go = function(e) {
-		if (!dragging) return;
+	//Drag go handler.
+	function go(e) {
+		if (!drag) return;
 	    
-	    var newPos = Dom.absEventMousePos(eventObj);
-	    newPos.move(elementStartPos.x, elementStartPos.y);
-	    newPos.move(-cursorStartPos.x, -cursorStartPos.y);
-	    newPos.checkBounds(bounds);
+	    var newPos = Dom.absEventMousePos(e);
+	    newPos.move(pos.element.x, pos.element.y);
+	    newPos.move(-pos.cursor.x, -pos.cursor.y);
+	    
+	    if (bounds) newPos.checkBounds(bounds);
 	    Dom(element).pos(newPos);
 	    
-	    if(moveCallback != null) moveCallback(newPos, element);
-	    return Dom.cancelEvent(eventObj);
+	    if (moveCallback) moveCallback(newPos, element);
+	    return Dom.cancelEvent(e);
 	}
 	
-	/**
-	 * Drag stop handler.
-	 * @method _stop
-	 * @param {Event} e - event.
-	 * @return {Boolean} false for browser.
-	 **/
-	this._stop = function(e) {
-		if(!dragging) return;
-	    Dom(document).removeEvent(MouseEvent.MOVE, dragGo).removeEvent(MouseEvent.UP, dragStop);
-	    cursorStartPos = null;
-	    elementStartPos = null;
+	//Drag stop handler.
+	function stop(e) {
+		if (!drag) return;
+		drag = false;
+		
+	    Dom(document).removeEvent(MouseEvent.MOVE, go).removeEvent(MouseEvent.UP, stop);
+	    pos.cursor = null; pos.element = null;
+	    
 	    if(endCallback != null) endCallback(element);
-	    dragging = false;
-	    return Dom.cancelEvent(eventObj);
+	    return Dom.cancelEvent(e);
 	}
 }
-
-
-	
-function dragObject(element, attachElement, bounds, startCallback, moveCallback, endCallback) {
-	  if(typeof(element) == "string") element = document.getElementById(element);
-
-	  var cursorStartPos = null;
-	  var elementStartPos = null;
-	  var dragging = false;
-	  
-	  if(typeof(attachElement) == "string") attachElement = document.getElementById(attachElement);
-	  if(attachElement == null) attachElement = element;
-	  Dom(attachElement).addEvent(MouseEvent.DOWN, dragStart);
-	  
-	  
-	  function dragStart(eventObj) { 
-			if (dragging) return;
-			dragging = true;
-			
-			if(startCallback != null) startCallback(eventObj, element);
-			
-			cursorStartPos = Dom.absEventMousePos(eventObj);
-			elementStartPos = Dom(element).pos();
-			
-			Dom(document).addEvent(MouseEvent.MOVE, dragGo).addEvent(MouseEvent.UP, dragStop);
-			return Dom.cancelEvent(eventObj);
-		  }
-		  
-		  function dragGo(eventObj) {
-		    if (!dragging) return;
-		    
-		    var newPos = Dom.absEventMousePos(eventObj);
-		    newPos.move(elementStartPos.x, elementStartPos.y);
-		    newPos.move(-cursorStartPos.x, -cursorStartPos.y);
-		    newPos.checkBounds(bounds);
-		    Dom(element).pos(newPos);
-		    
-		    if(moveCallback != null) moveCallback(newPos, element);
-		    return Dom.cancelEvent(eventObj);
-		  }
-		  
-		  function dragStop(eventObj) {
-		    if(!dragging) return;
-		    Dom(document).removeEvent(MouseEvent.MOVE, dragGo).removeEvent(MouseEvent.UP, dragStop);
-		    cursorStartPos = null;
-		    elementStartPos = null;
-		    if(endCallback != null) endCallback(element);
-		    dragging = false;
-		    return Dom.cancelEvent(eventObj);
-		  }
-	}
 
 
 /**

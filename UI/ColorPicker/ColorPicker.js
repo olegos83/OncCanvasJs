@@ -13,57 +13,6 @@ var arrowsOffset = new Point(0, 4);
 var arrowBounds = new Rectangle(new Point(0, -4), new Point(0, 251));
 var circleBounds = new Rectangle(new Point(-5, -5), new Point(250, 250));
 
-//DRAG
-function dragObject(element, attachElement, bounds, startCallback, moveCallback, endCallback) {
-  if(typeof(element) == "string") element = document.getElementById(element);
-
-  var cursorStartPos = null;
-  var elementStartPos = null;
-  var dragging = false;
-  
-  if(typeof(attachElement) == "string") attachElement = document.getElementById(attachElement);
-  if(attachElement == null) attachElement = element;
-  Dom(attachElement).addEvent(MouseEvent.DOWN, dragStart);
-  
-  
-  function dragStart(eventObj) { 
-	    if (dragging) return;
-	    dragging = true;
-	    
-	    if(startCallback != null) startCallback(eventObj, element);
-	    
-	    cursorStartPos = Dom.absEventMousePos(eventObj);
-	    elementStartPos = Dom(element).pos();
-	    
-	    Dom(document).addEvent(MouseEvent.MOVE, dragGo).addEvent(MouseEvent.UP, dragStop);
-	    return Dom.cancelEvent(eventObj);
-	  }
-	  
-	  function dragGo(eventObj) {
-	    if (!dragging) return;
-	    
-	    var newPos = Dom.absEventMousePos(eventObj);
-	    newPos.move(elementStartPos.x, elementStartPos.y);
-	    newPos.move(-cursorStartPos.x, -cursorStartPos.y);
-	    newPos.checkBounds(bounds);
-	    Dom(element).pos(newPos);
-	    
-	    if(moveCallback != null) moveCallback(newPos, element);
-	    return Dom.cancelEvent(eventObj);
-	  }
-	  
-	  function dragStop(eventObj) {
-	    if(!dragging) return;
-	    Dom(document).removeEvent(MouseEvent.MOVE, dragGo).removeEvent(MouseEvent.UP, dragStop);
-	    cursorStartPos = null;
-	    elementStartPos = null;
-	    if(endCallback != null) endCallback(element);
-	    dragging = false;
-	    return Dom.cancelEvent(eventObj);
-	  }
-}
-
-
 //COLORPICKER
 function arrowsDown(e, arrows) {
   var pos = Dom.getEventMousePos(e);
@@ -311,8 +260,9 @@ function attachColorPicker(method, initialColor) {
     	currentColor = new Color('RGB', {r: c[0], g: c[1], b: parseInt(c[2])});
     }
     
-    new dragObject("arrows", "hueBarDiv", arrowBounds, arrowsDown, arrowsMoved, endMovement);
-    new dragObject("circle", "gradientBox", circleBounds, circleDown, circleMoved, endMovement);
+    Dom('arrows').startDrag('hueBarDiv', arrowBounds, arrowsDown, arrowsMoved, endMovement);
+    Dom('circle').startDrag('gradientBox', circleBounds, circleDown, circleMoved, endMovement);
+    
     colorChanged('box');
 }
 
