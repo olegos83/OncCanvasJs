@@ -90,36 +90,29 @@ var DomWnd = function(title, x, y, width, height) {
     this._wnd.appendChild(this._body);
     
     //set drag and drop handlers
-    var startX = 0;
-    var startY = 0;
+    var pos = null;
     
     //title mouse down handler
     function onMouseDown(e) {
-        e.preventDefault();
-        
-        startX = e.clientX - parseInt(self._wnd.style.left);
-        startY = e.clientY - parseInt(self._wnd.style.top);
-        
-        document.addEventListener("mousemove", onMouseMove, false);
-        document.addEventListener("mouseup", onMouseUp, false);
+    	pos = Dom.getEventMousePos(e);
+    	Dom(document).addEvent(MouseEvent.MOVE, onMouseMove).addEvent(MouseEvent.UP, onMouseUp);
+        return Dom.cancelEvent(e);
     }
     
     //document mousemove handler
     function onMouseMove(e) {
-        var dx = e.clientX - startX;
-        var dy = e.clientY - startY;
-        
+        var dx = e.pageX - pos.x;
+        var dy = e.pageY - pos.y;
         self.pos({x:dx, y:dy});
     }
     
     //document mouseup handler
     function onMouseUp(e) {
-        document.removeEventListener("mousemove", onMouseMove, false);
-        document.removeEventListener("mouseup", onMouseUp, false);
+    	Dom(document).removeEvent(MouseEvent.MOVE, onMouseMove).removeEvent(MouseEvent.UP, onMouseUp);
     }
     
     //now turn drag on
-    this._title.addEventListener("mousedown", onMouseDown, false);
+    this._title.addEventListener(MouseEvent.DOWN, onMouseDown, false);
 }
 
 

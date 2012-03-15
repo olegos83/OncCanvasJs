@@ -257,4 +257,22 @@ var Dom = function(el) {
     	    				 e.clientY + document.documentElement.scrollTop + document.body.scrollTop);
     	 else return new Point(e.clientX + window.scrollX, e.clientY + window.scrollY);
       }
+     
+     /**
+      * Start element drag ability.
+      * @method startDrag
+      * @static
+      **/
+      Dom.startDrag = function() {
+    	  this.addEvent(MouseEvent.DOWN, DomDrag.onmousedown);
+      }
       
+      /**
+       * Stop element drag ability.
+       * @method stopDrag
+       * @static
+       **/
+       Dom.stopDrag = function() {
+    	   this.removeEvent(MouseEvent.DOWN, DomDrag.onmousedown);
+       }
+       

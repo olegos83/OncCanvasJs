@@ -1,3 +1,11 @@
+
+
+
+
+
+
+
+
 //OFFSETS OF COLORPICKER ELEMENTS
 var circleOffset = new Point(5, 5);
 var arrowsOffset = new Point(0, 4);
@@ -12,78 +20,47 @@ function dragObject(element, attachElement, bounds, startCallback, moveCallback,
   var cursorStartPos = null;
   var elementStartPos = null;
   var dragging = false;
-  var listening = false;
-  var disposed = false;
-  
-  function dragStart(eventObj) { 
-    if (dragging || !listening || disposed) return;
-    dragging = true;
-    
-    if(startCallback != null) startCallback(eventObj, element);
-    
-    cursorStartPos = Dom.absEventMousePos(eventObj);
-    elementStartPos = Dom(element).pos();
-    
-    Dom(document).addEvent(MouseEvent.MOVE, dragGo).addEvent(MouseEvent.UP, dragStopHook);
-    return Dom.cancelEvent(eventObj);
-  }
-  
-  function dragGo(eventObj) {
-    if (!dragging || disposed) return;
-    
-    var newPos = Dom.absEventMousePos(eventObj);
-    newPos.move(elementStartPos.x, elementStartPos.y);
-    newPos.move(-cursorStartPos.x, -cursorStartPos.y);
-    newPos.checkBounds(bounds);
-    Dom(element).pos(newPos);
-    
-    if(moveCallback != null) moveCallback(newPos, element);
-    return Dom.cancelEvent(eventObj); 
-  }
-  
-  function dragStopHook(eventObj) {
-    dragStop();
-    return Dom.cancelEvent(eventObj);
-  }
-  
-  function dragStop() {
-    if(!dragging || disposed) return;
-    Dom(document).removeEvent(MouseEvent.MOVE, dragGo).removeEvent(MouseEvent.UP, dragStopHook);
-    cursorStartPos = null;
-    elementStartPos = null;
-    if(endCallback != null) endCallback(element);
-    dragging = false;
-  }
-  
-  this.Dispose = function() {
-    if(disposed) return;
-    this.StopListening(true);
-    element = null;
-    attachElement = null;
-    lowerBound = null;
-    upperBound = null;
-    startCallback = null;
-    moveCallback = null
-    endCallback = null;
-    disposed = true;
-  }
-  
-  this.StartListening = function() {
-    if(listening || disposed) return;
-    listening = true;
-    Dom(attachElement).addEvent(MouseEvent.DOWN, dragStart);
-  }
-  
-  this.StopListening = function(stopCurrentDragging) {
-    if(!listening || disposed) return;
-    Dom(attachElement).removeEvent(MouseEvent.DOWN, dragStart);
-    listening = false;
-    if(stopCurrentDragging && dragging) dragStop();
-  }
   
   if(typeof(attachElement) == "string") attachElement = document.getElementById(attachElement);
   if(attachElement == null) attachElement = element;
-  this.StartListening();
+  Dom(attachElement).addEvent(MouseEvent.DOWN, dragStart);
+  
+  
+  function dragStart(eventObj) { 
+	    if (dragging) return;
+	    dragging = true;
+	    
+	    if(startCallback != null) startCallback(eventObj, element);
+	    
+	    cursorStartPos = Dom.absEventMousePos(eventObj);
+	    elementStartPos = Dom(element).pos();
+	    
+	    Dom(document).addEvent(MouseEvent.MOVE, dragGo).addEvent(MouseEvent.UP, dragStop);
+	    return Dom.cancelEvent(eventObj);
+	  }
+	  
+	  function dragGo(eventObj) {
+	    if (!dragging) return;
+	    
+	    var newPos = Dom.absEventMousePos(eventObj);
+	    newPos.move(elementStartPos.x, elementStartPos.y);
+	    newPos.move(-cursorStartPos.x, -cursorStartPos.y);
+	    newPos.checkBounds(bounds);
+	    Dom(element).pos(newPos);
+	    
+	    if(moveCallback != null) moveCallback(newPos, element);
+	    return Dom.cancelEvent(eventObj);
+	  }
+	  
+	  function dragStop(eventObj) {
+	    if(!dragging) return;
+	    Dom(document).removeEvent(MouseEvent.MOVE, dragGo).removeEvent(MouseEvent.UP, dragStop);
+	    cursorStartPos = null;
+	    elementStartPos = null;
+	    if(endCallback != null) endCallback(element);
+	    dragging = false;
+	    return Dom.cancelEvent(eventObj);
+	  }
 }
 
 
