@@ -200,10 +200,11 @@ var Point = function(x, y) {
     /**
      * Test if point is in bounds and if out - place it into.
      * @method checkBounds
-     * @param {Point} from - bounds from.
-     * @param {Point} to - bounds to test.
+     * @param {Rectangle} rect - bounds rectangle.
      **/
-    Point.prototype.checkBounds = function(from, to) {
+    Point.prototype.checkBounds = function(rect) {
+    	var from = rect.from; var to = rect.to;
+    	
     	if (this.x < from.x) this.x = from.x;
     	if (this.y < from.y) this.y = from.y;
     	

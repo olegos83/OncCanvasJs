@@ -2,31 +2,11 @@
 var circleOffset = new Point(5, 5);
 var arrowsOffset = new Point(0, 4);
 
-var arrowsLowBounds = new Point(0, -4);
-var arrowsUpBounds = new Point(0, 251);
-var circleLowBounds = new Point(-5, -5);
-var circleUpBounds = new Point(250, 250);
-
-
-//EVENTS
-function getMousePos(eventObj) {
-  eventObj = eventObj ? eventObj : window.event;
-  if (eventObj.layerX) return new Point(eventObj.layerX, eventObj.layerY);
-  else return new Point(eventObj.offsetX, eventObj.offsetY);
-}
-
-function absoluteCursorPostion(eventObj) {
-  eventObj = eventObj ? eventObj : window.event;
-  
-  if(isNaN(window.scrollX))
-    return new Point(eventObj.clientX + document.documentElement.scrollLeft + document.body.scrollLeft, 
-    				 eventObj.clientY + document.documentElement.scrollTop + document.body.scrollTop);
-  else
-    return new Point(eventObj.clientX + window.scrollX, eventObj.clientY + window.scrollY);
-}
+var arrowBounds = new Rectangle(new Point(0, -4), new Point(0, 251));
+var circleBounds = new Rectangle(new Point(-5, -5), new Point(250, 250));
 
 //DRAG
-function dragObject(element, attachElement, lowerBound, upperBound, startCallback, moveCallback, endCallback, attachLater) {
+function dragObject(element, attachElement, bounds, startCallback, moveCallback, endCallback) {
   if(typeof(element) == "string") element = document.getElementById(element);
 
   var cursorStartPos = null;
@@ -41,8 +21,8 @@ function dragObject(element, attachElement, lowerBound, upperBound, startCallbac
     
     if(startCallback != null) startCallback(eventObj, element);
     
-    cursorStartPos = absoluteCursorPostion(eventObj);
-    elementStartPos = new Point(parseInt(element.style.left), parseInt(element.style.top));
+    cursorStartPos = Dom.absEventMousePos(eventObj);
+    elementStartPos = Dom(element).pos();
     
     Dom(document).addEvent(MouseEvent.MOVE, dragGo).addEvent(MouseEvent.UP, dragStopHook);
     return Dom.cancelEvent(eventObj);
@@ -51,10 +31,10 @@ function dragObject(element, attachElement, lowerBound, upperBound, startCallbac
   function dragGo(eventObj) {
     if (!dragging || disposed) return;
     
-    var newPos = absoluteCursorPostion(eventObj);
+    var newPos = Dom.absEventMousePos(eventObj);
     newPos.move(elementStartPos.x, elementStartPos.y);
     newPos.move(-cursorStartPos.x, -cursorStartPos.y);
-    newPos.checkBounds(lowerBound, upperBound);
+    newPos.checkBounds(bounds);
     Dom(element).pos(newPos);
     
     if(moveCallback != null) moveCallback(newPos, element);
@@ -79,7 +59,7 @@ function dragObject(element, attachElement, lowerBound, upperBound, startCallbac
     if(disposed) return;
     this.StopListening(true);
     element = null;
-    attachElement = null
+    attachElement = null;
     lowerBound = null;
     upperBound = null;
     startCallback = null;
@@ -101,30 +81,26 @@ function dragObject(element, attachElement, lowerBound, upperBound, startCallbac
     if(stopCurrentDragging && dragging) dragStop();
   }
   
-  this.IsDragging = function(){return dragging;}
-  this.IsListening = function() {return listening;}
-  this.IsDisposed = function() {return disposed;}
-  
   if(typeof(attachElement) == "string") attachElement = document.getElementById(attachElement);
   if(attachElement == null) attachElement = element;
-  if(!attachLater) this.StartListening();
+  this.StartListening();
 }
 
 
 //COLORPICKER
 function arrowsDown(e, arrows) {
-  var pos = getMousePos(e);
+  var pos = Dom.getEventMousePos(e);
   if(Dom.getEventTarget(e) == arrows) pos.y += parseInt(arrows.style.top);
   
   pos.move(-arrowsOffset.x, -arrowsOffset.y);
-  pos.checkBounds(arrowsLowBounds, arrowsUpBounds);
+  pos.checkBounds(arrowBounds);
   Dom(arrows).pos(pos);
   
   arrowsMoved(pos);
 }
 
 function circleDown(e, circle) {
-  var pos = getMousePos(e);
+  var pos = Dom.getEventMousePos(e);
   
   if(Dom.getEventTarget(e) == circle) {
     pos.x += parseInt(circle.style.left);
@@ -132,7 +108,7 @@ function circleDown(e, circle) {
   }
   
   pos.move(-circleOffset.x, -circleOffset.y);
-  pos.checkBounds(circleLowBounds, circleUpBounds);
+  pos.checkBounds(circleBounds);
   Dom(circle).pos(pos);
     
   circleMoved(pos);
@@ -358,8 +334,8 @@ function attachColorPicker(method, initialColor) {
     	currentColor = new Color('RGB', {r: c[0], g: c[1], b: parseInt(c[2])});
     }
     
-    new dragObject("arrows", "hueBarDiv", arrowsLowBounds, arrowsUpBounds, arrowsDown, arrowsMoved, endMovement);
-    new dragObject("circle", "gradientBox", circleLowBounds, circleUpBounds, circleDown, circleMoved, endMovement);
+    new dragObject("arrows", "hueBarDiv", arrowBounds, arrowsDown, arrowsMoved, endMovement);
+    new dragObject("circle", "gradientBox", circleBounds, circleDown, circleMoved, endMovement);
     colorChanged('box');
 }
 

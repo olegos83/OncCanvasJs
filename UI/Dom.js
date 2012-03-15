@@ -230,3 +230,31 @@ var Dom = function(el) {
     	return e.target ? e.target : e.srcElement;
      }
      
+     /**
+      * Get event mouse poisition relative to event target.
+      * @method getEventMousePos
+      * @static
+      * @param {Event} e - event.
+      * @return {Point} mouse position.
+      **/
+      Dom.getEventMousePos = function(e) {
+    	 e = e ? e : window.event;
+    	 if (e.layerX) return new Point(e.layerX, e.layerY); else return new Point(e.offsetX, e.offsetY);
+      }
+      
+      /**
+       * Get event absolute mouse poisition.
+       * @method getEventMousePos
+       * @static
+       * @param {Event} e - event.
+       * @return {Point} mouse position.
+       **/
+      Dom.absEventMousePos = function(e) {
+    	 e = e ? e : window.event;
+    	 
+    	 if(isNaN(window.scrollX))
+    	    return new Point(e.clientX + document.documentElement.scrollLeft + document.body.scrollLeft, 
+    	    				 e.clientY + document.documentElement.scrollTop + document.body.scrollTop);
+    	 else return new Point(e.clientX + window.scrollX, e.clientY + window.scrollY);
+      }
+      
