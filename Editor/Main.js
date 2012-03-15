@@ -14,7 +14,7 @@ function main() {
     
     
     //tests
-    var p = new Point(100, 100);
+    /*var p = new Point(100, 100);
     var r = new Rectangle();
     r.placeAroundPoint(p, 30);
     
@@ -29,5 +29,5 @@ function main() {
     gr.addColorStop(.5,'rgb(0,255,0)');
     gr.addColorStop(1,'rgb(0,0,255)');
     o.color.fill = gr;
-    console.log(o.color);
+    console.log(o.color);*/
 }

@@ -15,7 +15,7 @@
 
 /**
 * Colors is a set of classes-helpers to work with color and gradients.
-* The idea is to organize or color functions in one place.
+* The idea is to organize all color functions in one place.
 **/
 
 
@@ -158,14 +158,9 @@ var Color = function(type, val) {
 		if (arguments.length == 0) return {r: Math.round(rgb.r * 255), g: Math.round(rgb.g * 255), b: Math.round(rgb.b * 255)};
 		if (isNaN(r) || isNaN(g) || isNaN(b)) return;
 		
-		r = r / 255.0;
-		rgb.r = r > 1 ? 1 : r < 0 ? 0 : r;
-		
-		g = g / 255.0;
-		rgb.g = g > 1 ? 1 : g < 0 ? 0 : g;
-		
-		b = b / 255.0;
-		rgb.b = b > 1 ? 1 : b < 0 ? 0 : b;
+		r = r / 255.0; rgb.r = r > 1 ? 1 : r < 0 ? 0 : r;
+		g = g / 255.0; rgb.g = g > 1 ? 1 : g < 0 ? 0 : g;
+		b = b / 255.0; rgb.b = b > 1 ? 1 : b < 0 ? 0 : b;
 		  
 		this._calcHSV();
 	}
@@ -200,7 +195,7 @@ var Color = function(type, val) {
 	 **/
 	Color.prototype.HEX = function(hex) {
 		if (arguments.length == 0)  {
-			var rgb = this._rgb;
+			var rgb = this.RGB();
 			
 			var rr = rgb.r.toString(16); if (rr.length == 1) rr = '0' + rr;
 			var gg = rgb.g.toString(16); if (gg.length == 1) gg = '0' + gg;
@@ -215,6 +210,6 @@ var Color = function(type, val) {
 			var g = parseInt(hex.substr(2, 2), 16);
 			var b = parseInt(hex.substr(4, 2), 16);
 			 
-			this.SetRGB(r, g, b);
+			this.RGB(r, g, b);
 		}
 	}

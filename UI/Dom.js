@@ -24,7 +24,7 @@
 *
 * @constructor
 * @param {Element} el - element or its id to work with. Can be empty for 
-*                                 some functions.
+*                       some functions.
 **/
 var Dom = function(el) {
     if (typeof(el) == 'string') Dom.el = document.getElementById(el); else Dom.el = el;

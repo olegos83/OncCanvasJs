@@ -1,177 +1,3 @@
-//COLOR OBJECT 
-function Color() {
-    //Stored as values between 0 and 1
-    var red = 0;
-    var green = 0;
-    var blue = 0;
-   
-    //Stored as values between 0 and 360
-    var hue = 0;
-   
-    //Strored as values between 0 and 1
-    var saturation = 0;
-    var value = 0;
-     
-this.SetRGB = function(r, g, b) {
-  if (isNaN(r) || isNaN(g) || isNaN(b)) return false;
-    
-  r = r/255.0;
-  red = r > 1 ? 1 : r < 0 ? 0 : r;
-  
-  g = g/255.0;
-  green = g > 1 ? 1 : g < 0 ? 0 : g;
-  
-  b = b/255.0;
-  blue = b > 1 ? 1 : b < 0 ? 0 : b;
-  
-  calculateHSV();
-  return true;
-}
-   
-this.Red = function() {
-	return Math.round(red*255);
-}
-   
-this.Green = function() {
-	return Math.round(green*255);
-}
-   
-this.Blue = function() {
-	return Math.round(blue*255);
-}
-   
-this.SetHSV = function(h, s, v) {
-  if (isNaN(h) || isNaN(s) || isNaN(v)) return false;
-    
-  hue = (h >= 360) ? 359.99 : (h < 0) ? 0 : h;
-  saturation = (s > 1) ? 1 : (s < 0) ? 0 : s;
-  value = (v > 1) ? 1 : (v < 0) ? 0 : v;
-  
-  calculateRGB();
-  return true;
-}
-     
-this.Hue = function() {
-	return hue;
-}
-     
-this.Saturation = function() {
-	return saturation;
-}
-     
-this.Value = function() {
-	return value;
-} 
-     
-this.SetHexString = function(hexString) {
-  if(hexString == null || typeof(hexString) != "string") return false;
-  if (hexString.substr(0, 1) == '#') hexString = hexString.substr(1);
-  if(hexString.length != 6) return false;
-     
-  var r = parseInt(hexString.substr(0, 2), 16);
-  var g = parseInt(hexString.substr(2, 2), 16);
-  var b = parseInt(hexString.substr(4, 2), 16);
-  
-  return this.SetRGB(r,g,b);
-}
- 
-this.HexString = function() {
-  var rStr = this.Red().toString(16);
-  if (rStr.length == 1) rStr = '0' + rStr;
-  
-  var gStr = this.Green().toString(16);
-  if (gStr.length == 1) gStr = '0' + gStr;
-  
-  var bStr = this.Blue().toString(16);
-  if (bStr.length == 1) bStr = '0' + bStr;
-  
-  return ('#' + rStr + gStr + bStr).toUpperCase();
-}
-   
-function calculateHSV() {
-  var max = Math.max(Math.max(red, green), blue);
-  var min = Math.min(Math.min(red, green), blue);
- 
-  value = max;
-  saturation = 0;
-  if(max != 0) saturation = 1 - min/max;
-   
-  hue = 0;
-  if(min == max) return;
- 
-  var delta = (max - min);
-  if (red == max) hue = (green - blue) / delta;
-  else if (green == max) hue = 2 + ((blue - red) / delta); else hue = 4 + ((red - green) / delta);
-  
-  hue = hue * 60;
-  if(hue <0) hue += 360;
-}
-   
-function calculateRGB() {
-  red = value;
-  green = value;
-  blue = value;
- 
-  if(value == 0 || saturation == 0)
-    return;
- 
-  var tHue = (hue / 60);
-  var i = Math.floor(tHue);
-  var f = tHue - i;
-  var p = value * (1 - saturation);
-  var q = value * (1 - saturation * f);
-  var t = value * (1 - saturation * (1 - f));
-  switch(i) {
-    case 0:
-      red = value;green = t;blue = p;
-    break;
-    
-    case 1:
-      red = q;green = value;blue = p;
-    break;
-    
-    case 2:
-      red = p;green = value;blue = t;
-    break;
-    
-    case 3:
-      red = p;green = q;blue = value;
-    break;
-    
-    case 4:
-      red = t;green = p;blue = value;
-    break;
-    
-    default:
-      red = value;green = p;blue = q;
-    break;
-  }
-}
-
-}
-
-//COLORS
-var Colors = new function() {
-  this.ColorFromHSV = function(hue, sat, val) {
-    var color = new Color();
-    color.SetHSV(hue,sat,val);
-    return color;
-  }
-
-  this.ColorFromRGB = function(r, g, b) {
-    var color = new Color();
-    color.SetRGB(r,g,b);
-    return color;
-  }
-
-  this.ColorFromHex = function(hexStr) {
-    var color = new Color();
-    color.SetHexString(hexStr);
-    return color;
-  }
-}
-
-
 //OFFSETS OF COLORPICKER ELEMENTS
 var circleOffset = new Point(5, 5);
 var arrowsOffset = new Point(0, 4);
@@ -314,88 +140,98 @@ function circleDown(e, circle) {
 
 function arrowsMoved(pos, element) {
   pos.move(arrowsOffset.x, arrowsOffset.y);
-  currentColor.SetHSV((256 - pos.y) * 359.99 / 255, currentColor.Saturation(), currentColor.Value());
+  var hsv = currentColor.HSV();
+  currentColor.HSV((256 - pos.y) * 359.99 / 255, hsv.s, hsv.v);
   colorChanged("arrows");
 }
 
 function circleMoved(pos, element) {
-	pos.move(circleOffset.x, circleOffset.y);
-  currentColor.SetHSV(currentColor.Hue(), 1 - pos.y / 255.0, pos.x / 255.0);
+  pos.move(circleOffset.x, circleOffset.y);
+  currentColor.HSV(currentColor.HSV().h, 1 - pos.y / 255.0, pos.x / 255.0);
   colorChanged("circle");
 }
 
 function colorChanged(source) {
-  document.getElementById("hexBox").value = currentColor.HexString();
-  document.getElementById("redBox").value = currentColor.Red();
-  document.getElementById("greenBox").value = currentColor.Green();
-  document.getElementById("blueBox").value = currentColor.Blue();
-  document.getElementById("hueBox").value = Math.round(currentColor.Hue());
-  var str = (currentColor.Saturation()*100).toString();
-  if(str.length > 4)
-    str = str.substr(0,4);
-  document.getElementById("saturationBox").value = str;
-  str = (currentColor.Value()*100).toString();
-  if(str.length > 4)
-    str = str.substr(0,4);
-  document.getElementById("valueBox").value = str;
+	var hsv = currentColor.HSV();
+	var rgb = currentColor.RGB();
+	var hex = currentColor.HEX();
+	
+	Dom('hexBox').prop('value', hex);
+	Dom('redBox').prop('value', rgb.r);
+	Dom('greenBox').prop('value', rgb.g);
+	Dom('blueBox').prop('value', rgb.b);
+	Dom('hueBox').prop('value', Math.round(hsv.h));
+	
+	var str = (hsv.s * 100).toString();
+	if(str.length > 4) str = str.substr(0,4);
+	Dom('saturationBox').prop('value', str);
   
-  if(source == "arrows" || source == "box")
-    document.getElementById("gradientBox").style.backgroundColor = Colors.ColorFromHSV(currentColor.Hue(), 1, 1).HexString();
-    
-  if(source == "box") {
-    var el = document.getElementById("arrows");
-    el.style.top = (256 - currentColor.Hue()*255/359.99 - arrowsOffset.y) + 'px';
-    
-    var pos = new Point(currentColor.Value()*255, (1-currentColor.Saturation())*255);
-    pos.move(-circleOffset.x, -circleOffset.y);
-    
-    Dom("circle").pos(pos); 
-    endMovement();
-  }
+	str = (hsv.v * 100).toString();
+	if(str.length > 4) str = str.substr(0,4);
+	Dom('valueBox').prop('value', str);
+	
+	if(source == "arrows" || source == "box")
+		Dom('gradientBox').css('backgroundColor', new Color('HSV', {h: hsv.h, s: 1, v: 1}).HEX());
+	
+	if(source == "box") {
+		Dom('arrows').css('top', (256 - hsv.h * 255 / 359.99 - arrowsOffset.y) + 'px');
+		
+		var pos = new Point(hsv.v * 255, (1 - hsv.s) * 255);
+		pos.move(-circleOffset.x, -circleOffset.y);
+		
+		Dom('circle').pos(pos); 
+		endMovement();
+	}
+	
+	Dom('quickColor').css('backgroundColor', hex);
   
-  document.getElementById("quickColor").style.backgroundColor = currentColor.HexString();
-  
-  //set color with attached method
-  if (setColorMethod) setColorMethod(currentColor.HexString());
+	//set color with attached method
+	if (setColorMethod) setColorMethod(hex);
 }
 
 function endMovement() {
-  document.getElementById("staticColor").style.backgroundColor = currentColor.HexString();
+	Dom('staticColor').css('backgroundColor', currentColor.HEX());
 }
 
 function hexBoxChanged(e) {
-  currentColor.SetHexString(document.getElementById("hexBox").value);
-  colorChanged("box");
+	currentColor.HEX(document.getElementById("hexBox").value);
+	colorChanged("box");
 }
 
 function redBoxChanged(e) {
-  currentColor.SetRGB(parseInt(document.getElementById("redBox").value), currentColor.Green(), currentColor.Blue());
-  colorChanged("box");
+	var rgb = currentColor.RGB();
+	currentColor.RGB(parseInt(document.getElementById("redBox").value), rgb.g, rgb.b);
+	colorChanged("box");
 }
 
 function greenBoxChanged(e) {
-  currentColor.SetRGB(currentColor.Red(), parseInt(document.getElementById("greenBox").value), currentColor.Blue());
-  colorChanged("box");
+	var rgb = currentColor.RGB();
+	currentColor.RGB(rgb.r, parseInt(document.getElementById("greenBox").value), rgb.b);
+	colorChanged("box");
 }
 
 function blueBoxChanged(e) {
-  currentColor.SetRGB(currentColor.Red(), currentColor.Green(), parseInt(document.getElementById("blueBox").value));
-  colorChanged("box");
+	var rgb = currentColor.RGB();
+	currentColor.RGB(rgb.r, rgb.g, parseInt(document.getElementById("blueBox").value));
+	colorChanged("box");
 }
 
 function hueBoxChanged(e) {
-  currentColor.SetHSV(parseFloat(document.getElementById("hueBox").value), currentColor.Saturation(), currentColor.Value());
-  colorChanged("box");
+	var hsv = currentColor.HSV();
+	currentColor.HSV(parseFloat(document.getElementById("hueBox").value), hsv.s, hsv.v);
+	colorChanged("box");
 }
 
 function saturationBoxChanged(e) {
-  currentColor.SetHSV(currentColor.Hue(), parseFloat(document.getElementById("saturationBox").value)/100.0, currentColor.Value());
-  colorChanged("box");
+	var hsv = currentColor.HSV();
+	currentColor.HSV(hsv.h, parseFloat(document.getElementById("saturationBox").value) / 100.0, hsv.v);
+	colorChanged("box");
 }
 
 function valueBoxChanged(e) {
-  currentColor.SetHSV(currentColor.Hue(), currentColor.Saturation(), parseFloat(document.getElementById("valueBox").value)/100.0);
-  colorChanged("box");
+	var hsv = currentColor.HSV();
+	currentColor.HSV(hsv.h, hsv.s, parseFloat(document.getElementById("valueBox").value) / 100.0);
+	colorChanged("box");
 }
 
 function fixPNG(myImage) {
@@ -516,10 +352,10 @@ function attachColorPicker(method, initialColor) {
     
     if (initialColor == '') initialColor = '#ffffff';
     if (initialColor.charAt(0) == '#') {
-    	currentColor = Colors.ColorFromHex(initialColor);
+    	currentColor = new Color('HEX', initialColor);
     } else {
     	var c = initialColor.split('(')[1].split(',');
-    	currentColor = Colors.ColorFromRGB(c[0], c[1], parseInt(c[2]));
+    	currentColor = new Color('RGB', {r: c[0], g: c[1], b: parseInt(c[2])});
     }
     
     new dragObject("arrows", "hueBarDiv", arrowsLowBounds, arrowsUpBounds, arrowsDown, arrowsMoved, endMovement);
