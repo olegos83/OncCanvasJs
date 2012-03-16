@@ -31,41 +31,41 @@
  * @param {Object} val - initial value: {r: red, g: green, b: blue}, {h: hue, s: saturation, v: value} or '#rrggbb'.
  **/
 var Color = function(type, val) {
-    //DO NOT USE PRIVATE PROPERTIES DIRECTLY - RESULT IS UNPREDICTABLE
-    //private properties:
-        /**
-         * RGB values for inner calculations. Stored as values between 0 and 1.
-         * @property _rgb
-         * @type Object
-         * @private
-         **/
-         this._rgb = {r: 0, g: 0, b: 0};
+//DO NOT USE PRIVATE PROPERTIES DIRECTLY - RESULT IS UNPREDICTABLE
+//private properties:
+    /**
+     * RGB values for inner calculations. Stored as values between 0 and 1.
+     * @property _rgb
+     * @type Object
+     * @private
+     **/
+     this._rgb = {r: 0, g: 0, b: 0};
 
-        /**
-         * HSV values for inner calculations. Stored as values between 0 and 1.
-         * H is between 0 and 360.
-         * @property _hsv
-         * @type Object
-         * @private
-         **/
-         this._hsv = {h: 0, s: 0, v: 0};
-         
-         //init color if needed
-         if (type) {
-        	 switch (type) {
-		   		case 'RGB':
-		   			this.RGB(val.r, val.g, val.b);
-				break;
-				  
-				case 'HSV':
-					this.HSV(val.h, val.s, val.v);
-				break;
-				  
-				case 'HEX':
-					this.HEX(val);
-				break;
-        	 }
-         }
+    /**
+     * HSV values for inner calculations. Stored as values between 0 and 1.
+     * H is between 0 and 360.
+     * @property _hsv
+     * @type Object
+     * @private
+     **/
+     this._hsv = {h: 0, s: 0, v: 0};
+     
+     //init color if needed
+     if (type) {
+    	 switch (type) {
+	   		case 'RGB':
+	   			this.RGB(val.r, val.g, val.b);
+			break;
+			  
+			case 'HSV':
+				this.HSV(val.h, val.s, val.v);
+			break;
+			  
+			case 'HEX':
+				this.HEX(val);
+			break;
+    	 }
+     }
 }
    
 
@@ -213,3 +213,28 @@ var Color = function(type, val) {
 			this.RGB(r, g, b);
 		}
 	}
+
+
+//static methods:
+	/**
+	 * Convert integer to css compatible hex color value.
+	 * @method numToCss
+	 * @static 
+	 * @param {Number} n - integer number.
+	 * @return {String} css hex color string.
+	 **/
+	Color.numToCss = function(n) {
+		var tmp = n.toString(16);
+		var len = 6 - tmp.length;
+		
+		if (len > 0) {
+			var a = '';
+			for (var i = 0; i < len; i++) a += '0';
+			tmp = '#' + a + tmp;
+		} else {
+			tmp = '#' + tmp;
+		}
+		
+		return tmp;
+	}
+	

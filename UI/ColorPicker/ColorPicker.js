@@ -1,7 +1,80 @@
+/*
+* ColorPicker by OlegoS. Mar 16, 2012
+*
+* Copyright (c) 2012 OlegoS
+*
+* See license information in readme file.
+*/
+
+/**
+* OncCanvasJs is a framework to work with html5 canvas. It can be used to write
+* games or any other web-applications, which use canvas graphics.
+* @module OncCanvasJs
+**/
 
 
-
-
+/**
+ * ColorPicker implementation. Support RGB and HSV values.
+ * Can be initialized from RGB, HSV or HEX if specified.
+ * 
+ * @class ColorPicker
+ * @static
+ * @author OlegoS
+ *
+ * @constructor
+**/
+var ColorPicker = {
+    /**
+     * Circle and arrow offsets.
+     **/
+    offset: {
+    	circle: new Point(5, 5), 
+    	arrows: new Point(0, 4)
+    },
+    
+    /**
+     * Circle and arrow bounds.
+     **/
+     bounds: {
+    	circle: new Rectangle(new Point(-5, -5), new Point(250, 250)), 
+    	arrows: new Rectangle(new Point(0, -4), new Point(0, 251))
+     },
+     
+//private methods:
+     /**
+      * Arrow mousedown handler.
+      **/
+     arrowsDown: function(e, arrows) {
+		var pos = Dom.getEventMousePos(e);
+		if(Dom.getEventTarget(e) == arrows) pos.y += parseInt(arrows.style.top);
+		
+		var offset = ColorPicker.offset.arrows;
+		pos.move(-offset.x, -offset.y);
+		pos.checkBounds(ColorPicker.bounds.arrows);
+		Dom(arrows).pos(pos);
+		  
+		ColorPicker.arrowsMoved(pos);
+     },
+     
+     /**
+      * Circle mousedown handler.
+      **/
+     circleDown: function(e, circle) {
+		var pos = Dom.getEventMousePos(e);
+		  
+		if(Dom.getEventTarget(e) == circle) {
+		  pos.x += parseInt(circle.style.left);
+		  pos.y += parseInt(circle.style.top);
+		}
+		
+		var offset = ColorPicker.offset.circle;
+		pos.move(-offset.x, -offset.y);
+		pos.checkBounds(ColorPicker.bounds.circle);
+		Dom(circle).pos(pos);
+		  
+		ColorPicker.circleMoved(pos);
+     }
+} 
 
 
 
@@ -15,29 +88,29 @@ var circleBounds = new Rectangle(new Point(-5, -5), new Point(250, 250));
 
 //COLORPICKER
 function arrowsDown(e, arrows) {
-  var pos = Dom.getEventMousePos(e);
-  if(Dom.getEventTarget(e) == arrows) pos.y += parseInt(arrows.style.top);
-  
-  pos.move(-arrowsOffset.x, -arrowsOffset.y);
-  pos.checkBounds(arrowBounds);
-  Dom(arrows).pos(pos);
-  
-  arrowsMoved(pos);
+	var pos = Dom.getEventMousePos(e);
+	if(Dom.getEventTarget(e) == arrows) pos.y += parseInt(arrows.style.top);
+	
+	pos.move(-arrowsOffset.x, -arrowsOffset.y);
+	pos.checkBounds(arrowBounds);
+	Dom(arrows).pos(pos);
+	  
+	arrowsMoved(pos);
 }
 
 function circleDown(e, circle) {
-  var pos = Dom.getEventMousePos(e);
-  
-  if(Dom.getEventTarget(e) == circle) {
-    pos.x += parseInt(circle.style.left);
-    pos.y += parseInt(circle.style.top);
-  }
-  
-  pos.move(-circleOffset.x, -circleOffset.y);
-  pos.checkBounds(circleBounds);
-  Dom(circle).pos(pos);
-    
-  circleMoved(pos);
+	var pos = Dom.getEventMousePos(e);
+	  
+	if(Dom.getEventTarget(e) == circle) {
+	  pos.x += parseInt(circle.style.left);
+	  pos.y += parseInt(circle.style.top);
+	}
+	  
+	pos.move(-circleOffset.x, -circleOffset.y);
+	pos.checkBounds(circleBounds);
+	Dom(circle).pos(pos);
+	  
+	circleMoved(pos);
 }
 
 function arrowsMoved(pos, element) {
@@ -81,7 +154,7 @@ function colorChanged(source) {
 		var pos = new Point(hsv.v * 255, (1 - hsv.s) * 255);
 		pos.move(-circleOffset.x, -circleOffset.y);
 		
-		Dom('circle').pos(pos); 
+		Dom('circle').pos(pos);
 		endMovement();
 	}
 	
@@ -153,9 +226,6 @@ function fixPNG(myImage) {
   myImage.outerHTML = strNewHTML
 }
 
-function fixGradientImg() {
-  fixPNG(document.getElementById("gradientImg"));
-}
 
 //returns element with colorpicker, path is path to images
 function initColorPicker(path) {
@@ -250,7 +320,7 @@ function initColorPicker(path) {
 var setColorMethod = null;
 function attachColorPicker(method, initialColor) {
     setColorMethod = method;
-    fixGradientImg();
+    fixPNG(document.getElementById("gradientImg"));
     
     if (initialColor == '') initialColor = '#ffffff';
     if (initialColor.charAt(0) == '#') {
@@ -266,22 +336,7 @@ function attachColorPicker(method, initialColor) {
     colorChanged('box');
 }
 
-//SAFE COLOR PALETTE
-function numberToCssColor(n) {
-	var tmp = n.toString(16);
-	var len = 6 - tmp.length;
-	
-	if (len > 0) {
-		var a = '';
-		for (var i = 0; i < len; i++) a += '0';
-		tmp = '#' + a + tmp;
-	} else {
-		tmp = '#' + tmp;
-	}
-	
-	return tmp;
-}
-
+//web safe color picker
 function buildSafePalette(type, el, selFn, sz) {
 	//init params and vars
 	var wd = sz || 16; var ht = sz || 16;
@@ -325,13 +380,13 @@ function buildSafePalette(type, el, selFn, sz) {
 	//draw items
 	for (i = 0; i < it; i++) {
 		y = i * ht;
-		clr = numberToCssColor(lineColors[i]);			
+		clr = Color.numToCss(lineColors[i]);			
 		drawItem(x, y, clr, el, selFn);	
 	}
 	
 	if (type == 1) for (i = 0; i < it; i++) {
 		x = wd; y = i * ht;
-		clr = numberToCssColor(lineColors[i + 6]);
+		clr = Color.numToCss(lineColors[i + 6]);
 		drawItem(x, y, clr, el, selFn);
 	}
 	
@@ -358,7 +413,7 @@ function buildSafePalette(type, el, selFn, sz) {
 				break;
 		    }
 			
-			clr = numberToCssColor((Math.floor(x / 6) * 51) << 16 | (x % 6 * 51) << 8 | y * 51);				
+			clr = Color.numToCss((Math.floor(x / 6) * 51) << 16 | (x % 6 * 51) << 8 | y * 51);				
 			x = j * wd; y = i * ht;
 			
 			drawItem(x + d, y, clr, el, selFn);
