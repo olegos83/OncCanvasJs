@@ -111,6 +111,16 @@ var DomDrag = function(element, attached, bounds, startCallback, moveCallback, e
 	    if(endCallback != null) endCallback(element);
 	    return Dom.cancelEvent(e);
 	}
+	
+	//stop drag
+	this.stopDrag = function() {
+		//null all vars
+		pos = element = attached = bounds = startCallback = moveCallback = endCallback = null;
+		
+		//remove listeners
+		Dom(attached).removeEvent(MouseEvent.DOWN, start);
+		Dom(document).removeEvent(MouseEvent.MOVE, go).removeEvent(MouseEvent.UP, stop);
+	}
 }
 
 

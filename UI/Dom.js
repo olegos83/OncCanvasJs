@@ -271,8 +271,11 @@ var Dom = function(el) {
       **/
       Dom.startDrag = function(attached, bounds, startCallback, moveCallback, endCallback) {
     	  if (this.el._domdrag) return this;
-    	  this.el._domdrag = new DomDrag(this.el, attached, bounds, startCallback, moveCallback, endCallback);
-    	  return this;
+    	  
+    	  var el = this.el;
+    	  el._domdrag = new DomDrag(el, attached, bounds, startCallback, moveCallback, endCallback);
+    	  
+    	  return Dom(el);
       }
       
       /**
@@ -282,7 +285,13 @@ var Dom = function(el) {
        * @return {Dom} this - can be chained.
        **/
        Dom.stopDrag = function() {
-    	  if (this.el._domdrag) delete this.el._domdrag;
-    	  return this;
+    	  var el = this.el;
+    	  
+    	  if (el._domdrag) {
+    		  el._domdrag.stopDrag();
+    		  delete el._domdrag;
+    	  }
+    	  
+    	  return Dom(el);
        }
        
