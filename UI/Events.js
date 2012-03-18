@@ -108,7 +108,7 @@ var DomDrag = function(element, attached, bounds, startCallback, moveCallback, e
 	    Dom(document).removeEvent(MouseEvent.MOVE, go).removeEvent(MouseEvent.UP, stop);
 	    pos.cursor = null; pos.element = null;
 	    
-	    if(endCallback != null) endCallback(element);
+	    if (endCallback) endCallback(element);
 	    return Dom.cancelEvent(e);
 	}
 	
