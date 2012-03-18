@@ -209,8 +209,8 @@ var ColorChooser = function(type) {
     		wnd.removeControl(colorSelect);
     	    wnd.addControl(picker);
     	    
-    	    if (type == 1) attachColorPicker(setFillColor, stage.color.fill);
-    	    else attachColorPicker(setStrokeColor, stage.color.stroke);
+    	    if (type == 1) ColorPicker.attach(setFillColor, stage.color.fill);
+    	    else ColorPicker.attach(setStrokeColor, stage.color.stroke);
     	}
     }).prop('value', 'Colors');
     
@@ -219,14 +219,14 @@ var ColorChooser = function(type) {
     
     //create color select
     var colorSelect = Dom.create('div', '', 'absolute', 5, 35);
-    buildSafePalette(0, colorSelect, function(e) {
+    ColorPicker.attachSafePicker(0, colorSelect, function(e) {
     	setColor(type, e.target.style.backgroundColor);
     }, 21);
     
     wnd.addControl(colorSelect);
     
     //create picker
-    var picker = initColorPicker("UI/ColorPicker/");
+    var picker = ColorPicker.init("UI/ColorPicker/");
     Dom(picker).pos({x:0, y:30});
     
     //create buttons
