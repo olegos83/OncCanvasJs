@@ -382,7 +382,7 @@ var Layer = function(id, elem, x, y, width, height) {
                 ctx.strokeStyle = stroke;
                 ctx.stroke();
             }
-            
+        
             if (fill != "") {
                 ctx.fillStyle = fill;
                 ctx.fill();

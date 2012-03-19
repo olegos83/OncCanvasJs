@@ -290,10 +290,20 @@ var Shaper = function(id, shape, color) {
         if (!this.layer) return;
         if (!this.visible) return;
         
-        //draw shape
+        //init vars
         var ctx = this.layer.ctx;
         var m = this.matrix;
         
+        //setup gradient if needed
+        if (this.color.stroke instanceof Gradient) {
+        	this.color.stroke = this.color.stroke.setup(this, this.layer);
+        }
+        
+        if (this.color.fill instanceof Gradient) {
+        	this.color.fill = this.color.fill.setup(this, this.layer);
+        }
+        
+        //draw shape
         ctx.save();
         ctx.setTransform(m[0][0], m[0][1], m[1][0], m[1][1], m[2][0], m[2][1]);
         this.layer.drawShape(this.color.stroke, this.color.fill, this.shape);

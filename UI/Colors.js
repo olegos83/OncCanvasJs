@@ -269,6 +269,7 @@ var Gradient = function(type, colorStops) {
      * @private
      **/
 	this._type = (type == null ? 'linear' : type);
+	if (this._type != 'radial') this._type = 'linear';
 	
     /**
      * Array of color stops.
@@ -287,7 +288,10 @@ var Gradient = function(type, colorStops) {
 	 * @return {String} if no args - return current type.
 	 **/
 	Gradient.prototype.type = function(type) {
-		if (type) this._type = type; else return this._type;
+		if (type) {
+			this._type = type
+			if (this._type != 'radial') this._type = 'linear';
+		} else return this._type;
 	}
 	
 	/**
@@ -307,6 +311,49 @@ var Gradient = function(type, colorStops) {
 	 **/
 	Gradient.prototype.removeColorStop = function(index) {
 		delete this._colorStops[index];
+	}
+
+	/**
+	 * Setup Gradient to fill the Shaper in specified layer.
+	 * @method setup
+	 * @param {Shaper} obj - Shaper instance.
+	 * @param {Layer} layer - layer.
+	 * @return {CanvasGradient} CanvasGradient instance, ready to fill Shaper instance.
+	 **/
+	Gradient.prototype.setup = function(obj, layer) {
+		//init vars
+		var r = obj.getBoundRect();
+		var c = r.getCenter();
+		var ctx = layer.ctx;
+		
+		//setup gradient line
+		var from = new Point(r.from.x, c.y);
+		var to = new Point(r.to.x, c.y);
+		
+		//create gradient instance
+		var gr = null;
+		switch (this.type()) {
+			case 'linear':
+				gr = ctx.createLinearGradient(from.x, from.y, to.x, to.y);
+			break;
+			
+			case 'radial':
+				gr = ctx.createRadialGradient(c.x, c.y, 1, c.x, c.y, Math.round(r.getWidth() / 2));
+			break;
+		}
+		
+		//return canvas gradient
+		this.setStops(gr);
+		return gr;
+	}
+	
+	/**
+	 * Apply Gradient to canvas gradient instance - simply add all color stops.
+	 * @method setStops
+	 * @param {CanvasGradient} gr - gradient.
+	 **/
+	Gradient.prototype.setStops = function(gr) {
+		for (var stop in this._colorStops) gr.addColorStop(stop, this._colorStops[stop]);
 	}
 	
     /**

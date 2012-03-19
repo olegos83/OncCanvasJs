@@ -22,16 +22,13 @@ function main() {
     stage.addObject(o);
     
     //horizontal gradient
-    var gr = stage.layer.ctx.createLinearGradient(70, 0, 130, 0);
+    var fill = new Gradient();
+    fill.addColorStop(0,'#ff0000');
+    fill.addColorStop(1,'#0000ff');
+    fill.addColorStop(0.5,'#00ff00');
     
-    //Add the color stops.
-    gr.addColorStop(0,'#ff0000');
-    gr.addColorStop(1,'#0000ff');
-    gr.addColorStop(0.5,'#00ff00');
-    o.color.fill = gr;
-    console.log(o.color);
-    
-    var o2 = {};
-    o2[0.005] = 10;
-    console.log(o2, o2[0.005]);
+    //var gr = fill.setup(o, stage.layer);
+    //
+
+    o.color.fill = fill;
 }
