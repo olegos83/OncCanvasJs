@@ -214,6 +214,14 @@ var Color = function(type, val) {
 		}
 	}
 
+    /**
+     * Returns a string representation of this object.
+     * @method toString
+     * @return {String} a string representation of this object.
+     **/
+	Color.prototype.toString = function() {
+        return "[Color(" + this.HEX() + ")]";
+    }
 
 //static methods:
 	/**
@@ -237,4 +245,76 @@ var Color = function(type, val) {
 		
 		return tmp;
 	}
+	
+	
+/**
+ * Gradient implementation. It is a wrapper for CnvasGradient.
+ * Can be initialized from colorStops object, which is empty by default.
+ * Color stop stored as object where key is stop index and value is stop color - colorStop['0.5'] = color.
+ * 
+ * @class Gradient
+ * @author OlegoS
+ *
+ * @constructor
+ * @param {Object} colorStops - array of color stops.
+ * @param {String} type - gradient type. Can be 'linear' or 'radial'.
+ **/
+var Gradient = function(type, colorStops) {
+//DO NOT USE PRIVATE PROPERTIES DIRECTLY - RESULT IS UNPREDICTABLE
+//private properties:
+	/**
+     * Gradient type.
+     * @property _type
+     * @type String
+     * @private
+     **/
+	this._type = (type == null ? 'linear' : type);
+	
+    /**
+     * Array of color stops.
+     * @property _colorStopsArr
+     * @type Array
+     * @private
+     **/
+    this._colorStops = (colorStops == null ? new Object() : colorStops);
+}
+
+//public methods:
+	/**
+	 * GET/SET Gradient type.
+	 * @method type
+	 * @param {String} type - gradient type. Can be 'linear' or 'radial'.
+	 * @return {String} if no args - return current type.
+	 **/
+	Gradient.prototype.type = function(type) {
+		if (type) this._type = type; else return this._type;
+	}
+	
+	/**
+	 * Add color stop.
+	 * @method addColorStop
+	 * @param {Number} index - index of stop.
+	 * @param {String} color - css color value.
+	 **/
+	Gradient.prototype.addColorStop = function(index, color) {
+		this._colorStops[index] = color;
+	}
+	
+	/**
+	 * Remove color stop.
+	 * @method removeColorStop
+	 * @param {Number} index - index of stop.
+	 **/
+	Gradient.prototype.removeColorStop = function(index) {
+		delete this._colorStops[index];
+	}
+	
+    /**
+     * Returns a string representation of this object.
+     * @method toString
+     * @return {String} a string representation of this object.
+     **/
+	Gradient.prototype.toString = function() {
+        return "[Gradient(type: " + this.type() + ")]";
+    }
 	
