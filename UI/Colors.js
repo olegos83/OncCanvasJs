@@ -278,6 +278,22 @@ var Gradient = function(type, colorStops) {
      * @private
      **/
     this._colorStops = (colorStops == null ? new Object() : colorStops);
+    
+    
+//public properties
+    /**
+     * Gradient scale koef.
+     * @property scale
+     * @type Number
+     **/
+    this.scale = 1;
+    
+    /**
+     * Gradient rotation angle in radians.
+     * @property rotation
+     * @type Number
+     **/
+    this.rotation = 0;
 }
 
 //public methods:
@@ -334,11 +350,18 @@ var Gradient = function(type, colorStops) {
 		var gr = null;
 		switch (this.type()) {
 			case 'linear':
+				from.scale(this.scale, this.scale, c);
+				to.scale(this.scale, this.scale, c);
+				
+				from.rotate(this.rotation, c);
+				to.rotate(this.rotation, c);
+				
 				gr = ctx.createLinearGradient(from.x, from.y, to.x, to.y);
 			break;
 			
 			case 'radial':
-				gr = ctx.createRadialGradient(c.x, c.y, 1, c.x, c.y, Math.round(r.getWidth() / 2));
+				to.scale(this.scale, this.scale, c);
+				gr = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, to.x - c.x);
 			break;
 		}
 		
