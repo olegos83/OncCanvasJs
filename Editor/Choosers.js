@@ -168,23 +168,6 @@ var BgrChooser = function() {
 
 //COLOR CHOOSER
 var ColorChooser = function(type) {
-	//color set methods
-	function setColor(type, c) {
-		if (type == 1) setFillColor(c); else setStrokeColor(c);
-	}
-	
-	function setStrokeColor(c) {
-	    stage.color.stroke = c;
-	    if (stage.trBox.selected) stage.trBox.selected.color.stroke = c;
-	    stage.layer.forceRedraw();
-	}
-
-	function setFillColor(c) {
-	    stage.color.fill = c;
-	    if (stage.trBox.selected) stage.trBox.selected.color.fill = c;
-	    stage.layer.forceRedraw();
-	}
-	
 	//init vars
 	var titleStr;
 	if (type == 1) titleStr = "Change fill color"; else titleStr = "Change stroke color";
@@ -198,19 +181,28 @@ var ColorChooser = function(type) {
     var selectBox = Dom.createComboBox(['None', 'Colors', 'Custom colors', 'Gradient']);
     
     Dom(selectBox).css('width', '256px').prop('onchange', function(e) {
+    	clearWnd();
     	var v = e.target.value;
     	
-    	if (v == 'None') {
-    		setColor(type, '');
-    	} else if (v == 'Colors') {
-    		wnd.removeControl(picker);
-    		wnd.addControl(colorSelect);
-    	} else if (v == 'Custom colors') {
-    		wnd.removeControl(colorSelect);
-    	    wnd.addControl(picker);
-    	    
-    	    if (type == 1) ColorPicker.attach(setFillColor, stage.color.fill);
-    	    else ColorPicker.attach(setStrokeColor, stage.color.stroke);
+    	switch (v) {
+	    	case 'None':
+	    		setColor(type, '');
+	    	break;
+	    	
+	    	case 'Colors':
+	    		wnd.addControl(colorSelect);
+	        break;
+	        	
+	    	case 'Custom colors':
+	    		wnd.addControl(picker);
+	    	    
+	    	    if (type == 1) ColorPicker.attach(setFillColor, stage.color.fill);
+	    	    else ColorPicker.attach(setStrokeColor, stage.color.stroke);
+	        break;
+	        
+	    	case 'Gradient':
+	    		wnd.addControl(gradientEditor);
+	        break;
     	}
     }).prop('value', 'Colors');
     
@@ -229,6 +221,9 @@ var ColorChooser = function(type) {
     var picker = ColorPicker.init("UI/ColorPicker/");
     Dom(picker).pos({x:0, y:30});
     
+    //create gradient editor
+    var gradientEditor = ColorPicker.initGradientEditor(5, 35, wnd.getWidth() - 10, wnd.getHeight() - 70);
+    
     //create buttons
     var selectBtn = Dom.create('button', '', 'absolute', 5, wnd.getHeight() - 30, 100, 25);
     
@@ -240,4 +235,29 @@ var ColorChooser = function(type) {
     });
     
     wnd.addControl(selectBtn);
+    
+    //INTERNAL FUNCTIONS
+	//color set methods
+	function setColor(type, c) {
+		if (type == 1) setFillColor(c); else setStrokeColor(c);
+	}
+	
+	function setStrokeColor(c) {
+	    stage.color.stroke = c;
+	    if (stage.trBox.selected) stage.trBox.selected.color.stroke = c;
+	    stage.layer.forceRedraw();
+	}
+
+	function setFillColor(c) {
+	    stage.color.fill = c;
+	    if (stage.trBox.selected) stage.trBox.selected.color.fill = c;
+	    stage.layer.forceRedraw();
+	}
+	
+	//clear window method
+	function clearWnd() {
+		wnd.removeControl(picker);
+		wnd.removeControl(colorSelect);
+		wnd.removeControl(gradientEditor);
+	}
 }

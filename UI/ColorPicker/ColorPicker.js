@@ -411,5 +411,14 @@ var ColorPicker = {
 				drawItem(x + d, y, clr, el, selFn);
 			}
 		}
+	 },
+	 
+	 /**
+      * Init gradient editor.
+      **/
+	 initGradientEditor: function(x, y, width, height) {
+		 var gradBox = Dom.create('div', '', 'absolute', x, y, width, height);
+		 Dom(gradBox).css('backgroundColor', '#fff');
+		 return gradBox;
 	 }
 } 
