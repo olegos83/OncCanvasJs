@@ -195,7 +195,7 @@ var ColorChooser = function(type) {
 	
     //create combo box
     var combo = Dom.create('div', '', 'absolute', 5, 5);
-    var selectBox = Dom.createComboBox(['None', 'Colors', 'Custom colors']);
+    var selectBox = Dom.createComboBox(['None', 'Colors', 'Custom colors', 'Gradient']);
     
     Dom(selectBox).css('width', '256px').prop('onchange', function(e) {
     	var v = e.target.value;

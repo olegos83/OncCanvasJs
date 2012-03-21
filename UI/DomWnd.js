@@ -152,7 +152,7 @@ var DomWnd = function(title, x, y, width, height) {
      **/
     DomWnd.prototype.close = function() {
         var body = document.getElementsByTagName("body")[0];
-        try { body.removeChild(this._wnd); } catch (err) {}
+        try { body.removeChild(this._wnd); } catch (err) { }
     }
 
     /**
@@ -170,7 +170,7 @@ var DomWnd = function(title, x, y, width, height) {
      * @param {Elem} elem - control to remove.
      **/
     DomWnd.prototype.removeControl = function(elem) {
-        try { this._body.removeChild(elem); } catch (err) {}
+        try { this._body.removeChild(elem); } catch (err) { }
     }
     
     /**
@@ -178,12 +178,8 @@ var DomWnd = function(title, x, y, width, height) {
      * @method clear
      **/
     DomWnd.prototype.clear = function() {
-        //get body children
-        var children = this._body.childNodes;
-        var len = children.length;
-        
-        //remove them
-        for (var i = 0; i < len; i++) this.removeControl(children[i]);
+        var wndBody = this._body;
+        while (wndBody.firstChild) wndBody.removeChild(wndBody.firstChild);
     }
     
     /**
