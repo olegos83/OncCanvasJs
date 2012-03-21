@@ -417,6 +417,31 @@ var ColorPicker = {
       * Init gradient editor.
       **/
 	 initGradientEditor: function(x, y, width, height) {
+		 //init vars
+		 var grRot = 0; var grScale = 1; var grType = 'linear';
+		 
+		 //fill presets method
+		 function fillPresets(num, sz) {
+			 var cy = sz / 2;
+			 presets.innerHTML = '';
+			 
+			 for (var i = 0; i < num; i++) {
+				 var cv = Dom.create('canvas', '', '', '', '', sz, sz);
+				 Dom(cv).css({border: '1px solid', marginLeft: '2px', marginTop: '2px'}).prop({width:sz, height:sz});
+				 presets.appendChild(cv);
+				 
+				 var gr = new Gradient(grType);
+				 gr.rotation = grRot; gr.scale = grScale;
+				 gr.addColorStop(0, '#ff0000');
+				 gr.addColorStop(0.5, '#0000ff');
+				 gr.addColorStop(1, '#00ff00');
+				 
+				 var ctx = cv.getContext("2d");
+				 ctx.fillStyle = gr.toCanvasGradient(ctx, new Point(0, cy), new Point(sz, cy));
+				 ctx.fillRect(0, 0, sz, sz);
+			 }
+		 }
+		 
 		 //create gradient editor main container
 		 var gradEditor = Dom.create('div', '', 'absolute', x, y, width, height);
 		 Dom(gradEditor).css('border', '1px solid');
@@ -427,22 +452,29 @@ var ColorPicker = {
 		 gradEditor.appendChild(presets);
 		 
 		 //create gradient canvases
-		 var grRot = 0; var grScale = 1; var grType = 'linear';
-		 for (var i = 0; i < 125; i++) {
-			 var cv = Dom.create('canvas', '', '', '', '', 35, 35);
-			 Dom(cv).css({border: '1px solid', marginLeft: '2px', marginTop: '2px'});
-			 presets.appendChild(cv);
-			 
-			 var gr = new Gradient(grType);
-			 gr.rotation = grRot;
-			 gr.scale = grScale;
-			 gr.addColorStop(0, '#ff0000');
-			 gr.addColorStop(1, '#00ff00');
-			 
-			 var ctx = cv.getContext("2d");
-			 ctx.fillStyle = gr.toCanvasGradient(ctx, new Point(0, 0), new Point(cv.width, 0));
-			 ctx.fillRect(0, 0, cv.width, cv.height);
-		 }
+		 fillPresets(50, 40);
+		 
+		 //create scale combo
+		 var scDiv = Dom.create('div', '', 'absolute', width - 90, 0, 95, 50);
+		 scDiv.innerHTML = 'Scale: ';
+		 
+		 var scCombo = Dom.createComboBox([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, '1.0',
+		                                   1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, '2.0']);
+		 Dom(scCombo).prop({
+			 value: '1.0',
+			 onchange: function() {
+				 grScale = scCombo.value;
+				 fillPresets(50, 40);
+			 }
+		 }); 
+		 
+		 scDiv.appendChild(scCombo);
+		 gradEditor.appendChild(scDiv);
+		 
+		 //create rotation selector
+		 
+		 //create gradient editor sliders box
+		 
 		 
 		 //return editor container as element
 		 return gradEditor;
