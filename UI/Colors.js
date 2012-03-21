@@ -328,23 +328,27 @@ var Gradient = function(type, colorStops) {
 	Gradient.prototype.removeColorStop = function(index) {
 		delete this._colorStops[index];
 	}
-
+	
 	/**
-	 * Setup Gradient to fill the Shaper in specified layer.
-	 * @method setup
-	 * @param {Shaper} obj - Shaper instance.
-	 * @param {Layer} layer - layer.
-	 * @return {CanvasGradient} CanvasGradient instance, ready to fill Shaper instance.
+	 * Apply Gradient to canvas gradient instance - simply add all color stops.
+	 * @method setStops
+	 * @param {CanvasGradient} gr - gradient.
 	 **/
-	Gradient.prototype.setup = function(obj, layer) {
+	Gradient.prototype.setStops = function(gr) {
+		for (var stop in this._colorStops) gr.addColorStop(stop, this._colorStops[stop]);
+	}
+	
+	/**
+	 * Convert to CanvasGradient from start to end point.
+	 * @method toCanvasGradient
+	 * @param {CanvasRenderingContext2d} ctx - canvas context.
+	 * @param {Point} from - start point.
+	 * @param {Point} to - end point.
+	 * @return {CanvasGradient} CanvasGradient instance.
+	 **/
+	Gradient.prototype.toCanvasGradient = function(ctx, from, to) {
 		//init vars
-		var r = obj.getBoundRect();
-		var c = r.getCenter();
-		var ctx = layer.ctx;
-		
-		//setup gradient line
-		var from = new Point(r.from.x, c.y);
-		var to = new Point(r.to.x, c.y);
+		var c = new Point((from.x + to.x) / 2, (from.y + to.y) / 2);
 		
 		//create gradient instance
 		var gr = null;
@@ -371,12 +375,19 @@ var Gradient = function(type, colorStops) {
 	}
 	
 	/**
-	 * Apply Gradient to canvas gradient instance - simply add all color stops.
-	 * @method setStops
-	 * @param {CanvasGradient} gr - gradient.
+	 * Setup Gradient to fill the Shaper in specified layer.
+	 * @method setup
+	 * @param {Shaper} obj - Shaper instance.
+	 * @param {Layer} layer - layer.
+	 * @return {CanvasGradient} CanvasGradient instance, ready to fill Shaper instance.
 	 **/
-	Gradient.prototype.setStops = function(gr) {
-		for (var stop in this._colorStops) gr.addColorStop(stop, this._colorStops[stop]);
+	Gradient.prototype.setup = function(obj, layer) {
+		//init vars
+		var r = obj.getBoundRect();
+		var c = r.getCenter();
+		
+		//return gradient instance
+		return this.toCanvasGradient(layer.ctx, new Point(r.from.x, c.y), new Point(r.to.x, c.y));
 	}
 	
     /**

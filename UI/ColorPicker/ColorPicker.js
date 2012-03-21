@@ -417,8 +417,34 @@ var ColorPicker = {
       * Init gradient editor.
       **/
 	 initGradientEditor: function(x, y, width, height) {
-		 var gradBox = Dom.create('div', '', 'absolute', x, y, width, height);
-		 Dom(gradBox).css('backgroundColor', '#fff');
-		 return gradBox;
+		 //create gradient editor main container
+		 var gradEditor = Dom.create('div', '', 'absolute', x, y, width, height);
+		 Dom(gradEditor).css('border', '1px solid');
+		 
+		 //create presets container
+		 var presets = Dom.create('div', '', 'absolute', 0, 0, width - 100, height - 70, '', 'auto');
+		 Dom(presets).css('border', '1px solid');
+		 gradEditor.appendChild(presets);
+		 
+		 //create gradient canvases
+		 var grRot = 0; var grScale = 1; var grType = 'linear';
+		 for (var i = 0; i < 125; i++) {
+			 var cv = Dom.create('canvas', '', '', '', '', 35, 35);
+			 Dom(cv).css({border: '1px solid', marginLeft: '2px', marginTop: '2px'});
+			 presets.appendChild(cv);
+			 
+			 var gr = new Gradient(grType);
+			 gr.rotation = grRot;
+			 gr.scale = grScale;
+			 gr.addColorStop(0, '#ff0000');
+			 gr.addColorStop(1, '#00ff00');
+			 
+			 var ctx = cv.getContext("2d");
+			 ctx.fillStyle = gr.toCanvasGradient(ctx, new Point(0, 0), new Point(cv.width, 0));
+			 ctx.fillRect(0, 0, cv.width, cv.height);
+		 }
+		 
+		 //return editor container as element
+		 return gradEditor;
 	 }
 } 
