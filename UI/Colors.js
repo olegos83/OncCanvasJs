@@ -256,8 +256,8 @@ var Color = function(type, val) {
  * @author OlegoS
  *
  * @constructor
- * @param {Object} colorStops - array of color stops.
  * @param {String} type - gradient type. Can be 'linear' or 'radial'.
+ * @param {Object} colorStops - array of color stops.
  **/
 var Gradient = function(type, colorStops) {
 //DO NOT USE PRIVATE PROPERTIES DIRECTLY - RESULT IS UNPREDICTABLE
