@@ -22,7 +22,7 @@
 * @author OlegoS
 *
 * @constructor
-* @param {String} id - string id of the Bitmap. Default is "".
+* @param {String} id - string id of the Text. Default is "".
 * @param {String} text - text string. Default is "".
 * @param {Object} font - font object. Default values are below.
 * 				  var font = {
@@ -43,31 +43,38 @@ var Text = function(id, text, font) {
     
     /**
      * Font object.
-     * @property fontFace
-     * @type {String}
+     * @property font
+     * @type {Object}
      **/
     this.font = { face: "Verdana", size: "12px", weight: "normal", style: "normal" };
     if (font) for (var f in font) this.font[f] = font[f];
     
-//measure initial text size
-    var ctx = Dom.create("canvas").getContext('2d');
-    ctx.font = this.font.style + ' ' + this.font.weight + ' ' + this.font.size + ' ' + this.font.face;
-    var w = ctx.measureText(this.text).width;
-    var h = parseInt(this.font.size) / 2 + parseInt(this.font.size) / 4;
-    
 //initialize base class
-    Shaper.call(this, id, new Rectangle(new Point(0, 0), new Point(w, -h)).toPolygon());
+    var sz = this.getTextSize();
+    Shaper.call(this, id, new Rectangle(new Point(0, 0), new Point(sz.width, -sz.height)).toPolygon());
 }
 
 //extend from Shaper, set constructor and delete unnessesary properties
 Text.prototype = new Shaper();
+for (var p in Text.prototype) if (Text.prototype.hasOwnProperty(p)) delete Text.prototype[p];
 Text.prototype.constructor = Text;
-delete Text.prototype._eventListener;
 
 
 //public methods:
+	/**
+	 * Get text size.
+	 * @method getTextSize
+	 * @return {Object} text metrics - {width: width, height: height}.
+	 **/
+	Text.prototype.getTextSize = function() {
+		var ctx = Dom.create("canvas").getContext('2d');
+	    ctx.font = this.font.style + ' ' + this.font.weight + ' ' + this.font.size + ' ' + this.font.face;
+	    
+	    return {width: ctx.measureText(this.text).width, height: parseInt(this.font.size) / 2 + parseInt(this.font.size) / 4};
+	}
+
     /**
-     * Draw function. Is called by layer to draw this Bitmap.
+     * Draw function. Is called by layer to draw this Text.
      * @method draw
      **/
 	Text.prototype.draw = function() {
@@ -75,7 +82,7 @@ delete Text.prototype._eventListener;
         if (!this.layer) return;
         if (!this.visible) return;
         
-        //draw shape
+        //init context and transforms
         var ctx = this.layer.ctx;
         var m = this.matrix;
         
@@ -83,12 +90,21 @@ delete Text.prototype._eventListener;
         ctx.setTransform(m[0][0], m[0][1], m[1][0], m[1][1], m[2][0], m[2][1]);
         ctx.font = this.font.style + ' ' + this.font.weight + ' ' + this.font.size + ' ' + this.font.face;
         
+        //stroke and fill
         if (this.color.stroke != "") {
+        	if (this.color.stroke instanceof Gradient) {
+            	this.color.stroke = this.color.stroke.setup(this, this.layer);
+            }
+        	
         	ctx.strokeStyle = this.color.stroke;
         	ctx.strokeText(this.text, 0, 0);
         }
         
         if (this.color.fill != "") {
+        	if (this.color.fill instanceof Gradient) {
+            	this.color.fill = this.color.fill.setup(this, this.layer);
+            }
+        	
         	ctx.fillStyle = this.color.fill;
         	ctx.fillText(this.text, 0, 0);
         }
@@ -98,9 +114,9 @@ delete Text.prototype._eventListener;
     
     
     /**
-     * Clone this Bitmap.
+     * Clone this Text.
      * @method clone
-     * @return {Bitmap} a cloned Bitmap.
+     * @return {Text} a cloned Text.
      **/
 	Text.prototype.clone = function() {
         /*var b = new Bitmap('copy_' + this.id, this.image.src, this.image.width, this.image.height);
