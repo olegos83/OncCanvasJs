@@ -119,7 +119,7 @@ var BgrChooser = function() {
     //create color select
     var colorSelect = Dom.create('div', '', 'absolute', 215, 299, 420, 160);
     
-    buildSafePalette(1, colorSelect, function(e) {
+    ColorPicker.attachSafePicker(1, colorSelect, function(e) {
     	Dom(stage.layer.canvas).css('backgroundColor', e.target.style.backgroundColor);
     }, 11);
     
