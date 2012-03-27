@@ -13,7 +13,7 @@ function main() {
     stage.trBox = new TrBox();
     
     
-    //tests
+    //gradient test
     var p = new Point(300, 200);
     var r = new Rectangle();
     r.placeAroundPoint(p, 150);
@@ -32,4 +32,10 @@ function main() {
     fill.scale = 1.6;
     //fill.rotation = -0.5;
     o.color.fill = o.color.stroke = fill;
+    
+    //text test
+    var t = new Text('TextForTest', 'Text for test', {size: '100px'});
+    t.move(100, 170);
+    console.log(t);
+    stage.addObject(t);
 }
