@@ -45,8 +45,8 @@ var Bitmap = function(id, src, width, height) {
 
 //extend from Shaper, set constructor and delete unnessesary properties
 Bitmap.prototype = new Shaper();
+for (var p in Bitmap.prototype) if (Bitmap.prototype.hasOwnProperty(p)) delete Bitmap.prototype[p];
 Bitmap.prototype.constructor = Bitmap;
-delete Bitmap.prototype._eventListener;
 
 
 //public methods:
