@@ -455,7 +455,7 @@ var ColorPicker = {
 		 fillPresets(50, 40);
 		 
 		 //create scale combo
-		 var scDiv = Dom.create('div', '', 'absolute', width - 90, 0, 95, 50);
+		 /*var scDiv = Dom.create('div', '', 'absolute', width - 90, 0, 95, 50);
 		 scDiv.innerHTML = 'Scale: ';
 		 
 		 var scCombo = Dom.createComboBox([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, '1.0',
@@ -469,7 +469,7 @@ var ColorPicker = {
 		 }); 
 		 
 		 scDiv.appendChild(scCombo);
-		 gradEditor.appendChild(scDiv);
+		 gradEditor.appendChild(scDiv);*/
 		 
 		 //create rotation selector
 		 

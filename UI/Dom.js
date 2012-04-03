@@ -58,8 +58,8 @@ var Dom = function(el) {
         if ( (x != null) || (x != '') ) this.css('left', x + 'px');
         if ( (y != null) || (y != '') ) this.css('top', y + 'px');
         
-        if ( (width != null) || (width != '') ) this.css('width', width + 'px');
-        if ( (height != null) || (height != '') ) this.css('height', height + 'px');
+        if ( (width != null) || (width != '') ) this.width(width);
+        if ( (height != null) || (height != '') ) this.height(height);
         
         if (display) this.css('display', display);
         if (overflow) this.css('overflow', overflow);
@@ -84,8 +84,7 @@ var Dom = function(el) {
     	
     	if (optArr) for(var i = 0; i < optArr.length; i++) {
     		var opt = this.create('option');
-    		this.prop('innerHTML', optArr[i]);
-    		combo.appendChild(opt);
+    		this.prop('innerHTML', optArr[i]).addTo(combo);
     	}
     	
     	return combo;
@@ -158,6 +157,38 @@ var Dom = function(el) {
             return this;
     	} else {
     		return new Point(parseInt(this.el.style.left), parseInt(this.el.style.top));
+    	}
+    }
+    
+    /**
+     * Get/Set DOM element css width.
+     * @method width
+     * @static
+     * @param {Number} width - width to set.
+     * @return {Object} this - can be chained, but if no arguments are passed - return current element width.
+     **/
+    Dom.width = function(width) {
+    	if (width) {
+        	this.css('width', width + 'px');
+            return this;
+    	} else {
+    		return parseInt(this.el.style.width);
+    	}
+    }
+    
+    /**
+     * Get/Set DOM element css height.
+     * @method height
+     * @static
+     * @param {Number} height - height to set.
+     * @return {Object} this - can be chained, but if no arguments are passed - return current element height.
+     **/
+    Dom.height = function(height) {
+    	if (height) {
+        	this.css('height', height + 'px');
+            return this;
+    	} else {
+    		return parseInt(this.el.style.height);
     	}
     }
     
@@ -293,5 +324,43 @@ var Dom = function(el) {
     	  }
     	  
     	  return Dom(el);
+       }
+       
+      /**
+       * Add children to element.
+       * @method add
+       * @static
+       * @param {Element} children - children to add.
+       * @return {Dom} this - can be chained.
+       **/
+       Dom.add = function(children) {
+    	   var l = arguments.length;
+    	   for (var i = 0; i < l; i++) this.el.appendChild(arguments[i]);
+    	   return this;
+       }
+       
+      /**
+       * Add element to specified parent.
+       * @method addTo
+       * @static
+       * @param {Element} parent - parent element.
+       * @return {Dom} this - can be chained.
+       **/
+       Dom.addTo = function(parent) {
+    	   parent.appendChild(this.el);
+    	   return this;
+       }
+       
+      /**
+       * Remove children from element.
+       * @method remove
+       * @static
+       * @param {Element} children - children to remove.
+       * @return {Dom} this - can be chained.
+       **/
+       Dom.remove = function(children) {
+    	   var l = arguments.length;
+    	   for (var i = 0; i < l; i++) this.el.removeChild(arguments[i]);
+    	   return this;
        }
        

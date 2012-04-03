@@ -31,63 +31,55 @@
 var DomWnd = function(title, x, y, width, height) {
 	//init vars
 	var self = this;
-	var body = document.getElementsByTagName("body")[0];
 	
 //DO NOT USE PRIVATE PROPERTIES DIRECTLY - RESULT IS UNPREDICTABLE
 //private properties:
     /**
     * Window container.
     * @property _wnd
-    * @type Elem
+    * @type Element
     * @private
     **/
 	this._wnd = Dom.create('div', title, 'absolute', x, y, width, height + 20);
-	Dom(this._wnd).css('border', '1px solid');
-	body.appendChild(this._wnd);
+	Dom(this._wnd).css('border', '1px solid').addTo(document.body);
 
     /**
     * Window title bar.
     * @property _title
-    * @type Elem
+    * @type Element
     * @private
     **/
 	this._title = Dom.create('div', '', '', 0, 0, width, 20, 'block');
-	Dom(this._title).css('backgroundColor', '#cccccc');
-	this._wnd.appendChild(this._title);
+	Dom(this._title).css('backgroundColor', '#cccccc').addTo(this._wnd);
     
     /**
     * Window title text.
     * @property _titleText
-    * @type Elem
+    * @type Element
     * @private
     **/
     this._titleText = Dom.create('span');
-    Dom(this._titleText).prop('innerHTML', title).css({marginLeft: '4px', cursor: 'default'});
-    this._title.appendChild(this._titleText);
+    Dom(this._titleText).prop('innerHTML', title).css({marginLeft: '4px', cursor: 'default'}).addTo(this._title);
    
     /**
     * Window close button.
     * @property _closeBtn
-    * @type Elem
+    * @type Element
     * @private
     **/
     this._closeBtn = Dom.create('img', '', 'relative', width - this._titleText.offsetWidth - 23, 2, 15, 15);
-    Dom(this._closeBtn).attr("src", "UI/close_btn.png");
-    this._title.appendChild(this._closeBtn);
-    
-    this._closeBtn.addEventListener("click", function(e) {
+    Dom(this._closeBtn).attr("src", "UI/close_btn.png").addEvent(MouseEvent.DOWN, function(e) {
         self.close();
-    }, false);
+    }).addTo(this._title);
 
     /**
     * Window body - all controls are added here.
     * @property _body
-    * @type Elem
+    * @type Element
     * @private
     **/
     this._body = Dom.create('div', '', 'absolute', 0, 20, width, parseInt(this._wnd.style.height) - 20, 'block');
-    Dom(this._body).css('backgroundColor', '#eeeeee');
-    this._wnd.appendChild(this._body);
+    Dom(this._body).css('backgroundColor', '#eeeeee').addTo(this._wnd);
     
     //set drag and drop handlers
     var pos = null;
@@ -112,7 +104,7 @@ var DomWnd = function(title, x, y, width, height) {
     }
     
     //now turn drag on
-    this._title.addEventListener(MouseEvent.DOWN, onMouseDown, false);
+    Dom(this._title).addEvent(MouseEvent.DOWN, onMouseDown);
 }
 
 
@@ -130,19 +122,19 @@ var DomWnd = function(title, x, y, width, height) {
     /**
      * Get window width.
      * @method getWidth
-     * @return {Number} - width of the window.
+     * @return {Number} - window width.
      **/
     DomWnd.prototype.getWidth = function() {
-        return parseInt(this._wnd.style.width);
+        return Dom(this._body).width();
     }
     
     /**
      * Get window height.
      * @method getHeight
-     * @return {Number} - height of the window.
+     * @return {Number} - window height.
      **/
     DomWnd.prototype.getHeight = function() {
-        return parseInt(this._body.style.height);
+    	return Dom(this._body).height();
     }
     
     /**
@@ -151,14 +143,13 @@ var DomWnd = function(title, x, y, width, height) {
      * @method close
      **/
     DomWnd.prototype.close = function() {
-        var body = document.getElementsByTagName("body")[0];
-        try { body.removeChild(this._wnd); } catch (err) { }
+        try { document.body.removeChild(this._wnd); } catch (err) { }
     }
 
     /**
      * Add control to window.
      * @method addControl
-     * @param {Elem} elem - control to add.
+     * @param {Element} elem - control to add.
      **/
     DomWnd.prototype.addControl = function(elem) {
         this._body.appendChild(elem);
@@ -167,7 +158,7 @@ var DomWnd = function(title, x, y, width, height) {
     /**
      * Remove control from window.
      * @method removeControl
-     * @param {Elem} elem - control to remove.
+     * @param {Element} elem - control to remove.
      **/
     DomWnd.prototype.removeControl = function(elem) {
         try { this._body.removeChild(elem); } catch (err) { }
