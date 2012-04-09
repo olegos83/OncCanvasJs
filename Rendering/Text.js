@@ -119,9 +119,10 @@ Text.prototype.constructor = Text;
      * @return {Text} a cloned Text.
      **/
 	Text.prototype.clone = function() {
-        /*var b = new Bitmap('copy_' + this.id, this.image.src, this.image.width, this.image.height);
-        b.matrix.multiply(this.matrix);
-        return b;*/
+        var t = new Text('copy_' + this.id, this.text, this.font);
+        t.color.stroke = this.color.stroke; t.color.fill = this.color.fill;
+        t.matrix.multiply(this.matrix);
+        return t;
     }
 
     /**

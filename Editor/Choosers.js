@@ -69,10 +69,7 @@ var ClipChooser = function() {
     });
     
     //add controls
-    imgListWnd.addControl(catSelector);
-    imgListWnd.addControl(imgList);
-    imgListWnd.addControl(selectBtn);
-    imgListWnd.addControl(cancelBtn);
+    imgListWnd.addControl([catSelector, imgList, selectBtn, cancelBtn]);
 }
 
 
@@ -158,11 +155,7 @@ var BgrChooser = function() {
     });
     
     //add controls
-    imgListWnd.addControl(catSelector);
-    imgListWnd.addControl(imgList);
-    imgListWnd.addControl(colorSelect);
-    imgListWnd.addControl(selectBtn);
-    imgListWnd.addControl(cancelBtn);
+    imgListWnd.addControl([catSelector, imgList, colorSelect, selectBtn, cancelBtn]);
 }
 
 
