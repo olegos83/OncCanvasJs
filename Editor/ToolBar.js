@@ -9,6 +9,9 @@ function onUpPanelClick(event) {
 	
 	//background chooser
 	if (id == 'background') BgrChooser();
+	
+	//text editor
+	if (id == 'add_text') TextEditor('DemoText');
 }
 
 //create new arrow

@@ -19,7 +19,7 @@ var ClipChooser = function() {
                   'heloween.png', 'sun.png'];
     
     for (var i = 0; i < artArr.length; i++) {
-        img = Dom.create('img', '', '', '', '', 175, 130);
+        var img = Dom.create('img', '', '', '', '', 175, 130);
         
         Dom(img).prop({
         	src: 'Editor/clipart/img/' + artArr[i],
@@ -33,9 +33,7 @@ var ClipChooser = function() {
         		if (selectedClip) Dom(selectedClip).css('borderColor', '#fff');
         		selectedClip = e.target;
         	}
-        }).css({margin: '5px', border: '1px solid #fff'});
-        
-        imgList.appendChild(img);
+        }).css({margin: '5px', border: '1px solid #fff'}).addTo(imgList);
     }
     
     //setup window
@@ -94,7 +92,7 @@ var BgrChooser = function() {
                   'heloween.png', 'sun.png'];
     
     for (var i = 0; i < artArr.length; i++) {
-        img = Dom.create('img', '', '', '', '', 175, 130);
+        var img = Dom.create('img', '', '', '', '', 175, 130);
         
         Dom(img).prop({
         	src: 'Editor/clipart/img/' + artArr[i],
@@ -108,9 +106,7 @@ var BgrChooser = function() {
         		if (selectedClip) Dom(selectedClip).css('borderColor', '#fff');
         		selectedClip = e.target;
         	}
-        }).css({margin: '5px', border: '1px solid #fff'});
-        
-        imgList.appendChild(img);
+        }).css({margin: '5px', border: '1px solid #fff'}).addTo(imgList);
     }
     
     //create color select
@@ -251,4 +247,69 @@ var ColorChooser = function(type) {
 	function clearWnd() {
 		wnd.removeControl([picker, colorSelect, gradientEditor]);
 	}
+}
+
+
+//TEXT EDITOR
+var TextEditor = function(text) {
+	//init vars
+	var font = 'Arial', size = '18px';
+	
+	//create window
+	if (TextEditor.wnd) TextEditor.wnd.close();
+    var wnd = TextEditor.wnd = new DomWnd('Edit text', 200, 60, 700, 330);
+	
+	//create controls
+    var combo = Dom.create('div', '', 'absolute', 5, 5);
+    wnd.addControl(combo);
+    
+    //font select
+    var fontBox = Dom.createComboBox(['Arial', 'Times New Roman', 'Courier', 'Verdana']);
+    
+    Dom(fontBox).width(150).prop('onchange', function(e) {
+    	font = e.target.value;
+    	Dom(textInput).css('fontFamily', font);
+    }).prop('value', font).addTo(combo);
+    
+    //size select
+    var szArr = [];
+    for (var i = 8; i <= 196; i += 2) szArr.push(i + 'px');
+    var sizeBox = Dom.createComboBox(szArr);
+    
+    Dom(sizeBox).width(70).css('marginLeft', '5px').prop('onchange', function(e) {
+    	size = e.target.value;
+    	Dom(textInput).css('fontSize', size);
+    }).prop('value', size).addTo(combo);
+    
+	//create textinput
+    var textInput = Dom.create('input', '', 'absolute', 5, 35, wnd.getWidth() - 14);
+    
+    Dom(textInput).prop('value', text).css({
+    	border: 'none',
+    	outline: 'none',
+    	background: 'none',
+    	fontFamily: font,
+    	fontSize: size
+    });
+    
+    //create buttons
+    var selectBtn = Dom.create('button', '', 'absolute', 5, wnd.getHeight() - 30, 100, 25);
+    
+    Dom(selectBtn).prop({
+    	innerHTML: 'Place', 
+    	onclick: function(e) {
+    		wnd.close();
+    	} 
+    });
+    
+    var cancelBtn = Dom.create('button', '', 'absolute', 110, wnd.getHeight() - 30, 100, 25);
+    
+    Dom(cancelBtn).prop({
+    	innerHTML: 'Cancel', 
+    	onclick: function(e) {
+    		wnd.close();
+    	} 
+    });
+    
+    wnd.addControl([textInput, selectBtn, cancelBtn]);
 }
