@@ -143,7 +143,7 @@ var DomWnd = function(title, x, y, width, height) {
      * @method close
      **/
     DomWnd.prototype.close = function() {
-        try { document.body.removeChild(this._wnd); } catch (err) { }
+    	try { Dom(document.body).remove(this._wnd); } catch (err) { }
     }
 
     /**
@@ -152,7 +152,7 @@ var DomWnd = function(title, x, y, width, height) {
      * @param {Element} elem - control to add.
      **/
     DomWnd.prototype.addControl = function(elem) {
-        this._body.appendChild(elem);
+    	Dom(this._body).add(elem);
     }
     
     /**
@@ -161,7 +161,7 @@ var DomWnd = function(title, x, y, width, height) {
      * @param {Element} elem - control to remove.
      **/
     DomWnd.prototype.removeControl = function(elem) {
-        try { this._body.removeChild(elem); } catch (err) { }
+    	try { Dom(this._body).remove(elem); } catch (err) { }
     }
     
     /**
@@ -169,8 +169,8 @@ var DomWnd = function(title, x, y, width, height) {
      * @method clear
      **/
     DomWnd.prototype.clear = function() {
-        var wndBody = this._body;
-        while (wndBody.firstChild) wndBody.removeChild(wndBody.firstChild);
+        var bd = this._body;
+        while (bd.firstChild) Dom(bd).remove(bd.firstChild);
     }
     
     /**

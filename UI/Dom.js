@@ -334,8 +334,16 @@ var Dom = function(el) {
        * @return {Dom} this - can be chained.
        **/
        Dom.add = function(children) {
-    	   var l = arguments.length;
-    	   for (var i = 0; i < l; i++) this.el.appendChild(arguments[i]);
+    	   var l = 0, i = 0;
+    	   
+    	   if (children instanceof Array) {
+    		   l = children.length;
+    		   for (i = 0; i < l; i++) this.el.appendChild(children[i]);
+    	   } else {
+    		   l = arguments.length;
+        	   for (i = 0; i < l; i++) this.el.appendChild(arguments[i]);
+    	   }
+    	   
     	   return this;
        }
        
@@ -359,8 +367,16 @@ var Dom = function(el) {
        * @return {Dom} this - can be chained.
        **/
        Dom.remove = function(children) {
-    	   var l = arguments.length;
-    	   for (var i = 0; i < l; i++) this.el.removeChild(arguments[i]);
+    	   var l = 0, i = 0;
+    	   
+    	   if (children instanceof Array) {
+    		   l = children.length;
+    		   for (i = 0; i < l; i++) this.el.removeChild(children[i]);
+    	   } else {
+    		   l = arguments.length;
+        	   for (i = 0; i < l; i++) this.el.removeChild(arguments[i]);
+    	   }
+    	   
     	   return this;
        }
        
