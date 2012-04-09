@@ -371,10 +371,10 @@ var Dom = function(el) {
     	   
     	   if (children instanceof Array) {
     		   l = children.length;
-    		   for (i = 0; i < l; i++) this.el.removeChild(children[i]);
+    		   for (i = 0; i < l; i++) try { this.el.removeChild(children[i]); } catch(err) { }
     	   } else {
     		   l = arguments.length;
-        	   for (i = 0; i < l; i++) this.el.removeChild(arguments[i]);
+        	   for (i = 0; i < l; i++) try { this.el.removeChild(arguments[i]); } catch(err) { }
     	   }
     	   
     	   return this;

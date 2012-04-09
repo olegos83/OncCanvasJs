@@ -143,25 +143,25 @@ var DomWnd = function(title, x, y, width, height) {
      * @method close
      **/
     DomWnd.prototype.close = function() {
-    	try { Dom(document.body).remove(this._wnd); } catch (err) { }
+    	Dom(document.body).remove(this._wnd);
     }
 
     /**
-     * Add control to window.
+     * Add controls to window.
      * @method addControl
-     * @param {Element} elem - control to add.
+     * @param {Element} elem - control or array of controls to add.
      **/
     DomWnd.prototype.addControl = function(elem) {
     	Dom(this._body).add(elem);
     }
     
     /**
-     * Remove control from window.
+     * Remove controls from window.
      * @method removeControl
-     * @param {Element} elem - control to remove.
+     * @param {Element} elem - control or array of controls to remove.
      **/
     DomWnd.prototype.removeControl = function(elem) {
-    	try { Dom(this._body).remove(elem); } catch (err) { }
+    	Dom(this._body).remove(elem);
     }
     
     /**

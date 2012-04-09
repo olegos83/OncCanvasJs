@@ -256,8 +256,6 @@ var ColorChooser = function(type) {
 	
 	//clear window method
 	function clearWnd() {
-		wnd.removeControl(picker);
-		wnd.removeControl(colorSelect);
-		wnd.removeControl(gradientEditor);
+		wnd.removeControl([picker, colorSelect, gradientEditor]);
 	}
 }
