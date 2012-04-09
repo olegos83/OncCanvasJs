@@ -253,7 +253,7 @@ var ColorChooser = function(type) {
 //TEXT EDITOR
 var TextEditor = function(text) {
 	//init vars
-	var font = 'Arial', size = '18px';
+	var face = 'Arial', size = '18px';
 	
 	//create window
 	if (TextEditor.wnd) TextEditor.wnd.close();
@@ -267,9 +267,9 @@ var TextEditor = function(text) {
     var fontBox = Dom.createComboBox(['Arial', 'Times New Roman', 'Courier', 'Verdana']);
     
     Dom(fontBox).width(150).prop('onchange', function(e) {
-    	font = e.target.value;
-    	Dom(textInput).css('fontFamily', font);
-    }).prop('value', font).addTo(combo);
+    	face = e.target.value;
+    	Dom(textInput).css('fontFamily', face);
+    }).prop('value', face).addTo(combo);
     
     //size select
     var szArr = [];
@@ -288,7 +288,7 @@ var TextEditor = function(text) {
     	border: 'none',
     	outline: 'none',
     	background: 'none',
-    	fontFamily: font,
+    	fontFamily: face,
     	fontSize: size
     });
     
@@ -298,7 +298,14 @@ var TextEditor = function(text) {
     Dom(selectBtn).prop({
     	innerHTML: 'Place', 
     	onclick: function(e) {
-    		wnd.close();
+    		if (textInput.value == '') return;
+    		
+    		var t = new Text('text', textInput.value, {face: face, size: size});
+    		stage.addObject(t);
+	        t.move(stage.stageWidth / 2 - t.getWidth() / 2, stage.stageHeight / 2 - t.getHeight() / 2);
+	        stage.trBox.apply(t);
+	        
+	        wnd.close();
     	}
     });
     
