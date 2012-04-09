@@ -138,7 +138,7 @@ var BgrChooser = function() {
 	    	});
 	        
 	    	imgListWnd.close();
-    	} 
+    	}
     });
     
     var cancelBtn = Dom.create('button', '', 'absolute', 110, imgListWnd.getHeight() - 30, 100, 25);
@@ -147,7 +147,7 @@ var BgrChooser = function() {
     	innerHTML: 'Cancel', 
     	onclick: function(e) {
     		imgListWnd.close();
-    	} 
+    	}
     });
     
     //add controls
@@ -299,7 +299,7 @@ var TextEditor = function(text) {
     	innerHTML: 'Place', 
     	onclick: function(e) {
     		wnd.close();
-    	} 
+    	}
     });
     
     var cancelBtn = Dom.create('button', '', 'absolute', 110, wnd.getHeight() - 30, 100, 25);
@@ -308,7 +308,7 @@ var TextEditor = function(text) {
     	innerHTML: 'Cancel', 
     	onclick: function(e) {
     		wnd.close();
-    	} 
+    	}
     });
     
     wnd.addControl([textInput, selectBtn, cancelBtn]);
