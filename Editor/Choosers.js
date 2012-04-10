@@ -251,9 +251,18 @@ var ColorChooser = function(type) {
 
 
 //TEXT EDITOR
-var TextEditor = function(text) {
+var TextEditor = function(textObj) {
 	//init vars
-	var face = 'Arial', size = '18px';
+	var isNew = 1, text = '', face = 'Arial', size = '42px', weight = 'normal', style = 'normal';
+	
+	if (textObj && textObj.text) {
+		isNew = 0;
+		text = textObj.text;
+		face = textObj.font.face;
+		size = textObj.font.size;
+		weight = textObj.font.weight;
+		style = textObj.font.style;
+	}
 	
 	//create window
 	if (TextEditor.wnd) TextEditor.wnd.close();
@@ -273,7 +282,8 @@ var TextEditor = function(text) {
     
     //size select
     var szArr = [];
-    for (var i = 8; i <= 196; i += 2) szArr.push(i + 'px');
+    for (var i = 8; i <= 198; i += 2) szArr.push(i + 'px');
+    
     var sizeBox = Dom.createComboBox(szArr);
     
     Dom(sizeBox).width(70).css('marginLeft', '5px').prop('onchange', function(e) {
@@ -281,16 +291,64 @@ var TextEditor = function(text) {
     	Dom(textInput).css('fontSize', size);
     }).prop('value', size).addTo(combo);
     
+    //bold and italic buttons
+    var boldBtn = Dom.create('button');
+    
+    Dom(boldBtn).css({
+    	marginLeft: '5px',
+    	height: '24px',
+    	fontFamily: 'Verdana',
+    	fontWeight: 'bold'
+    }).prop({
+    	innerHTML: 'B',
+    	onclick: function(e) {
+    		weight = textInput.style.fontWeight;
+    		
+    		Dom(boldBtn).css('fontWeight', weight);
+    		if (weight == 'bold') weight = 'normal'; else weight = 'bold';
+    		
+    		Dom(textInput).css('fontWeight', weight);
+    	}
+    }).addTo(combo);
+    
+    var italicBtn = Dom.create('button');
+    
+    Dom(italicBtn).css({
+    	marginLeft: '3px',
+    	height: '24px',
+    	fontFamily: 'Verdana',
+    	fontStyle: 'italic'
+    }).prop({
+    	innerHTML: 'I',
+    	onclick: function(e) {
+    		style = textInput.style.fontStyle;
+    		
+    		Dom(italicBtn).css('fontStyle', style);
+    		if (style == 'italic') style = 'normal'; else style = 'italic';
+    		
+    		Dom(textInput).css('fontStyle', style);
+    	}
+    }).addTo(combo);
+    
 	//create textinput
-    var textInput = Dom.create('input', '', 'absolute', 5, 35, wnd.getWidth() - 14);
+    var textCont = Dom.create('div', '', 'absolute', 5, 35, wnd.getWidth() - 12, wnd.getHeight() - 70);
+    
+    Dom(textCont).css({
+    	border: '1px solid',
+    	background: "url('Editor/img/canv_bg.png')",
+    });
+    
+    var textInput = Dom.create('input', '', '', '', '', wnd.getWidth() - 12);
     
     Dom(textInput).prop('value', text).css({
     	border: 'none',
     	outline: 'none',
     	background: 'none',
     	fontFamily: face,
-    	fontSize: size
-    });
+    	fontSize: size,
+    	fontWeight: weight,
+    	fontStyle: style
+    }).addTo(textCont);
     
     //create buttons
     var selectBtn = Dom.create('button', '', 'absolute', 5, wnd.getHeight() - 30, 100, 25);
@@ -300,11 +358,17 @@ var TextEditor = function(text) {
     	onclick: function(e) {
     		if (textInput.value == '') return;
     		
-    		var t = new Text('text', textInput.value, {face: face, size: size});
-    		stage.addObject(t);
-	        t.move(stage.stageWidth / 2 - t.getWidth() / 2, stage.stageHeight / 2 - t.getHeight() / 2);
-	        stage.trBox.apply(t);
-	        
+    		if (isNew) {
+	    		var t = new Text('text', textInput.value, { face: face, size: size, weight: weight, style: style });
+	    		stage.addObject(t);
+		        t.move(stage.stageWidth / 2 - t.getWidth() / 2, stage.stageHeight / 2 - t.getHeight() / 2);
+		        stage.trBox.apply(t);
+    		} else {
+    			textObj.setText(textInput.value);
+    			textObj.setFont({ face: face, size: size, weight: weight, style: style });
+    			stage.layer.forceRedraw();
+    		}
+		    
 	        wnd.close();
     	}
     });
@@ -318,5 +382,5 @@ var TextEditor = function(text) {
     	}
     });
     
-    wnd.addControl([textInput, selectBtn, cancelBtn]);
+    wnd.addControl([textCont, selectBtn, cancelBtn]);
 }

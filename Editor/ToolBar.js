@@ -1,9 +1,10 @@
 //TOOLBAR
 //show clipart window
 function onUpPanelClick(event) {
+	//init vars
 	var id = event.target.id;
-	//console.log(id);
-
+    var obj = stage.trBox.selected;
+    
     //clipart chooser
 	if (id == 'clipart') ClipChooser();
 	
@@ -11,7 +12,7 @@ function onUpPanelClick(event) {
 	if (id == 'background') BgrChooser();
 	
 	//text editor
-	if (id == 'add_text') TextEditor('DemoText');
+	if (id == 'add_text') TextEditor(obj);
 }
 
 //create new arrow

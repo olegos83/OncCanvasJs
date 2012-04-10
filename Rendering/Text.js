@@ -62,6 +62,26 @@ Text.prototype.constructor = Text;
 
 //public methods:
 	/**
+	 * Set text.
+	 * @method setText
+	 * @param {Sting} text - text to set.
+	 **/
+	Text.prototype.setText = function(text) {
+		this.text = text;
+		this.updateShape();
+	}
+	
+	/**
+	 * Set font params.
+	 * @method setFont
+	 * @param {Object} font - font params to set.
+	 **/
+	Text.prototype.setFont = function(font) {
+		for (var f in font) this.font[f] = font[f];
+		this.updateShape();
+	}
+
+	/**
 	 * Get text size.
 	 * @method getTextSize
 	 * @return {Object} text metrics - {width: width, height: height}.
@@ -72,7 +92,19 @@ Text.prototype.constructor = Text;
 	    
 	    return {width: ctx.measureText(this.text).width, height: parseInt(this.font.size) / 2 + parseInt(this.font.size) / 4};
 	}
-
+	
+	/**
+	 * Update shape - needed when text or font are changed to recalculate internal shape.
+	 * @method updateShape
+	 **/
+	Text.prototype.updateShape = function() {
+		var sz = this.getTextSize();
+		var pt = this.shape.pointsArr;
+		
+		pt[1].x = pt[2].x = sz.width;
+		pt[2].y = pt[3].y = -sz.height;
+	}
+	
     /**
      * Draw function. Is called by layer to draw this Text.
      * @method draw
