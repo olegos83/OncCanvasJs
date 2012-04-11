@@ -427,8 +427,7 @@ var ColorPicker = {
 			 
 			 for (var i = 0; i < num; i++) {
 				 var cv = Dom.create('canvas', '', '', '', '', sz, sz);
-				 Dom(cv).css({border: '1px solid', marginLeft: '2px', marginTop: '2px'}).prop({width:sz, height:sz});
-				 presets.appendChild(cv);
+				 Dom(cv).css({border: '1px solid', marginLeft: '2px', marginTop: '2px'}).prop({width:sz, height:sz}).addTo(presets);
 				 
 				 var gr = new Gradient(grType);
 				 gr.rotation = grRot; gr.scale = grScale;
@@ -497,7 +496,6 @@ var ColorPicker = {
 			 }
 		 }).addTo(scaleSet);
 		 
-		 		 
 		 //create rotation set
 		 var rotationSet = Dom.create('div', '', 'absolute', 261, height - 58);
 		 Dom(rotationSet).prop('innerHTML', 'Rotation: ').addTo(gradEditor);
@@ -555,7 +553,8 @@ var ColorPicker = {
 		 }).addTo(typeSet);
 		 
 		 //create gradient editor sliders box
-		 
+		 var gradBox = Dom.create('canvas', '', 'absolute', 155, height - 25, 250, 40);
+		 Dom(gradBox).css('background', 'white').addTo(gradEditor);
 		 
 		 //return editor container as element
 		 return gradEditor;
