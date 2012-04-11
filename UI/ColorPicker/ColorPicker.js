@@ -444,34 +444,115 @@ var ColorPicker = {
 		 
 		 //create gradient editor main container
 		 var gradEditor = Dom.create('div', '', 'absolute', x, y, width, height);
-		 Dom(gradEditor).css('border', '1px solid');
 		 
 		 //create presets container
-		 var presets = Dom.create('div', '', 'absolute', 0, 0, width - 100, height - 70, '', 'auto');
-		 Dom(presets).css('border', '1px solid');
-		 gradEditor.appendChild(presets);
+		 var presets = Dom.create('div', '', 'absolute', 0, 0, width - 2, height - 67, '', 'auto');
+		 Dom(presets).css('border', '1px solid').addTo(gradEditor);
 		 
 		 //create gradient canvases
 		 fillPresets(50, 40);
 		 
-		 //create scale combo
-		 /*var scDiv = Dom.create('div', '', 'absolute', width - 90, 0, 95, 50);
-		 scDiv.innerHTML = 'Scale: ';
+		 //create scale set
+		 var scaleSet = Dom.create('div', '', 'absolute', 127, height - 58);
+		 Dom(scaleSet).prop('innerHTML', 'Scale: ').addTo(gradEditor);
 		 
-		 var scCombo = Dom.createComboBox([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, '1.0',
-		                                   1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, '2.0']);
-		 Dom(scCombo).prop({
-			 value: '1.0',
-			 onchange: function() {
-				 grScale = scCombo.value;
+		 var lelftScBtn = Dom.create('button');
+		 
+		 Dom(lelftScBtn).css({
+			 width: '16px',
+			 height: '16px',
+			 padding: '0',
+			 lineHeight: '10px'
+		 }).prop({ 
+			 innerHTML: '<',
+			 onclick: function(e) {
+				 grScale -= 0.1;
+				 if (grScale < 0.1) grScale = 0.1;
+				 Dom(scInput).prop('value', grScale.toFixed(1));
 				 fillPresets(50, 40);
 			 }
-		 }); 
+		 }).addTo(scaleSet);
 		 
-		 scDiv.appendChild(scCombo);
-		 gradEditor.appendChild(scDiv);*/
+		 var scInput = Dom.create('input', '', '', '', '', 40);
 		 
-		 //create rotation selector
+		 Dom(scInput).css({
+			 margin: '0 3px',
+			 fontFamily: 'Verdana',
+			 textAlign: 'center'
+		 }).prop('value', grScale.toFixed(1)).addTo(scaleSet);
+		 
+		 var rightScBtn = Dom.create('button');
+		 
+		 Dom(rightScBtn).css({
+			 width: '16px',
+			 height: '16px',
+			 padding: '0',
+			 lineHeight: '10px'
+		 }).prop({ 
+			 innerHTML: '>',
+			 onclick: function(e) {
+				 grScale += 0.1;
+				 Dom(scInput).prop('value', grScale.toFixed(1));
+				 fillPresets(50, 40);
+			 }
+		 }).addTo(scaleSet);
+		 
+		 		 
+		 //create rotation set
+		 var rotationSet = Dom.create('div', '', 'absolute', 261, height - 58);
+		 Dom(rotationSet).prop('innerHTML', 'Rotation: ').addTo(gradEditor);
+		 
+		 var lelftRotBtn = Dom.create('button');
+		 
+		 Dom(lelftRotBtn).css({
+			 width: '16px',
+			 height: '16px',
+			 padding: '0',
+			 lineHeight: '10px'
+		 }).prop({
+			 innerHTML: '<',
+			 onclick: function(e) {
+				 grRot -= 0.1;
+				 Dom(rotInput).prop('value', grRot.toFixed(1));
+				 fillPresets(50, 40);
+			 }
+		 }).addTo(rotationSet);
+		 
+		 var rotInput = Dom.create('input', '', '', '', '', 40);
+		 
+		 Dom(rotInput).css({
+			 margin: '0 3px',
+			 fontFamily: 'Verdana',
+			 textAlign: 'center'
+		 }).prop('value', grRot.toFixed(1)).addTo(rotationSet);
+		 
+		 var rightRotBtn = Dom.create('button');
+		 
+		 Dom(rightRotBtn).css({
+			 width: '16px',
+			 height: '16px',
+			 padding: '0',
+			 lineHeight: '10px'
+		 }).prop({
+			 innerHTML: '>',
+			 onclick: function(e) {
+				 grRot += 0.1;
+				 Dom(rotInput).prop('value', grRot.toFixed(1));
+				 fillPresets(50, 40);
+			 }
+		 }).addTo(rotationSet);
+		 
+		 //create type set
+		 var typeSet = Dom.create('div', '', 'absolute', 0, height - 60);
+		 Dom(typeSet).prop('innerHTML', 'Type: ').addTo(gradEditor);
+		 
+		 var typeCombo = Dom.createComboBox(['linear', 'radial']);
+		 Dom(typeCombo).width(75).prop({
+			 onchange: function(e) {
+				 grType = typeCombo.value;
+				 fillPresets(50, 40);
+			 }
+		 }).addTo(typeSet);
 		 
 		 //create gradient editor sliders box
 		 
