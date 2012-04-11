@@ -367,6 +367,7 @@ var TextEditor = function(textObj) {
     			textObj.setText(textInput.value);
     			textObj.setFont({ face: face, size: size, weight: weight, style: style });
     			stage.layer.forceRedraw();
+    			stage.trBox.updateRects();
     		}
 		    
 	        wnd.close();
