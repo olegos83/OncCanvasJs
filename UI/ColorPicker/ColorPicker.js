@@ -547,13 +547,23 @@ var ColorPicker = {
 			['#99d89e', '#40c0ad', '#aeeeb7']
 		 ], numGradients = gradientArr.length;
 		 
+		 for (var i = 0; i < numGradients; i++) {
+			 var gr = new Gradient();
+			 
+			 gr.addColorStop(0, gradientArr[i][0]);
+			 gr.addColorStop(0.5, gradientArr[i][1]);
+			 gr.addColorStop(1, gradientArr[i][2]);
+			 
+			 gradientArr[i][3] = gr;
+		 }
+		 
 		 //fill presets method
 		 function fillPresets(num, sz) {
 			 var cy = sz / 2;
 			 presets.innerHTML = '';
 			 
 			 for (var i = 0; i < num; i++) {
-				 var cv = Dom.create('canvas', '', '', '', '', sz, sz);
+				 var cv = Dom.create('canvas', i.toString(), '', '', '', sz, sz);
 				 Dom(cv).css({
 					 border: '1px solid',
 					 marginLeft: '2px',
@@ -567,14 +577,19 @@ var ColorPicker = {
 					 },
 					 onmouseout: function(e) {
 						 Dom(e.target).css('borderColor', '#000');
+					 },
+					 onclick: function(e) {
+						 var ctx = gradBox.getContext('2d');
+						 var gr = gradientArr[e.target.id][3];
+						 
+						 gr.type('linear'); gr.rotation = 0; gr.scale = 1;
+						 ctx.fillStyle = gr.toCanvasGradient(ctx, new Point(0, 0), new Point(gradBox.width, 0));
+						 ctx.fillRect(0, 0, gradBox.width, gradBox.height);
 					 }
 				 }).addTo(presets);
 				 
-				 var gr = new Gradient(grType);
-				 gr.rotation = grRot; gr.scale = grScale;
-				 gr.addColorStop(0, gradientArr[i][0]);
-				 gr.addColorStop(0.5, gradientArr[i][1]);
-				 gr.addColorStop(1, gradientArr[i][2]);
+				 var gr = gradientArr[i][3];
+				 gr.type(grType); gr.rotation = grRot; gr.scale = grScale;
 				 
 				 var ctx = cv.getContext("2d");
 				 ctx.fillStyle = gr.toCanvasGradient(ctx, new Point(0, cy), new Point(sz, cy));
