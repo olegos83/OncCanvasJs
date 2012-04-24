@@ -273,7 +273,18 @@ var TextEditor = function(textObj) {
     wnd.addControl(combo);
     
     //font select
-    var fontBox = Dom.createComboBox(['Arial', 'Times New Roman', 'Courier', 'Verdana']);
+    var fontBox = Dom.createComboBox([
+          'Arial',
+          'Comic Sans MS',
+          'Courier',
+          'Garamond',
+          'Georgia',
+          'Impact',
+          'Palatino Linotype',
+          'Symbol',
+          'Times New Roman',
+          'Verdana'
+    ]);
     
     Dom(fontBox).width(150).prop('onchange', function(e) {
     	face = e.target.value;
