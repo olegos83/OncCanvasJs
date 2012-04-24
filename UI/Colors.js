@@ -273,7 +273,7 @@ var Gradient = function(type, colorStops) {
 	
     /**
      * Array of color stops.
-     * @property _colorStopsArr
+     * @property _colorStops
      * @type Array
      * @private
      **/
@@ -305,7 +305,7 @@ var Gradient = function(type, colorStops) {
 	 **/
 	Gradient.prototype.type = function(type) {
 		if (type) {
-			this._type = type
+			this._type = type;
 			if (this._type != 'radial') this._type = 'linear';
 		} else return this._type;
 	}
