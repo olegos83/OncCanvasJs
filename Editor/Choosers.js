@@ -211,7 +211,9 @@ var ColorChooser = function(type) {
     Dom(picker).pos({x:0, y:30});
     
     //create gradient editor
-    var gradientEditor = ColorPicker.initGradientEditor(5, 35, wnd.getWidth() - 10, wnd.getHeight() - 70);
+    var grFn = null;
+    if (type == 1) grFn = setFillColor; else grFn = setStrokeColor;
+    var gradientEditor = ColorPicker.initGradientEditor(5, 35, wnd.getWidth() - 10, wnd.getHeight() - 70, grFn);
     
     //create buttons
     var selectBtn = Dom.create('button', '', 'absolute', 5, wnd.getHeight() - 30, 100, 25);

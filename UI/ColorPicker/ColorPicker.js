@@ -312,7 +312,7 @@ var ColorPicker = {
 		ColorPicker.setColor = method;
 		ColorPicker.fixPNG(document.getElementById("gradientImg"));
 	    
-	    if (initialColor == '') initialColor = '#ffffff';
+	    if ( (initialColor == '') || (initialColor instanceof CanvasGradient) || (initialColor instanceof Gradient) ) initialColor = '#ffffff';
 	    if (initialColor.charAt(0) == '#') {
 	    	ColorPicker.color = new Color('HEX', initialColor);
 	    } else {
@@ -419,7 +419,7 @@ var ColorPicker = {
 	 /**
       * Init gradient editor.
       **/
-	 initGradientEditor: function(x, y, width, height) {
+	 initGradientEditor: function(x, y, width, height, selFn) {
 		 //init vars
 		 var grRot = 0; var grScale = 1; var grType = 'linear';
 		 
@@ -585,6 +585,11 @@ var ColorPicker = {
 						 gr.type('linear'); gr.rotation = 0; gr.scale = 1;
 						 ctx.fillStyle = gr.toCanvasGradient(ctx, new Point(0, 0), new Point(gradBox.width, 0));
 						 ctx.fillRect(0, 0, gradBox.width, gradBox.height);
+						 
+						 if (selFn) {
+							 gr.type(grType); gr.rotation = grRot; gr.scale = grScale;
+							 selFn(gr);
+						 }
 					 }
 				 }).addTo(presets);
 				 
