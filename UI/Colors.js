@@ -383,7 +383,7 @@ var Gradient = function(type, colorStops) {
 	 **/
 	Gradient.prototype.setup = function(obj, layer) {
 		//init vars
-		var r = obj.getBoundRect();
+		var r = obj.shape.getBoundRect();
 		var c = r.getCenter();
 		
 		//return gradient instance
