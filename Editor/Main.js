@@ -22,4 +22,6 @@ function main() {
     tfill.addColorStop(0.5,'#00ff00');
     tfill.addColorStop(1,'#0000ff');
     t.color.fill = tfill;
+    
+    ColorChooser(1);
 }
