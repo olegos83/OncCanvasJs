@@ -158,8 +158,12 @@ var BgrChooser = function() {
 //COLOR CHOOSER
 var ColorChooser = function(type) {
 	//init vars
-	var titleStr;
-	if (type == 1) titleStr = "Change fill color"; else titleStr = "Change stroke color";
+	var titleStr = "Change stroke color", grFn = setStrokeColor;
+	
+    if (type == 1) {
+    	titleStr = "Change fill color";
+    	grFn = setFillColor;
+    }
 	
     //setup window
     if (ColorChooser.wnd) ColorChooser.wnd.close();
@@ -183,10 +187,11 @@ var ColorChooser = function(type) {
 	        break;
 	        	
 	    	case 'Custom colors':
+	    		var chColor = stage.color.stroke;
+	    		if (type == 1) chColor = stage.color.fill;
+	    		
 	    		wnd.addControl(picker);
-	    	    
-	    	    if (type == 1) ColorPicker.attach(setFillColor, stage.color.fill);
-	    	    else ColorPicker.attach(setStrokeColor, stage.color.stroke);
+	    	    ColorPicker.attach(grFn, chColor);
 	        break;
 	        
 	    	case 'Gradient':
@@ -211,8 +216,6 @@ var ColorChooser = function(type) {
     Dom(picker).pos({x:0, y:30});
     
     //create gradient editor
-    var grFn = null;
-    if (type == 1) grFn = setFillColor; else grFn = setStrokeColor;
     var gradientEditor = ColorPicker.initGradientEditor(5, 35, wnd.getWidth() - 10, wnd.getHeight() - 70, grFn);
     
     //create buttons
