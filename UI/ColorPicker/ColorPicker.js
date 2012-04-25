@@ -586,6 +586,9 @@ var ColorPicker = {
 						 ctx.fillStyle = gr.toCanvasGradient(ctx, new Point(0, 0), new Point(gradBox.width, 0));
 						 ctx.fillRect(0, 0, gradBox.width, gradBox.height);
 						 
+						 Dom(gradBoxCont).remove(grSliders);
+						 for (var cs in gr._colorStops) createSlider(cs, gr._colorStops[cs]);
+						 
 						 if (selFn) {
 							 gr.type(grType); gr.rotation = grRot; gr.scale = grScale;
 							 selFn(gr);
@@ -714,8 +717,33 @@ var ColorPicker = {
 		 }).addTo(typeSet);
 		 
 		 //create gradient editor sliders box
-		 var gradBox = Dom.create('canvas', '', 'absolute', 155, height - 25, 250, 40);
-		 Dom(gradBox).css('background', 'white').addTo(gradEditor);
+		 var gradBoxCont = Dom.create('div', '', 'absolute', 155, height - 25, 250, 40);
+		 Dom(gradBoxCont).css('background', 'white').addTo(gradEditor);
+		 
+		 var gradBox = Dom.create('canvas', '', 'absolute', 0, 0, 250, 40);
+		 Dom(gradBox).addTo(gradBoxCont);
+		 
+		 //sliders to edit gradient
+		 var slBounds =  new Rectangle(new Point(-4, 34), new Point(246, 34));
+		 var grSliders = [];
+		 
+		 //create slider function
+		 function createSlider(stopId, bgr) {
+			 if (stopId < 0) stopId = 0;
+			 if (stopId > 1) stopId = 1;
+			 
+			 var xpos = 250 * stopId;
+			 var slider = Dom.create('div', stopId.toString(), 'absolute', xpos - 4, 34, 6, 12);
+			 
+			 Dom(slider).css({
+				 background: bgr,
+				 border: '1px solid',
+				 borderRadius: '3px',
+				 cursor: 'pointer'
+			 }).addTo(gradBoxCont).startDrag(null, slBounds, null, null, null);
+			 
+			 grSliders.push(slider);
+		 }
 		 
 		 //return editor container as element
 		 return gradEditor;
