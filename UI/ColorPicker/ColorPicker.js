@@ -579,15 +579,10 @@ var ColorPicker = {
 						 Dom(e.target).css('borderColor', '#000');
 					 },
 					 onclick: function(e) {
-						 var ctx = gradBox.getContext('2d');
 						 var gr = gradientArr[e.target.id][3];
 						 
-						 gr.type('linear'); gr.rotation = 0; gr.scale = 1;
-						 ctx.fillStyle = gr.toCanvasGradient(ctx, new Point(0, 0), new Point(gradBox.width, 0));
-						 ctx.fillRect(0, 0, gradBox.width, gradBox.height);
-						 
-						 Dom(gradBoxCont).remove(grSliders);
-						 for (var cs in gr._colorStops) createSlider(cs, gr._colorStops[cs]);
+						 fillGradBox(gr);
+						 createSliders(gr);
 						 
 						 if (selFn) {
 							 gr.type(grType); gr.rotation = grRot; gr.scale = grScale;
@@ -723,12 +718,20 @@ var ColorPicker = {
 		 var gradBox = Dom.create('canvas', '', 'absolute', 0, 0, 250, 40);
 		 Dom(gradBox).addTo(gradBoxCont);
 		 
+		 function fillGradBox(gr) {
+			 var ctx = gradBox.getContext('2d'), w = gradBox.width, h = gradBox.height;
+			 gr.type('linear'); gr.rotation = 0; gr.scale = 1;
+			 
+			 ctx.fillStyle = gr.toCanvasGradient(ctx, new Point(0, 0), new Point(w, 0));
+			 ctx.fillRect(0, 0, w, h);
+		 }
+		 
 		 //sliders to edit gradient
 		 var slBounds =  new Rectangle(new Point(-4, 34), new Point(246, 34));
 		 var grSliders = [];
 		 
 		 //create slider function
-		 function createSlider(stopId, bgr) {
+		 function createSlider(stopId, bgr, startDrag, drag, endDrag) {
 			 if (stopId < 0) stopId = 0;
 			 if (stopId > 1) stopId = 1;
 			 
@@ -740,9 +743,31 @@ var ColorPicker = {
 				 border: '1px solid',
 				 borderRadius: '3px',
 				 cursor: 'pointer'
-			 }).addTo(gradBoxCont).startDrag(null, slBounds, null, null, null);
+			 }).addTo(gradBoxCont).startDrag(null, slBounds, startDrag, drag, endDrag);
 			 
 			 grSliders.push(slider);
+		 }
+		 
+		 function createSliders(gr) {
+			 var stopElem;
+			 
+			 Dom(gradBoxCont).remove(grSliders);
+			 for (var cs in gr._colorStops) createSlider(cs, gr._colorStops[cs], startDrag, drag, null);
+			 
+			 function startDrag() {
+				 stopElem = arguments[1];
+			 }
+			 
+			 function drag() {
+				 var stop = stopElem.id, color = gr._colorStops[stop];
+				 gr.removeColorStop(stop);
+				 
+				 stop = (arguments[0].x + 4) / 250;
+				 stopElem.id = stop.toString();
+				 gr.addColorStop(stop, color);
+				 
+				 fillGradBox(gr);
+			 }
 		 }
 		 
 		 //return editor container as element
