@@ -311,7 +311,7 @@ var Gradient = function(type, colorStops) {
 	}
 	
 	/**
-	 * Add color stop.
+	 * Add color stop or change existing stop color.
 	 * @method addColorStop
 	 * @param {Number} index - index of stop.
 	 * @param {String} color - css color value.
@@ -330,12 +330,61 @@ var Gradient = function(type, colorStops) {
 	}
 	
 	/**
+	 * Check if stop exists.
+	 * @method hasStop
+	 * @param {Number} index - index of stop.
+	 * @return {Boolean} - true if stop exists or false if not.
+	 **/
+	Gradient.prototype.hasStop = function(index) {
+		if (this._colorStops[index]) return true; else return false;
+	}
+	
+	/**
+	 * Change stop index if such stop exists.
+	 * @method setStopIndex
+	 * @param {Number} oldIndex - index of stop.
+	 * @param {Number} newIndex - new index to set.
+	 **/
+	Gradient.prototype.setStopIndex = function(oldIndex, newIndex) {
+		var c = this.getStopColor(oldIndex);
+		
+		if (c != '') {
+			this.removeColorStop(oldIndex);
+			this.addColorStop(newIndex, c);
+		}
+	}
+	
+	/**
+	 * Get color stop indexes by color.
+	 * @method getStopIndexes
+	 * @param {String} color - color to test. If no color passed - return all indexes.
+	 * @return {Array} array of stop indexes with specified color or null if no stops.
+	 **/
+	Gradient.prototype.getStopIndexes = function(color) {
+		var indexes = [];
+		for (var i in this._colorStops) if ( !color || (this._colorStops[i] == color) ) indexes.push(i);
+		
+		if (indexes.length == 0) indexes = null;
+		return indexes;
+	}
+	
+	/**
+	 * Get stop color by its index.
+	 * @method getStopColor
+	 * @param {Number} index - index of stop.
+	 * @return {String} color of stop with specified index or '' - if there is no stop.
+	 **/
+	Gradient.prototype.getStopColor = function(index) {
+		if (this.hasStop(index)) return this._colorStops[index]; else return '';
+	}
+	
+	/**
 	 * Apply Gradient to canvas gradient instance - simply add all color stops.
 	 * @method setStops
 	 * @param {CanvasGradient} gr - gradient.
 	 **/
 	Gradient.prototype.setStops = function(gr) {
-		for (var stop in this._colorStops) gr.addColorStop(stop, this._colorStops[stop]);
+		for (var i in this._colorStops) gr.addColorStop(i, this._colorStops[i]);
 	}
 	
 	/**
