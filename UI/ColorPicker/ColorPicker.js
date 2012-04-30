@@ -580,6 +580,7 @@ var ColorPicker = {
 					 },
 					 onclick: function(e) {
 						 var gr = gradientArr[e.target.id][3];
+						 gr._icon = e.target;
 						 
 						 fillGradBox(gr);
 						 createSliders(gr);
@@ -718,8 +719,10 @@ var ColorPicker = {
 		 var gradBox = Dom.create('canvas', '', 'absolute', 0, 0, 250, 40);
 		 Dom(gradBox).addTo(gradBoxCont);
 		 
-		 function fillGradBox(gr) {
-			 var ctx = gradBox.getContext('2d'), w = gradBox.width, h = gradBox.height;
+		 function fillGradBox(gr, canvas) {
+			 if (!canvas) canvas = gradBox;
+			 
+			 var ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height;
 			 gr.type('linear'); gr.rotation = 0; gr.scale = 1;
 			 
 			 ctx.fillStyle = gr.toCanvasGradient(ctx, new Point(0, 0), new Point(w, 0));
@@ -749,24 +752,30 @@ var ColorPicker = {
 		 }
 		 
 		 function createSliders(gr) {
-			 var stopElem;
-			 
 			 Dom(gradBoxCont).remove(grSliders);
-			 for (var cs in gr._colorStops) createSlider(cs, gr._colorStops[cs], startDrag, drag, null);
+			 
+			 var stopElem, stopsArr = gr.getStopIndexes(), len = stopsArr.length;
+			 for (var i = 0; i < len; i++) createSlider(stopsArr[i], gr.getStopColor(stopsArr[i]), startDrag, drag, null);
 			 
 			 function startDrag() {
 				 stopElem = arguments[1];
 			 }
 			 
 			 function drag() {
-				 var stop = stopElem.id, color = gr._colorStops[stop];
-				 gr.removeColorStop(stop);
+				 var oldI = stopElem.id, newI = (arguments[0].x + 4) / 250;
 				 
-				 stop = (arguments[0].x + 4) / 250;
-				 stopElem.id = stop.toString();
-				 gr.addColorStop(stop, color);
+				 if (!gr.hasStop(newI)) {
+					 stopElem.id = newI.toString();
+					 gr.setStopIndex(oldI, newI);
+				 }
 				 
 				 fillGradBox(gr);
+				 fillGradBox(gr, gr._icon);
+				 
+				 if (selFn) {
+					 gr.type(grType); gr.rotation = grRot; gr.scale = grScale;
+					 selFn(gr);
+				 }
 			 }
 		 }
 		 
