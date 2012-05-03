@@ -136,7 +136,7 @@ function onToolClick(event) {
     	
     	if (undo) {
     		var len = undo.length;
-    		for (var i = 0; i < len; i++) stage.addObject(undo[i]); 
+    		for (var i = 0; i < len; i++) stage.addObject(undo[i]);
     	}
     }
 }
