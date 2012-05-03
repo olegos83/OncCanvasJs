@@ -18,6 +18,9 @@ var Stage = function() {
     this.stageHeight = this.layer.canvas.height;
     this.trBox = null;
     
+    //init history for undo operation
+    this.history = [];
+    
     //set canvas events
     var events = {};
     events[MouseEvent.DOWN] = this.stageMouseDown;
@@ -116,6 +119,7 @@ Stage.prototype.stageMouseUp = function(e) {
     //new drawing
     if (stage.state == 'drawing') {
         stage.trBox.apply(stage.newObj);
+        stage.history.push(stage.layer.dumpObjects());
         
     //rotation
     } else if (stage.state == 'rotating') stage.trBox.updateRects();

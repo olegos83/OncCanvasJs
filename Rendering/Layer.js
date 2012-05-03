@@ -66,7 +66,7 @@ var Layer = function(id, elem, x, y, width, height) {
          * @type {Array}
          * @private
          **/
-         this._objArr = new Array();
+         this._objArr = [];
         
         
 //public properties:
@@ -422,6 +422,22 @@ var Layer = function(id, elem, x, y, width, height) {
             
             ctx.closePath();
         }
+    }
+    
+    /**
+     * Dump all objects added to Layer.
+     * @method dumpObjects
+     * @return {Array} array of objects.
+     **/
+    Layer.prototype.dumpObjects = function() {
+    	var len = this.getNumObjects(), objArr = [];
+        
+    	for (var i = 0; i < len; i++) {
+    		var o = this.getObjectAt(i).clone();
+    		if (o) objArr.push(o);
+    	}
+        
+        return objArr;
     }
     
     /**

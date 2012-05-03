@@ -128,4 +128,15 @@ function onToolClick(event) {
     	layer.grid = !layer.grid;
     	layer.forceRedraw();
     }
+    
+    //undo tool
+    if (id == 'undo_tool') {
+    	var undo = stage.history.pop();
+    	stage.clear();
+    	
+    	if (undo) {
+    		var len = undo.length;
+    		for (var i = 0; i < len; i++) stage.addObject(undo[i]); 
+    	}
+    }
 }

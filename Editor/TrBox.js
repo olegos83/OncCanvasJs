@@ -277,14 +277,12 @@ var TrPoint = function(pos, rad, color) {
     
 	//initialize base class
     Shaper.call(this, '', new Rectangle(), color);
-    delete this.matrix;
 }
 
 //extend from Shaper, set constructor and delete unused properties
 TrPoint.prototype = new Shaper();
+for (var p in TrPoint.prototype) if (TrPoint.prototype.hasOwnProperty(p)) delete TrPoint.prototype[p];
 TrPoint.prototype.constructor = TrPoint;
-delete TrPoint.prototype._eventListener;
-delete TrPoint.prototype.matrix;
 
 //TrPoint methods
 //move TrPoint
@@ -314,4 +312,9 @@ TrPoint.prototype.draw = function() {
     //draw shape
     this.shape.placeAroundPoint(this._pos, this._radius);
     this.layer.drawShape(this.color.stroke, this.color.fill, this.shape.clone());
+}
+
+//Clone function
+TrPoint.prototype.clone = function() {
+	return false;
 }
