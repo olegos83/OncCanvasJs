@@ -26,10 +26,7 @@ function createArrow() {
 
 //tool clicked
 function onToolClick(event) {
-    var id = event.target.id;
-    var box = stage.trBox;
-    var layer = stage.layer;
-    var obj = box.selected;
+    var id = event.target.id, box = stage.trBox, layer = stage.layer, obj = box.selected;
 
     //drawing tools
     if (id == 'clear_tool') stage.clear();
@@ -124,5 +121,11 @@ function onToolClick(event) {
         var l = layer.getNumObjects() - 1;
         index = layer.getObjectIndex(obj);
         if (index < l) layer.setObjectIndex(obj, index + 1);
+    }
+    
+    //grid tool
+    if (id == 'grid_tool') {
+    	layer.grid = !layer.grid;
+    	layer.forceRedraw();
     }
 }

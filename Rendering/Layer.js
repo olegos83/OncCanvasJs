@@ -71,6 +71,13 @@ var Layer = function(id, elem, x, y, width, height) {
         
 //public properties:
        /**
+        * Flag to enable/disable grid drawing.
+        * @property grid
+        * @type Boolean
+        **/
+        this.grid = false;
+          
+       /**
         * Reference to parent layer.
         * @property layer
         * @type Layer
@@ -330,6 +337,30 @@ var Layer = function(id, elem, x, y, width, height) {
     }
     
     /**
+     * Show layer grid. Grid is drawn top to all layer objects.
+     * @method showGrid
+     **/
+    Layer.prototype.showGrid = function() {
+    	var ctx = this.ctx, w = this.canvas.width, h = this.canvas.height, sq = 20, step = w / sq;
+    	
+    	ctx.beginPath();
+    	
+    	for (var i = step; i < w; i += step) {
+    		ctx.moveTo(i + 0.5, 0);
+    		ctx.lineTo(i + 0.5, h);
+    	}
+    	
+    	for (var i = step; i < h; i += step) {
+    		ctx.moveTo(0, i + 0.5);
+    		ctx.lineTo(w, i + 0.5);
+    	}
+    	
+		ctx.strokeStyle = 'gray';
+		ctx.stroke();
+		ctx.closePath();
+    }
+    
+    /**
      * Draw this layer. If animated - layer is drawn by specified interval.
      * Objects must have draw method to be drawn. They are drawn in z order.
      * @method draw
@@ -345,6 +376,7 @@ var Layer = function(id, elem, x, y, width, height) {
             this._objArr[i].draw();
         }
         
+        if (this.grid) this.showGrid();
         this._dirty = false;
     }
     
