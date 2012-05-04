@@ -119,7 +119,6 @@ Stage.prototype.stageMouseUp = function(e) {
     //new drawing
     if (stage.state == 'drawing') {
         stage.trBox.apply(stage.newObj);
-        stage.history.push(stage.layer.dumpObjects());
         
     //rotation
     } else if (stage.state == 'rotating') stage.trBox.updateRects();
