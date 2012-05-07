@@ -765,26 +765,40 @@ var ColorPicker = {
 				 borderRadius: '3px',
 				 cursor: 'pointer'
 			 }).prop({
-				 ondblclick: function(e) {
-					 var curSlider = e.target, changer = Dom.create('div', '', 'absolute', 139, 90);
-					 Dom(changer).addTo(gradEditor);
+				 onclick: function(e) {
+					 if(e.target._dragged) return;
+					 var gr = gradBox._gr, curSlider = e.target;
 					 
-					 ColorPicker.attachSafePicker(0, changer, function(e) {
-						var gr = gradBox._gr; 
+					 if (e.ctrlKey) {
+						 gr.removeColorStop(curSlider.id);
 						 
-				    	Dom(curSlider).css('backgroundColor', e.target.style.backgroundColor);
-				    	gr.addColorStop(curSlider.id, e.target.style.backgroundColor);
-				    	
-				    	fillGradBox(gr);
-						fillGradBox(gr, gr._icon);
+						 fillGradBox(gr);
+						 createSliders(gr);
+						 fillGradBox(gr, gr._icon);
 						 
-						if (selFn) {
+						 if (selFn) {
 							gr.type(grType); gr.rotation = grRot; gr.scale = grScale;
 						    selFn(gr);
-						}
-				    	
-				    	Dom(gradEditor).remove(changer);
-					 }, 14);
+						 }
+					 } else {
+						 var changer = Dom.create('div', '', 'absolute', 139, 90);
+						 Dom(changer).addTo(gradEditor);
+						 
+						 ColorPicker.attachSafePicker(0, changer, function(e) {
+					    	Dom(curSlider).css('backgroundColor', e.target.style.backgroundColor);
+					    	gr.addColorStop(curSlider.id, e.target.style.backgroundColor);
+					    	
+					    	fillGradBox(gr);
+							fillGradBox(gr, gr._icon);
+							 
+							if (selFn) {
+								gr.type(grType); gr.rotation = grRot; gr.scale = grScale;
+							    selFn(gr);
+							}
+					    	
+					    	Dom(gradEditor).remove(changer);
+						 }, 14);
+					 }
 				 }
 			 }).addTo(gradBoxCont).startDrag(null, slBounds, startDrag, drag, endDrag);
 			 
@@ -799,9 +813,11 @@ var ColorPicker = {
 			 
 			 function startDrag() {
 				 stopElem = arguments[1];
+				 stopElem._dragged = false;
 			 }
 			 
 			 function drag() {
+				 stopElem._dragged = true;
 				 var oldI = stopElem.id, newI = (arguments[0].x + 4) / 250;
 				 
 				 if (!gr.hasStop(newI)) {
