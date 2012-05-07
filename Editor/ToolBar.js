@@ -2,25 +2,16 @@
 //show clipart window
 function onUpPanelClick(event) {
 	//init vars
-	var id = event.target.id, obj = stage.trBox.selected, layer = stage.layer;
+	var id = event.target.id, obj = stage.trBox.selected;
     
     //clipart chooser
-	if (id == 'clipart') {
-		stage.history.push(layer.dumpObjects());
-		ClipChooser();
-	}
+	if (id == 'clipart') ClipChooser();
 	
 	//background chooser
-	if (id == 'background') {
-		stage.history.push(layer.dumpObjects());
-		BgrChooser();
-	}
+	if (id == 'background') BgrChooser();
 	
 	//text editor
-	if (id == 'add_text') {
-		stage.history.push(layer.dumpObjects());
-		TextEditor(obj);
-	}
+	if (id == 'add_text') TextEditor(obj);
 }
 
 //create new arrow

@@ -47,6 +47,7 @@ var ClipChooser = function() {
     	innerHTML: 'Select',
     	onclick: function(e) {
 	    	if (!selectedClip) return;
+	    	stage.history.push(stage.layer.dumpObjects());
 	    	
 	    	var im = new Bitmap("img", selectedClip.src, 200, 150);
 	        stage.addObject(im);
@@ -352,6 +353,11 @@ var TextEditor = function(textObj) {
     Dom(textCont).css({
     	border: '1px solid',
     	background: "url('Editor/img/canv_bg.png')",
+    	cursor: 'text'
+    }).prop({
+    	onclick: function(e) {
+    		textInput.focus();
+    	}
     });
     
     var textInput = Dom.create('input', '', '', '', '', wnd.getWidth() - 12);
@@ -373,6 +379,7 @@ var TextEditor = function(textObj) {
     	innerHTML: 'Place', 
     	onclick: function(e) {
     		if (textInput.value == '') return;
+    		stage.history.push(stage.layer.dumpObjects());
     		
     		if (isNew) {
 	    		var t = new Text('text', textInput.value, { face: face, size: size, weight: weight, style: style });
