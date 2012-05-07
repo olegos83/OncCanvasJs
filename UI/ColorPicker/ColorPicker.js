@@ -717,10 +717,28 @@ var ColorPicker = {
 		 Dom(gradBoxCont).css('background', 'white').addTo(gradEditor);
 		 
 		 var gradBox = Dom.create('canvas', '', 'absolute', 0, 0, 250, 40);
-		 Dom(gradBox).addTo(gradBoxCont);
+		 Dom(gradBox).prop({
+			 onclick: function(e) {
+				 var index = Dom.getEventMousePos(e).x / 250, gr = e.target._gr;
+				 
+				 gr.addColorStop(index, '#ffffff');
+				 
+				 fillGradBox(gr);
+				 createSliders(gr);
+				 fillGradBox(gr, gr._icon);
+				 
+				 if (selFn) {
+					 gr.type(grType); gr.rotation = grRot; gr.scale = grScale;
+					 selFn(gr);
+				 }
+			 }
+		 }).addTo(gradBoxCont);
 		 
 		 function fillGradBox(gr, canvas) {
-			 if (!canvas) canvas = gradBox;
+			 if (!canvas) {
+				 canvas = gradBox;
+				 canvas._gr = gr;
+			 }
 			 
 			 var ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height;
 			 gr.type('linear'); gr.rotation = 0; gr.scale = 1;
@@ -746,6 +764,28 @@ var ColorPicker = {
 				 border: '1px solid',
 				 borderRadius: '3px',
 				 cursor: 'pointer'
+			 }).prop({
+				 ondblclick: function(e) {
+					 var curSlider = e.target, changer = Dom.create('div', '', 'absolute', 139, 90);
+					 Dom(changer).addTo(gradEditor);
+					 
+					 ColorPicker.attachSafePicker(0, changer, function(e) {
+						var gr = gradBox._gr; 
+						 
+				    	Dom(curSlider).css('backgroundColor', e.target.style.backgroundColor);
+				    	gr.addColorStop(curSlider.id, e.target.style.backgroundColor);
+				    	
+				    	fillGradBox(gr);
+						fillGradBox(gr, gr._icon);
+						 
+						if (selFn) {
+							gr.type(grType); gr.rotation = grRot; gr.scale = grScale;
+						    selFn(gr);
+						}
+				    	
+				    	Dom(gradEditor).remove(changer);
+					 }, 14);
+				 }
 			 }).addTo(gradBoxCont).startDrag(null, slBounds, startDrag, drag, endDrag);
 			 
 			 grSliders.push(slider);
