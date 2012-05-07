@@ -44,14 +44,20 @@ TrBox.prototype.initEvents = function() {
     //make scale objects draggable and init rotate events for rotation objects
     for (var i = 1; i <= 8; i++) {
         this['so' + i].startDrag();
+        
+        this['so' + i].addEventListener(MouseEvent.DRAGSTART, function(e) {
+        	stage.history.push(stage.layer.dumpObjects());
+        });
+        
         this['so' + i].addEventListener(MouseEvent.DRAGEND, function(e) {
             lastPos.h = 'L';lastPos.v = 'U';
             box.updateRects();
         });
         
         if (i <= 4) this['ro' + i].addEventListener(MouseEvent.DOWN, function(e) {
-                box.rotationPoint = e.target._pos;
-                stage.state = 'rotating';
+        	stage.history.push(stage.layer.dumpObjects());
+            box.rotationPoint = e.target._pos;
+            stage.state = 'rotating';
         });
     }
     
@@ -163,6 +169,11 @@ TrBox.prototype.apply = function(obj, dragStartPos) {
     
     obj.startDrag(); 
     if (dragStartPos) Draggable.onmousedown({pos:dragStartPos, target:obj});
+    
+    obj.addEventListener(MouseEvent.DRAGSTART, function(e) {
+    	stage.history.push(stage.layer.dumpObjects());
+    });
+    
     obj.addEventListener(MouseEvent.DRAG, function(e) {
         box.updateRects();
     });
@@ -216,6 +227,7 @@ TrBox.prototype.unset = function() {
     //clear selection
     if (stage.trBox.selected) {
     	stage.trBox.selected.stopDrag();
+    	stage.trBox.selected.removeEventListener(MouseEvent.DRAGSTART);
     	stage.trBox.selected.removeEventListener(MouseEvent.DRAG);
     }
     
