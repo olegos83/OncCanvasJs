@@ -130,17 +130,15 @@ var DomDrag = function(element, attached, bounds, startCallback, moveCallback, e
 var Draggable = {
     //init vars
     obj: null,
+    dragged: false,
     startx: 0,
     starty: 0,
     
     //mouse down
     onmousedown: function(e) {
     	Draggable.startx = e.pos.x;
-        Draggable.starty = e.pos.y;
+    	Draggable.starty = e.pos.y;
         Draggable.obj = e.target;
-        
-        e.type = MouseEvent.DRAGSTART;
-        Draggable.obj.processEvent(e);
     },
 
     //mouse move
@@ -149,6 +147,11 @@ var Draggable = {
 
         var mx = e.pageX - Draggable.obj.layer.canvas.offsetLeft;
         var my = e.pageY - Draggable.obj.layer.canvas.offsetTop;
+        
+        if ( (!Draggable.dragged) && ( (mx != Draggable.startx) || (my != Draggable.starty) ) ) {
+        	Draggable.dragged = true;
+        	Draggable.obj.processEvent({ pos:{x:Draggable.startx, y:Draggable.starty}, target:Draggable.obj, type:MouseEvent.DRAGSTART });
+        }
         
         var dx = mx - Draggable.startx;
         var dy = my - Draggable.starty;
@@ -174,6 +177,7 @@ var Draggable = {
         Draggable.obj.processEvent(evt);
         
         Draggable.obj = null;
+        Draggable.dragged = false;
     }
 };
 
