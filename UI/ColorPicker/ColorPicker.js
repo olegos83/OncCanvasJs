@@ -424,138 +424,7 @@ var ColorPicker = {
 		 var grRot = 0; var grScale = 1; var grType = 'linear';
 		 
 		 //init gradients
-		 var gradientArr = [
-			['#a9f4dd', '#b03c26', '#c47e1c'],
-			['#635da9', '#47fac9', '#18d3f4'],
-			['#0a680b', '#f9cdad', '#e72269'],
-			['#65519c', '#de51cf', '#7685f5'],
-			['#659734', '#380ae8', '#5d673d'],
-			['#cdd790', '#029bfb', '#c6460e'],
-			['#23b75f', '#5b6b2d', '#43d38b'],
-			['#39cd10', '#eeb8df', '#b1e257'],
-			['#c1a61f', '#0bd5cd', '#94c7d5'],
-			['#314025', '#fa0767', '#a42eb8'],
-			['#3c6d02', '#22f53d', '#5da848'],
-			['#9ab742', '#997fbe', '#73740d'],
-			['#590dec', '#dd6128', '#7188a1'],
-			['#18b51e', '#d5721e', '#dbd162'],
-			['#279d0d', '#8dab3c', '#1ebacf'],
-			['#0ef5a8', '#786bce', '#788059'],
-			['#0d25cf', '#99761f', '#2509d0'],
-			['#4ab054', '#677aaa', '#c20ba4'],
-			['#ca18d5', '#c1283a', '#a1cc91'],
-			['#1d346a', '#35a828', '#7c728e'],
-			['#d4455f', '#b15007', '#3f0045'],
-			['#475937', '#2229d4', '#f39124'],
-			['#e02fe4', '#901af9', '#01edaa'],
-			['#e9ce30', '#85b74d', '#944e2e'],
-			['#8a727b', '#5ea30f', '#433f4c'],
-			['#949dbd', '#ef3890', '#4d1903'],
-			['#bf7c27', '#4bd780', '#546f48'],
-			['#5fb053', '#3f3ee7', '#2aee69'],
-			['#ec97c3', '#30c85e', '#b546d4'],
-			['#29dffe', '#ae3933', '#c71b55'],
-			['#7678ee', '#979911', '#131fba'],
-			['#248d3e', '#92c7eb', '#e44259'],
-			['#da4c18', '#ecdfa2', '#425f3d'],
-			['#640773', '#cd50dd', '#68834e'],
-			['#d60ebf', '#1437ba', '#a19cf1'],
-			['#326422', '#752ddb', '#066940'],
-			['#a61cc0', '#ad8a16', '#8edc07'],
-			['#1b2159', '#fc351b', '#497bae'],
-			['#ea57cc', '#dc91ea', '#6399b2'],
-			['#31a2e0', '#4159a1', '#5ecb00'],
-			['#d12552', '#40c2a8', '#6afa69'],
-			['#97ca10', '#f2f050', '#ab69f7'],
-			['#9d5662', '#139a33', '#d49b33'],
-			['#64a4f9', '#6b2aad', '#a87cef'],
-			['#a32464', '#33178e', '#b5d02e'],
-			['#aba35f', '#3a07fb', '#114cdd'],
-			['#a4588b', '#1dcd49', '#fcbc72'],
-			['#eb35d8', '#917db6', '#55b3e8'],
-			['#27c335', '#b18d51', '#bb0b7a'],
-			['#c5eadf', '#de9261', '#b83883'],
-			['#5aea52', '#a99e54', '#61d23b'],
-			['#7acf44', '#e5c56a', '#f9e104'],
-			['#d6527e', '#df77d0', '#afe909'],
-			['#128aa4', '#bc988d', '#5597f1'],
-			['#c7f6d3', '#29c4b1', '#1d2906'],
-			['#1a914c', '#5e90b4', '#43f8d8'],
-			['#2da3ec', '#d95c04', '#a6016a'],
-			['#f3dd80', '#e666a1', '#7934db'],
-			['#0d47d2', '#723db9', '#d79d92'],
-			['#6935de', '#373dd6', '#7a49dc'],
-			['#d7e577', '#8a7aca', '#2a76bf'],
-			['#ac0045', '#a74124', '#bc797f'],
-			['#9a8aa3', '#235335', '#04a615'],
-			['#aa3f94', '#4017ae', '#dced91'],
-			['#cccdc3', '#8c50b5', '#f4f6dc'],
-			['#b19317', '#a51ce0', '#6384d0'],
-			['#0efa17', '#da5931', '#a7486a'],
-			['#5384c7', '#7b7922', '#e278b5'],
-			['#4b0840', '#4faae0', '#c1322a'],
-			['#f4056d', '#e2218d', '#45d74e'],
-			['#36f032', '#3a5c58', '#aee2fb'],
-			['#dd4ebb', '#1102be', '#49899b'],
-			['#25c451', '#84b5eb', '#a4f9f7'],
-			['#affc63', '#5aed49', '#43375c'],
-			['#e777e2', '#21c8f3', '#29c1e1'],
-			['#d35772', '#688db4', '#4120a5'],
-			['#e75663', '#0f5171', '#b75887'],
-			['#55937e', '#a8ebda', '#dd05dc'],
-			['#61150c', '#ae3255', '#3902b4'],
-			['#1bbb23', '#beb121', '#40240a'],
-			['#4a3d89', '#2d614b', '#93ef05'],
-			['#6bd36d', '#fee656', '#944d55'],
-			['#3868a8', '#50ea68', '#70778b'],
-			['#9fae64', '#3180f9', '#97e214'],
-			['#cfd939', '#f94689', '#1646dd'],
-			['#3ac5bf', '#a32347', '#e00ad0'],
-			['#dbf510', '#87f475', '#2b00e8'],
-			['#0dacdd', '#581797', '#1261e8'],
-			['#1a0f74', '#51aa77', '#599c9e'],
-			['#8aa068', '#4b5a98', '#0a763b'],
-			['#8fe550', '#fc7df4', '#75988d'],
-			['#0e5e5f', '#7e6487', '#9019e8'],
-			['#17f22c', '#e99135', '#89a7f9'],
-			['#de460f', '#b2cc25', '#71eb53'],
-			['#fd7438', '#663828', '#db1f8b'],
-			['#85f437', '#2c27cb', '#c537e0'],
-			['#ced0c6', '#688784', '#2fef52'],
-			['#e33c20', '#45b780', '#b530e3'],
-			['#877a46', '#3e9a2a', '#a2e7a1'],
-			['#6c95b2', '#042cde', '#181b86'],
-			['#a7e96e', '#1bfdcb', '#76dcd5'],
-			['#2eb774', '#7daa92', '#2d83d9'],
-			['#53ddcf', '#ef4cdb', '#14fd09'],
-			['#03dc55', '#806076', '#1d1573'],
-			['#fc7747', '#73f4f3', '#5f7e3a'],
-			['#61edcf', '#d15c6a', '#fc3777'],
-			['#e3a1ee', '#e6d048', '#f78968'],
-			['#bb15ea', '#e53a72', '#06b207'],
-			['#e7066d', '#ec2063', '#4c0fc5'],
-			['#68c0f2', '#a8fb58', '#2c991c'],
-			['#154ffa', '#3aed95', '#d20e14'],
-			['#85bc50', '#8168e9', '#890e2a'],
-			['#1ec80b', '#cfb18a', '#2440aa'],
-			['#e74761', '#e153c2', '#dc4fa6'],
-			['#0b7efb', '#fa3012', '#a620ba'],
-			['#1e3dea', '#a3ec6d', '#019824'],
-			['#7de85d', '#8e90b7', '#0a8ec5'],
-			['#99eb16', '#67ba9c', '#922b98'],
-			['#0a7b76', '#252a3b', '#6f2312'],
-			['#99d89e', '#40c0ad', '#aeeeb7']
-		 ], numGradients = gradientArr.length;
-		 
-		 for (var i = 0; i < numGradients; i++) {
-			 var gr = new Gradient();
-			 
-			 gr.addColorStop(0, gradientArr[i][0]);
-			 gr.addColorStop(0.5, gradientArr[i][1]);
-			 gr.addColorStop(1, gradientArr[i][2]);
-			 
-			 gradientArr[i][3] = gr;
-		 }
+		 var numGradients = gradientArr.length;
 		 
 		 //fill presets method
 		 function fillPresets(num, sz) {
@@ -731,6 +600,8 @@ var ColorPicker = {
 					 gr.type(grType); gr.rotation = grRot; gr.scale = grScale;
 					 selFn(gr);
 				 }
+				 
+				 changeSliderColor(document.getElementById(index));
 			 }
 		 }).addTo(gradBoxCont);
 		 
@@ -770,6 +641,7 @@ var ColorPicker = {
 					 var gr = gradBox._gr, curSlider = e.target;
 					 
 					 if (e.ctrlKey) {
+						 if (gr.getStopIndexes().length <= 2) return;
 						 gr.removeColorStop(curSlider.id);
 						 
 						 fillGradBox(gr);
@@ -781,23 +653,7 @@ var ColorPicker = {
 						    selFn(gr);
 						 }
 					 } else {
-						 var changer = Dom.create('div', '', 'absolute', 139, 90);
-						 Dom(changer).addTo(gradEditor);
-						 
-						 ColorPicker.attachSafePicker(0, changer, function(e) {
-					    	Dom(curSlider).css('backgroundColor', e.target.style.backgroundColor);
-					    	gr.addColorStop(curSlider.id, e.target.style.backgroundColor);
-					    	
-					    	fillGradBox(gr);
-							fillGradBox(gr, gr._icon);
-							 
-							if (selFn) {
-								gr.type(grType); gr.rotation = grRot; gr.scale = grScale;
-							    selFn(gr);
-							}
-					    	
-					    	Dom(gradEditor).remove(changer);
-						 }, 14);
+						 changeSliderColor(curSlider);
 					 }
 				 }
 			 }).addTo(gradBoxCont).startDrag(null, slBounds, startDrag, drag, endDrag);
@@ -805,6 +661,7 @@ var ColorPicker = {
 			 grSliders.push(slider);
 		 }
 		 
+		 //create all sliders in gradBox
 		 function createSliders(gr) {
 			 Dom(gradBoxCont).remove(grSliders);
 			 
@@ -835,7 +692,163 @@ var ColorPicker = {
 			 }
 		 }
 		 
+		 //change slider and its stop color
+		 function changeSliderColor(slider) {
+			 var changer = Dom.create('div', '', 'absolute', 139, 90), gr = gradBox._gr;
+			 Dom(changer).addTo(gradEditor);
+			 
+			 ColorPicker.attachSafePicker(0, changer, function(e) {
+		    	Dom(slider).css('backgroundColor', e.target.style.backgroundColor);
+		    	gr.addColorStop(slider.id, e.target.style.backgroundColor);
+		    	
+		    	fillGradBox(gr);
+				fillGradBox(gr, gr._icon);
+				 
+				if (selFn) {
+					gr.type(grType); gr.rotation = grRot; gr.scale = grScale;
+				    selFn(gr);
+				}
+		    	
+		    	Dom(gradEditor).remove(changer);
+			 }, 14);
+		 }
+		 
 		 //return editor container as element
 		 return gradEditor;
 	 }
-} 
+}
+
+
+/**
+ * Temporary gradient presets - must be stored on server.
+ **/
+var gradientArr = [ ['#a9f4dd', '#b03c26', '#c47e1c'],
+	       			['#635da9', '#47fac9', '#18d3f4'],
+	       			['#0a680b', '#f9cdad', '#e72269'],
+	       			['#65519c', '#de51cf', '#7685f5'],
+	       			['#659734', '#380ae8', '#5d673d'],
+	       			['#cdd790', '#029bfb', '#c6460e'],
+	       			['#23b75f', '#5b6b2d', '#43d38b'],
+	       			['#39cd10', '#eeb8df', '#b1e257'],
+	       			['#c1a61f', '#0bd5cd', '#94c7d5'],
+	       			['#314025', '#fa0767', '#a42eb8'],
+	       			['#3c6d02', '#22f53d', '#5da848'],
+	       			['#9ab742', '#997fbe', '#73740d'],
+	       			['#590dec', '#dd6128', '#7188a1'],
+	       			['#18b51e', '#d5721e', '#dbd162'],
+	       			['#279d0d', '#8dab3c', '#1ebacf'],
+	       			['#0ef5a8', '#786bce', '#788059'],
+	       			['#0d25cf', '#99761f', '#2509d0'],
+	       			['#4ab054', '#677aaa', '#c20ba4'],
+	       			['#ca18d5', '#c1283a', '#a1cc91'],
+	       			['#1d346a', '#35a828', '#7c728e'],
+	       			['#d4455f', '#b15007', '#3f0045'],
+	       			['#475937', '#2229d4', '#f39124'],
+	       			['#e02fe4', '#901af9', '#01edaa'],
+	       			['#e9ce30', '#85b74d', '#944e2e'],
+	       			['#8a727b', '#5ea30f', '#433f4c'],
+	       			['#949dbd', '#ef3890', '#4d1903'],
+	       			['#bf7c27', '#4bd780', '#546f48'],
+	       			['#5fb053', '#3f3ee7', '#2aee69'],
+	       			['#ec97c3', '#30c85e', '#b546d4'],
+	       			['#29dffe', '#ae3933', '#c71b55'],
+	       			['#7678ee', '#979911', '#131fba'],
+	       			['#248d3e', '#92c7eb', '#e44259'],
+	       			['#da4c18', '#ecdfa2', '#425f3d'],
+	       			['#640773', '#cd50dd', '#68834e'],
+	       			['#d60ebf', '#1437ba', '#a19cf1'],
+	       			['#326422', '#752ddb', '#066940'],
+	       			['#a61cc0', '#ad8a16', '#8edc07'],
+	       			['#1b2159', '#fc351b', '#497bae'],
+	       			['#ea57cc', '#dc91ea', '#6399b2'],
+	       			['#31a2e0', '#4159a1', '#5ecb00'],
+	       			['#d12552', '#40c2a8', '#6afa69'],
+	       			['#97ca10', '#f2f050', '#ab69f7'],
+	       			['#9d5662', '#139a33', '#d49b33'],
+	       			['#64a4f9', '#6b2aad', '#a87cef'],
+	       			['#a32464', '#33178e', '#b5d02e'],
+	       			['#aba35f', '#3a07fb', '#114cdd'],
+	       			['#a4588b', '#1dcd49', '#fcbc72'],
+	       			['#eb35d8', '#917db6', '#55b3e8'],
+	       			['#27c335', '#b18d51', '#bb0b7a'],
+	       			['#c5eadf', '#de9261', '#b83883'],
+	       			['#5aea52', '#a99e54', '#61d23b'],
+	       			['#7acf44', '#e5c56a', '#f9e104'],
+	       			['#d6527e', '#df77d0', '#afe909'],
+	       			['#128aa4', '#bc988d', '#5597f1'],
+	       			['#c7f6d3', '#29c4b1', '#1d2906'],
+	       			['#1a914c', '#5e90b4', '#43f8d8'],
+	       			['#2da3ec', '#d95c04', '#a6016a'],
+	       			['#f3dd80', '#e666a1', '#7934db'],
+	       			['#0d47d2', '#723db9', '#d79d92'],
+	       			['#6935de', '#373dd6', '#7a49dc'],
+	       			['#d7e577', '#8a7aca', '#2a76bf'],
+	       			['#ac0045', '#a74124', '#bc797f'],
+	       			['#9a8aa3', '#235335', '#04a615'],
+	       			['#aa3f94', '#4017ae', '#dced91'],
+	       			['#cccdc3', '#8c50b5', '#f4f6dc'],
+	       			['#b19317', '#a51ce0', '#6384d0'],
+	       			['#0efa17', '#da5931', '#a7486a'],
+	       			['#5384c7', '#7b7922', '#e278b5'],
+	       			['#4b0840', '#4faae0', '#c1322a'],
+	       			['#f4056d', '#e2218d', '#45d74e'],
+	       			['#36f032', '#3a5c58', '#aee2fb'],
+	       			['#dd4ebb', '#1102be', '#49899b'],
+	       			['#25c451', '#84b5eb', '#a4f9f7'],
+	       			['#affc63', '#5aed49', '#43375c'],
+	       			['#e777e2', '#21c8f3', '#29c1e1'],
+	       			['#d35772', '#688db4', '#4120a5'],
+	       			['#e75663', '#0f5171', '#b75887'],
+	       			['#55937e', '#a8ebda', '#dd05dc'],
+	       			['#61150c', '#ae3255', '#3902b4'],
+	       			['#1bbb23', '#beb121', '#40240a'],
+	       			['#4a3d89', '#2d614b', '#93ef05'],
+	       			['#6bd36d', '#fee656', '#944d55'],
+	       			['#3868a8', '#50ea68', '#70778b'],
+	       			['#9fae64', '#3180f9', '#97e214'],
+	       			['#cfd939', '#f94689', '#1646dd'],
+	       			['#3ac5bf', '#a32347', '#e00ad0'],
+	       			['#dbf510', '#87f475', '#2b00e8'],
+	       			['#0dacdd', '#581797', '#1261e8'],
+	       			['#1a0f74', '#51aa77', '#599c9e'],
+	       			['#8aa068', '#4b5a98', '#0a763b'],
+	       			['#8fe550', '#fc7df4', '#75988d'],
+	       			['#0e5e5f', '#7e6487', '#9019e8'],
+	       			['#17f22c', '#e99135', '#89a7f9'],
+	       			['#de460f', '#b2cc25', '#71eb53'],
+	       			['#fd7438', '#663828', '#db1f8b'],
+	       			['#85f437', '#2c27cb', '#c537e0'],
+	       			['#ced0c6', '#688784', '#2fef52'],
+	       			['#e33c20', '#45b780', '#b530e3'],
+	       			['#877a46', '#3e9a2a', '#a2e7a1'],
+	       			['#6c95b2', '#042cde', '#181b86'],
+	       			['#a7e96e', '#1bfdcb', '#76dcd5'],
+	       			['#2eb774', '#7daa92', '#2d83d9'],
+	       			['#53ddcf', '#ef4cdb', '#14fd09'],
+	       			['#03dc55', '#806076', '#1d1573'],
+	       			['#fc7747', '#73f4f3', '#5f7e3a'],
+	       			['#61edcf', '#d15c6a', '#fc3777'],
+	       			['#e3a1ee', '#e6d048', '#f78968'],
+	       			['#bb15ea', '#e53a72', '#06b207'],
+	       			['#e7066d', '#ec2063', '#4c0fc5'],
+	       			['#68c0f2', '#a8fb58', '#2c991c'],
+	       			['#154ffa', '#3aed95', '#d20e14'],
+	       			['#85bc50', '#8168e9', '#890e2a'],
+	       			['#1ec80b', '#cfb18a', '#2440aa'],
+	       			['#e74761', '#e153c2', '#dc4fa6'],
+	       			['#0b7efb', '#fa3012', '#a620ba'],
+	       			['#1e3dea', '#a3ec6d', '#019824'],
+	       			['#7de85d', '#8e90b7', '#0a8ec5'],
+	       			['#99eb16', '#67ba9c', '#922b98'],
+	       			['#0a7b76', '#252a3b', '#6f2312'],
+	       			['#99d89e', '#40c0ad', '#aeeeb7'] ];
+
+for (var i = 0; i < gradientArr.length; i++) {
+	 var gr = new Gradient();
+	 
+	 gr.addColorStop(0, gradientArr[i][0]);
+	 gr.addColorStop(0.5, gradientArr[i][1]);
+	 gr.addColorStop(1, gradientArr[i][2]);
+	 
+	 gradientArr[i][3] = gr;
+}
