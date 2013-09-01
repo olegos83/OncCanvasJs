@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="lib/" kind="src" path="Editor"/>
+	<classpathentry kind="src" path="Editor/lib"/>
+	<classpathentry kind="src" path="Geometry"/>
+	<classpathentry kind="src" path="Rendering"/>
+	<classpathentry excluding="ColorPicker/" kind="src" path="UI"/>
+	<classpathentry kind="src" path="UI/ColorPicker"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
