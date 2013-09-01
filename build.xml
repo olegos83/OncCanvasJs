@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<project name="WebbyJs" default="build-lib" basedir=".">
+
+ 	<target name="build-lib" depends="concat-files, minify">
+		<echo>Congratulations! WebbyJs successfully compiled!</echo>
+	</target>
+
+	<target name="concat-files">
+		<echo>Source code compilation...</echo>
+		
+		<concat destfile="Build/webby.js">
+			<filelist dir="Source/Core/">
+				<file name="Globals.js"/>
+				<file name="EventListener.js"/>
+				<file name="DataProvider.js"/>
+				<file name="DB.js"/>
+			</filelist>
+			
+			<filelist dir="Source/Gl/Geometry/">
+				<file name="Matrix.js"/>
+				<file name="Point.js"/>
+				<file name="Rectangle.js"/>
+				<file name="Path.js"/>
+			</filelist>
+			
+			<filelist dir="Source/Gl/Fonts/">
+				<file name="Font.js"/>
+				<file name="FontsManager.js"/>
+			</filelist>
+			
+			<filelist dir="Source/Gl/Rendering/">
+				<file name="Color.js"/>
+				<file name="Gradient.js"/>
+				
+				<file name="Stage.js"/>
+				<file name="Layer.js"/>
+				<file name="LayerObject.js"/>
+				<file name="ObjGroup.js"/>
+				
+				<file name="Shaper.js"/>
+				<file name="Bitmap.js"/>
+				<file name="Text.js"/>
+			</filelist>
+			
+			<filelist dir="Source/Gl/Svg/">
+				<file name="SvgParser.js"/>
+			</filelist>
+			
+			<filelist dir="Source/Widgets/">
+				<file name="Widget.js"/>
+				
+				<file name="PopUp.js"/>
+				<file name="TabSwitch.js"/>
+				
+				<file name="ComboBox.js"/>
+				<file name="Button.js"/>
+				
+				<file name="Palette.js"/>
+			</filelist>
+		</concat>
+	</target>
+
+	<target name="minify">
+		<echo>Minifying compiled source...</echo>
+	</target>
+
+</project>
