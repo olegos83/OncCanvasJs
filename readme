@@ -2,9 +2,13 @@ Hello! My name is OlegoS and I want to present my javascript framework, WebbyJs.
 
 THIS PROJECT IS EXPERIMENTAL - NOT FOR PRODUCTION USAGE. FOR NOW IT IS INCONSISTENT AND I WILL START HEAVY REFACTORING AFTER 20th SEPTEMBER 2013.
 
-I do it just for fun and experiments, but this work helps me to better understand javascript and common web development tasks.
+I do it just for fun and experiments, but this work helps me to better understand javascript and common web development tasks. If you are interested, I provide a license info, read it please before using this code.
 
-If you are interested, I provide a license info, read it please before using this code.
+Besides, I must mention about usage of several third party code either as is or with modifications. For example font rendering is inspired from typeface.js and SVG parser is based on canvg. All copyrights of used technologies will be preserved and written here after first release.
+
+You may use code from this project under the terms of the MIT License:
+
+Copyright (C) <2013> <Olegos83>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
