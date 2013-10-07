@@ -414,14 +414,14 @@
 		//return path as svg 'd' string
 		if (!d) {
 			var l = points.length, str = '', cp;
-			if (l == 0) return str; else { pt = points[0]; str = 'M' + pt.x + ',' + pt.y; }
+			if (l == 0) return str; else { pt = points[0]; str = 'M' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3); }
 			
 			for (i = 1; i < l; i++) {
 				pt = points[i];
 				
 				//move point
 				if (pt.mv) {
-					str += ' M' + pt.x + ',' + pt.y;
+					str += ' M' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3);
 					
 				//drawing point
 				} else {
@@ -431,18 +431,18 @@
 					if (cp) {
 						//quadratic
 						if (cp == pt.prev) {
-							str += ' Q' + cp.x + ',' + cp.y +
-									' ' + pt.x + ',' + pt.y;
+							str += ' Q' + cp.x.toFixed(3) + ',' + cp.y.toFixed(3) +
+									' ' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3);
 							
 						//cubic bezier
 						} else {
-							str += ' C' + cp.x + ',' + cp.y +
-									' ' + pt.prev.x + ',' + pt.prev.y +
-									' ' + pt.x + ',' + pt.y;
+							str += ' C' + cp.x.toFixed(3) + ',' + cp.y.toFixed(3) +
+									' ' + pt.prev.x.toFixed(3) + ',' + pt.prev.y.toFixed(3) +
+									' ' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3);
 						}
 						
 					//line
-					} else str += ' L' + pt.x + ',' + pt.y;
+					} else str += ' L' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3);
 				}
 			}
 			

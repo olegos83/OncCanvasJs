@@ -78,6 +78,14 @@ var TextBaseline = {
     BOTTOM: 'bottom'
 };
 
+/**
+ * Id generator - to naive for now.
+ */
+var _uniqNumId_ = 0;
+
+function getUniqId() {
+	return _uniqNumId_++;
+}
 
 /**
  * Prototype inheritance global method. Child's prototype is inherited from parent's.

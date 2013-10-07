@@ -228,7 +228,8 @@
 		var m0 = this[0], m1 = this[1], m2 = this[2];
 		
 		if (!val) {
-			return 'matrix(' + m0[0] + ' ' + m0[1] + ' ' + m1[0] + ' ' + m1[1] + ' ' + m2[0] + ' ' + m2[1] + ')';
+			return 'matrix(' + m0[0].toFixed(3) + ' ' + m0[1].toFixed(3) + ' ' + m1[0].toFixed(3) + ' '
+							 + m1[1].toFixed(3) + ' ' + m2[0].toFixed(3) + ' ' + m2[1].toFixed(3) + ')';
 		} else {
 			val = val.replace('matrix(', '').replace(')', '').split(' ');
 		}

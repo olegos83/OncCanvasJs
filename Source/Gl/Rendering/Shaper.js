@@ -236,7 +236,44 @@
 	    
 	    return cloned;
 	}
-
+	
+	/**
+	 * Get svg code for this object.
+	 * 
+	 * @method svg
+	 * 
+	 * @return {String} svg code string.
+	 **/
+	p.svg = function() {
+		var data = this.shapes.data, l = data.length, svg = '<g transform="' + this.matrix.svg() + '">\n',
+			style = this.style, fill = style.fillColor, i;
+		
+		if (fill instanceof Gradient) {
+			var type = fill.type(), stops = fill.getStopIndexes(), id = getUniqId();
+			
+			svg += '\t<' + type + 'Gradient id="gr' + id + '">\n';
+			
+			for (i = 0; i < stops.length; i++) {
+				svg += '\t\t<stop stop-color="' + fill.getStopColor(stops[i]) + '" offset="' + stops[i] * 100 + '%" />\n';
+			}
+			
+			svg += '\t</' + type + 'Gradient>\n';
+			fill = 'url(#gr' + id + ')';
+		}
+		
+		for (i = 0; i < l; i++) {
+			var d = data[i].svg();
+			
+			if (d) svg += '\t<path stroke="' + style.strokeColor +
+								  '" fill="' + fill +
+						  '" stroke-width="' + style.strokeWidth +
+						  	   '" opacity="' + style.opacity +
+						  	   		 '" d="' + d + '" />\n';
+		}
+		
+		return svg + '</g>';
+	}
+	
 	/**
 	 * Returns a string representation of this object.
 	 * 

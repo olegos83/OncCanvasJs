@@ -125,7 +125,7 @@
 		 **/
 		getFileByStyle: function(style) {
 			var file = this.fileByStyle[ this.getStyleKey(style) ];
-			if (file) return Main.baseDir + 'ui/fonts/' + file; else return '';
+			if (file) return Main.baseDir + 'fonts/' + file; else return '';
 		},
 		
 		/**

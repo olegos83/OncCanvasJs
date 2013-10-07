@@ -87,15 +87,19 @@
 	 **/
 	p.draw = function() {
 	    if (this.layer && this.visible) {
-	    	var ctx = this.layer.ctx, img = this.image;
+	    	var ctx = this.layer.ctx, img = this.image, style = this.style;
 		    
-			ctx.globalAlpha = this.style.opacity;
+	    	if (style.shadowColor) {
+	    		ctx.shadowColor = style.shadowColor;
+	    		ctx.shadowBlur = style.shadowBlur;
+	    	}
+	    	
+			ctx.globalAlpha = style.opacity;
 		    ctx.oc_setTransform(this.matrix);
 		    ctx.drawImage(img, 0, 0, img.width, img.height);
 	    }
 	}
-
-
+	
 	/**
 	 * Clone this Bitmap.
 	 * 
@@ -108,7 +112,21 @@
 	    cloned.matrixTransform(this.matrix);
 	    return cloned;
 	}
-
+	
+	/**
+	 * Get svg code for this object.
+	 * 
+	 * @method svg
+	 * 
+	 * @return {String} svg code string.
+	 **/
+	p.svg = function() {
+		var img = this.image;
+		
+		return '<image preserveAspectRatio="none" width="' + img.width + 'px" height="' + img.height + 'px" opacity="' +
+				this.style.opacity + '" transform="' + this.matrix.svg() + '" xlink:href="' + img.src + '"></image>';
+	}
+	
 	/**
 	 * Returns a string representation of this object.
 	 * 

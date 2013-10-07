@@ -11,7 +11,7 @@
 	//object management handlers
 	function onObjAdd(e) {
 		var item = e.item;
-		if (item.layer) item.layer.remove(item);
+		if (item.layer && item.layer != this) item.layer.remove(item);
 		
 		item.layer = this;
 		this.redraw();

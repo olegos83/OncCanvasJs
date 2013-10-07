@@ -208,6 +208,7 @@
 	    parent.appendChild(ed);
 	    
 	    var bb = ed.getBoundingClientRect(), body = document.body;
+	    
 	    ed._ox = Math.round(bb.left + window.pageXOffset - body.clientLeft);
 	    ed._oy = Math.round(bb.top + window.pageYOffset - body.clientTop);
 	}
@@ -222,6 +223,18 @@
 	    	this.parent.innerHTML = '';
 		    this.parent = null;
 	    }
+	}
+	
+	/**
+	 * Invalidate Stage parameters.
+	 * 
+	 * @method invalidate
+	 **/
+	p.invalidate = function() {
+		var ed = this.eventDiv, bb = ed.getBoundingClientRect(), body = document.body;
+		
+	    ed._ox = Math.round(bb.left + window.pageXOffset - body.clientLeft);
+	    ed._oy = Math.round(bb.top + window.pageYOffset - body.clientTop);
 	}
 	
 	/**

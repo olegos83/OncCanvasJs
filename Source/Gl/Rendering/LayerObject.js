@@ -73,7 +73,7 @@
 	     * @property style
 	     * @type Number
 	     **/
-	    this.style = { strokeWidth: 1, opacity: 1, strokeColor: '#000000', fillColor: '#ffffff' };
+	    this.style = { strokeWidth: 1, opacity: 1, strokeColor: '#000000', fillColor: '#ffffff', shadowColor: '', shadowBlur: 0 };
 	}
 
 	//extend from EventListener

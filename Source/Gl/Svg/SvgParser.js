@@ -20,7 +20,7 @@
 		
 		ajax.open('GET', url, false);
 		ajax.send(null);
-			
+		
 	    return ajax.responseText;
 	}
 	
