@@ -78,6 +78,14 @@ var TextBaseline = {
     BOTTOM: 'bottom'
 };
 
+/**
+ * Id generator - to naive for now.
+ */
+var _uniqNumId_ = 0;
+
+function getUniqId() {
+	return _uniqNumId_++;
+}
 
 /**
  * Prototype inheritance global method. Child's prototype is inherited from parent's.
@@ -806,7 +814,8 @@ if (CanvasRenderingContext2D) { ( function() {
 		var m0 = this[0], m1 = this[1], m2 = this[2];
 		
 		if (!val) {
-			return 'matrix(' + m0[0] + ' ' + m0[1] + ' ' + m1[0] + ' ' + m1[1] + ' ' + m2[0] + ' ' + m2[1] + ')';
+			return 'matrix(' + m0[0].toFixed(3) + ' ' + m0[1].toFixed(3) + ' ' + m1[0].toFixed(3) + ' '
+							 + m1[1].toFixed(3) + ' ' + m2[0].toFixed(3) + ' ' + m2[1].toFixed(3) + ')';
 		} else {
 			val = val.replace('matrix(', '').replace(')', '').split(' ');
 		}
@@ -1630,14 +1639,14 @@ if (CanvasRenderingContext2D) { ( function() {
 		//return path as svg 'd' string
 		if (!d) {
 			var l = points.length, str = '', cp;
-			if (l == 0) return str; else { pt = points[0]; str = 'M' + pt.x + ',' + pt.y; }
+			if (l == 0) return str; else { pt = points[0]; str = 'M' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3); }
 			
 			for (i = 1; i < l; i++) {
 				pt = points[i];
 				
 				//move point
 				if (pt.mv) {
-					str += ' M' + pt.x + ',' + pt.y;
+					str += ' M' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3);
 					
 				//drawing point
 				} else {
@@ -1647,18 +1656,18 @@ if (CanvasRenderingContext2D) { ( function() {
 					if (cp) {
 						//quadratic
 						if (cp == pt.prev) {
-							str += ' Q' + cp.x + ',' + cp.y +
-									' ' + pt.x + ',' + pt.y;
+							str += ' Q' + cp.x.toFixed(3) + ',' + cp.y.toFixed(3) +
+									' ' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3);
 							
 						//cubic bezier
 						} else {
-							str += ' C' + cp.x + ',' + cp.y +
-									' ' + pt.prev.x + ',' + pt.prev.y +
-									' ' + pt.x + ',' + pt.y;
+							str += ' C' + cp.x.toFixed(3) + ',' + cp.y.toFixed(3) +
+									' ' + pt.prev.x.toFixed(3) + ',' + pt.prev.y.toFixed(3) +
+									' ' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3);
 						}
 						
 					//line
-					} else str += ' L' + pt.x + ',' + pt.y;
+					} else str += ' L' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3);
 				}
 			}
 			
@@ -2257,7 +2266,7 @@ if (CanvasRenderingContext2D) { ( function() {
 		 **/
 		getFileByStyle: function(style) {
 			var file = this.fileByStyle[ this.getStyleKey(style) ];
-			if (file) return Main.baseDir + 'ui/fonts/' + file; else return '';
+			if (file) return Main.baseDir + 'fonts/' + file; else return '';
 		},
 		
 		/**
@@ -3079,6 +3088,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	    parent.appendChild(ed);
 	    
 	    var bb = ed.getBoundingClientRect(), body = document.body;
+	    
 	    ed._ox = Math.round(bb.left + window.pageXOffset - body.clientLeft);
 	    ed._oy = Math.round(bb.top + window.pageYOffset - body.clientTop);
 	}
@@ -3093,6 +3103,18 @@ if (CanvasRenderingContext2D) { ( function() {
 	    	this.parent.innerHTML = '';
 		    this.parent = null;
 	    }
+	}
+	
+	/**
+	 * Invalidate Stage parameters.
+	 * 
+	 * @method invalidate
+	 **/
+	p.invalidate = function() {
+		var ed = this.eventDiv, bb = ed.getBoundingClientRect(), body = document.body;
+		
+	    ed._ox = Math.round(bb.left + window.pageXOffset - body.clientLeft);
+	    ed._oy = Math.round(bb.top + window.pageYOffset - body.clientTop);
 	}
 	
 	/**
@@ -3133,7 +3155,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	//object management handlers
 	function onObjAdd(e) {
 		var item = e.item;
-		if (item.layer) item.layer.remove(item);
+		if (item.layer && item.layer != this) item.layer.remove(item);
 		
 		item.layer = this;
 		this.redraw();
@@ -3420,7 +3442,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	     * @property style
 	     * @type Number
 	     **/
-	    this.style = { strokeWidth: 1, opacity: 1, strokeColor: '#000000', fillColor: '#ffffff' };
+	    this.style = { strokeWidth: 1, opacity: 1, strokeColor: '#000000', fillColor: '#ffffff', shadowColor: '', shadowBlur: 0 };
 	}
 
 	//extend from EventListener
@@ -4056,7 +4078,44 @@ if (CanvasRenderingContext2D) { ( function() {
 	    
 	    return cloned;
 	}
-
+	
+	/**
+	 * Get svg code for this object.
+	 * 
+	 * @method svg
+	 * 
+	 * @return {String} svg code string.
+	 **/
+	p.svg = function() {
+		var data = this.shapes.data, l = data.length, svg = '<g transform="' + this.matrix.svg() + '">\n',
+			style = this.style, fill = style.fillColor, i;
+		
+		if (fill instanceof Gradient) {
+			var type = fill.type(), stops = fill.getStopIndexes(), id = getUniqId();
+			
+			svg += '\t<' + type + 'Gradient id="gr' + id + '">\n';
+			
+			for (i = 0; i < stops.length; i++) {
+				svg += '\t\t<stop stop-color="' + fill.getStopColor(stops[i]) + '" offset="' + stops[i] * 100 + '%" />\n';
+			}
+			
+			svg += '\t</' + type + 'Gradient>\n';
+			fill = 'url(#gr' + id + ')';
+		}
+		
+		for (i = 0; i < l; i++) {
+			var d = data[i].svg();
+			
+			if (d) svg += '\t<path stroke="' + style.strokeColor +
+								  '" fill="' + fill +
+						  '" stroke-width="' + style.strokeWidth +
+						  	   '" opacity="' + style.opacity +
+						  	   		 '" d="' + d + '" />\n';
+		}
+		
+		return svg + '</g>';
+	}
+	
 	/**
 	 * Returns a string representation of this object.
 	 * 
@@ -4160,15 +4219,19 @@ if (CanvasRenderingContext2D) { ( function() {
 	 **/
 	p.draw = function() {
 	    if (this.layer && this.visible) {
-	    	var ctx = this.layer.ctx, img = this.image;
+	    	var ctx = this.layer.ctx, img = this.image, style = this.style;
 		    
-			ctx.globalAlpha = this.style.opacity;
+	    	if (style.shadowColor) {
+	    		ctx.shadowColor = style.shadowColor;
+	    		ctx.shadowBlur = style.shadowBlur;
+	    	}
+	    	
+			ctx.globalAlpha = style.opacity;
 		    ctx.oc_setTransform(this.matrix);
 		    ctx.drawImage(img, 0, 0, img.width, img.height);
 	    }
 	}
-
-
+	
 	/**
 	 * Clone this Bitmap.
 	 * 
@@ -4181,7 +4244,21 @@ if (CanvasRenderingContext2D) { ( function() {
 	    cloned.matrixTransform(this.matrix);
 	    return cloned;
 	}
-
+	
+	/**
+	 * Get svg code for this object.
+	 * 
+	 * @method svg
+	 * 
+	 * @return {String} svg code string.
+	 **/
+	p.svg = function() {
+		var img = this.image;
+		
+		return '<image preserveAspectRatio="none" width="' + img.width + 'px" height="' + img.height + 'px" opacity="' +
+				this.style.opacity + '" transform="' + this.matrix.svg() + '" xlink:href="' + img.src + '"></image>';
+	}
+	
 	/**
 	 * Returns a string representation of this object.
 	 * 
@@ -4367,7 +4444,51 @@ if (CanvasRenderingContext2D) { ( function() {
 		cloned.matrixTransform(this.matrix);
 		return cloned;
 	}
-
+	
+	/**
+	 * Get svg code for this object.
+	 * 
+	 * @method svg
+	 * 
+	 * @return {String} svg code string.
+	 **/
+	p.svg = function() {
+		var data = this.shapes.data, l = data.length, style = this.style, fill = style.fillColor, i,
+			
+			fnt = 'fontFamily:' + style.fontFamily +
+				   ',fontSize:' + style.fontSize +
+				 ',fontWeight:' + style.fontWeight +
+				  ',fontStyle:' + style.fontStyle +
+				  ',textAlign:' + style.textAlign,
+			
+			svg = '<g txt-text="' + this.text + '" txt-style="' + fnt + '" transform="' + this.matrix.svg() + '">\n';
+	
+		if (fill instanceof Gradient) {
+			var type = fill.type(), stops = fill.getStopIndexes(), id = getUniqId();
+			
+			svg += '\t<' + type + 'Gradient id="gr' + id + '">\n';
+			
+			for (i = 0; i < stops.length; i++) {
+				svg += '\t\t<stop stop-color="' + fill.getStopColor(stops[i]) + '" offset="' + stops[i] * 100 + '%" />\n';
+			}
+			
+			svg += '\t</' + type + 'Gradient>\n';
+			fill = 'url(#gr' + id + ')';
+		}
+		
+		for (i = 0; i < l; i++) {
+			var d = data[i].svg();
+			
+			if (d) svg += '\t<path stroke="' + style.strokeColor +
+								  '" fill="' + fill +
+						  '" stroke-width="' + style.strokeWidth +
+						  	   '" opacity="' + style.opacity +
+						  	   		 '" d="' + d + '" />\n';
+		}
+		
+		return svg + '</g>';
+	}
+	
 	/**
 	 * Returns a string representation of this object.
 	 * 
@@ -4404,7 +4525,7 @@ if (CanvasRenderingContext2D) { ( function() {
 		
 		ajax.open('GET', url, false);
 		ajax.send(null);
-			
+		
 	    return ajax.responseText;
 	}
 	
@@ -4647,1205 +4768,4 @@ if (CanvasRenderingContext2D) { ( function() {
 	
 	//set up for global use
 	window.SvgParser = SvgParser;
-}() );
-/*
- * Widget by OlegoS, 15 Jul 2013
- *
- * Base widget class.
- */
-
-
-//ANONYMOUS FUNCTION WRAPPER
-( function() {
-//PRIVATE
-	//add hidden div to calculate widget metrics
-	var _metrics;
-	
-	function _addHD() {
-		document.removeEventListener("DOMContentLoaded", _addHD, false);
-		
-		_metrics = document.createElement('div');
-		_metrics.style.position = 'absolute';
-		_metrics.style.top = _metrics.style.left = '0';
-		_metrics.style.visibility = 'hidden';
-		
-		document.body.appendChild(_metrics);
-	}
-	
-	document.addEventListener("DOMContentLoaded", _addHD, false);
-	
-	
-//CONSTRUCTOR
-	/**
-	 * Base widget class. All widgets must be inherited from it.
-	 * 
-	 * All HTML structure is stored in 'html' object property and can be extended in realtime
-	 * by html elements or widgets. By default, it has only 'container' and 'content' elements,
-	 * which refer to the same 'div' element.
-	 * 
-	 * All DOM manipulations affect html.container and child elements are added to html.content.
-	 * Child element can be either html element or another widget.
-	 * 
-	 * CSS schemes are highly recomended to be used for visual theming. Default CSS prefix is 'owl_'.
-	 *
-	 * @class Widget
-	 * @author OlegoS
-	 *
-	 * @constructor
-	 **/
-	var Widget = function() {
-		/**
-		 * Metrics calculation element.
-		 * 
-		 * @property _metrics
-		 * @type Object
-		 * 
-		 * @private
-		 **/
-		this._metrics = _metrics;
-		
-		/**
-		 * Parent widget or html element reference.
-		 * 
-		 * @property parent
-		 * @type Widget
-		 **/
-		this.parent = null;
-		
-		/**
-	     * Inner HTML structure. Can contain other widgets too.
-	     * Must have container and content, which are the same by default.
-	     * 
-	     * @property html
-	     * @type Object
-	     **/
-	    this.html = { container: document.createElement('div') };
-	    
-	    //initialize html structure
-	    var html = this.html;
-		html.content = html.container;
-		
-		html.container.className = 'owl_widget';
-		html.container._widget_ = this;
-	}
-	
-	
-//STATIC
-	
-	
-//PROTOTYPE
-	//get prototype reference
-	var p = Widget.prototype;
-	
-	/**
-	 * Append this widget to another widget or html element.
-	 * 
-	 * @method appendTo
-	 * @param {Widget} w - parent widget.
-	 * 
-	 * @return {Widget} this for chaining.
-	 **/
-	p.appendTo = function(w) {
-		this.parent = w;
-		
-		if (w.html) w = w.html.content;
-		w.appendChild(this.html.container);
-		
-		return this;
-	}
-	
-	/**
-	 * Append child widget or html element to this widget.
-	 * 
-	 * @method append
-	 * @param {Widget} w - child widget.
-	 * 
-	 * @return {Widget} this for chaining.
-	 **/
-	p.append = function(w) {
-		if (w.html) {
-			w.parent = this;
-			w = w.html.container;
-		}
-		
-		this.html.content.appendChild(w);
-		return this;
-	}
-	
-	/**
-	 * Insert this widget to DOM before another widget or html element.
-	 * 
-	 * @method insertBefore
-	 * @param {Widget} w - near widget.
-	 * 
-	 * @return {Widget} this for chaining.
-	 **/
-	p.insertBefore = function(w) {
-		var next;
-		
-		if (w.html) {
-			next = w.html.container;
-			w = w.parent;
-		} else {
-			next = w;
-			w = w.parentNode;
-		}
-		
-		if (w) {
-			this.parent = w;
-			if (w.html) w = w.html.content;
-			w.insertBefore(this.html.container, next);
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * Insert this widget to DOM after another widget or html element.
-	 * 
-	 * @method insertAfter
-	 * @param {Widget} w - near widget.
-	 * 
-	 * @return {Widget} this for chaining.
-	 **/
-	p.insertAfter = function(w) {
-		var next;
-		
-		if (w.html) {
-			next = w.html.container.nextSibling;
-			w = w.parent;
-		} else {
-			next = w.nextSibling;
-			w = w.parentNode;
-		}
-		
-		if (w) {
-			this.parent = w;
-			if (w.html) w = w.html.content;
-			if (next) w.insertBefore(this.html.container, next); else w.appendChild(this.html.container);
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * Remove this widget with all its children from DOM.
-	 * 
-	 * @method remove
-	 * 
-	 * @return {Widget} this for chaining.
-	 **/
-	p.remove = function() {
-		var w = this.parent;
-		
-		if (w) {
-			var container = this.html.container;
-			
-			if (w.html) w = w.html.content;
-			w.removeChild(container);
-			
-			this.parent = null;
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * Get/Set widget's DOM properties.
-	 * 
-	 * @method prop
-	 * @param {Object} prop - properties object, { prop: value, ... }.
-	 * 
-	 * @return {Object} this for chaining or container reference, when called without arguments.
-	 **/
-	p.prop = function(prop) {
-		if (!prop) return this.html.container;
-		
-		var container = this.html.container, p;
-		for (p in prop) container[p] = prop[p];
-		
-		return this;
-	}
-	
-	/**
-	 * Get/Set CSS rules for widget. Manipulations allways apply to html.container.style, but
-	 * if widget is inserted to DOM - computed style is returned, if not - html.container.style.
-	 * 
-	 * @method css
-	 * @param {Object} css - css object, { style: value, ... }.
-	 * 
-	 * @return {Object} this for chaining or css reference, when called without arguments.
-	 **/
-	p.css = function(css) {
-		if (!css) return (this.parent == null ? this.html.container.style : getComputedStyle(this.html.container, ''));
-		
-		var style = this.html.container.style, p;
-		for (p in css) style[p] = css[p];
-		
-		return this;
-	}
-	
-	/**
-	 * Add CSS class to widget.
-	 * 
-	 * @method addClass
-	 * @param {String} name - class name.
-	 * 
-	 * @return {Widget} this for chaining.
-	 **/
-	p.addClass = function(name) {
-		var container = this.html.container;
-
-		if (container.className.indexOf(name) == -1) container.className += ' ' + name;
-		return this;
-	}
-	
-	/**
-	 * Remove CSS class from widget.
-	 * 
-	 * @method removeClass
-	 * @param {String} name - class name.
-	 * 
-	 * @return {Widget} this for chaining.
-	 **/
-	p.removeClass = function(name) {
-		var container = this.html.container;
-		
-		container.className = container.className.replace(name, "");
-		return this;
-	}
-	
-	/**
-	 * Check CSS class existance for widget.
-	 * 
-	 * @method hasClass
-	 * @param {String} name - class name.
-	 * 
-	 * @return {Boolean} true if widget has class or false otherwise.
-	 **/
-	p.hasClass = function(name) {
-		return (this.html.container.className.indexOf(name) != -1);
-	}
-	
-	/**
-	 * Show widget - make it visible.
-	 * 
-	 * @method show
-	 * 
-	 * @return {Widget} this for chaining.
-	 **/
-	p.show = function() {
-		return this.removeClass('owl_hidden').addClass('owl_visible');
-	}
-	
-	/**
-	 * Hide widget - make it invisible.
-	 * 
-	 * @method hide
-	 * 
-	 * @return {Widget} this for chaining.
-	 **/
-	p.hide = function() {
-		return this.removeClass('owl_visible').addClass('owl_hidden');
-	}
-	
-	/**
-	 * Get/Set html inside widget.
-	 * 
-	 * @method innerHtml
-	 * @param {String} html - html string.
-	 * 
-	 * @return {Object} this for chaining or html content, if called without arguments.
-	 **/
-	p.innerHtml = function(html) {
-		if (arguments.length == 0) return this.html.content.innerHTML;
-		
-		this.html.content.innerHTML = html;
-		return this;
-	}
-	
-	/**
-	 * Get/Set text inside widget.
-	 * 
-	 * @method text
-	 * @param {String} txt - text string.
-	 * 
-	 * @return {Object} this for chaining or text content, if called without arguments.
-	 **/
-	p.text = function(txt) {
-		if (arguments.length == 0) return this.html.content.textContent;
-		
-		this.html.content.textContent = txt;
-		return this;
-	}
-	
-	/**
-	 * Get/Set widget position in pixels inside parent element.
-	 * 
-	 * @method pos
-	 * @param {Number} x - left coord.
-	 * @param {Number} y - top coord.
-	 * @param {String} type - positioning type, 'relative' or 'absolute'.
-	 * 
-	 * @return {Object} this for chaining or position inside parent widget as { x: x, y: y }, when called without arguments.
-	 **/
-	p.pos = function(x, y, type) {
-		if (arguments.length < 2) return { x: this.html.container.offsetLeft, y: this.html.container.offsetTop };
-		
-		var style = this.html.container.style;
-		
-		if (type == 'absolute' || type == 'relative') style.position = type;
-		style.left = x + 'px'; style.top = y + 'px';
-		
-		return this;
-	}
-	
-	/**
-	 * Get/Set x widget coord in pixels inside parent element.
-	 * 
-	 * @method x
-	 * @param {Number} x - left coord.
-	 * 
-	 * @return {Object} this for chaining or current x coord inside parent widget, when called without arguments.
-	 **/
-	p.x = function(x) {
-		if (arguments.length == 0) return this.html.container.offsetLeft;
-		
-		this.html.container.style.left = x + 'px';
-		return this;
-	}
-	
-	/**
-	 * Get/Set y widget coord in pixels inside parent element.
-	 * 
-	 * @method y
-	 * @param {Number} y - top coord.
-	 * 
-	 * @return {Object} this for chaining or current y coord inside parent widget, when called without arguments.
-	 **/
-	p.y = function(y) {
-		if (arguments.length == 0) return this.html.container.offsetTop;
-		
-		this.html.container.style.top = y + 'px';
-		return this;
-	}
-	
-	/**
-	 * Get/Set widget size in pixels. This size is a full outer dimensions of the widget.
-	 * Correct size is returned only if widget exists in DOM.
-	 * 
-	 * @method size
-	 * @param {Number} w - width.
-	 * @param {Number} h - height.
-	 * 
-	 * @return {Object} this for chaining or widget size as { width: width, height: height }, when called without arguments.
-	 **/
-	p.size = function(w, h) {
-		var ctr = this.html.container;
-		if (arguments.length < 2) return { width: ctr.offsetWidth, height: ctr.offsetHeight };
-		
-		var css;
-		
-		if ( document.body.contains(ctr) ) {
-			css = getComputedStyle(ctr, '');
-			ctr.style.width = w - (ctr.offsetWidth - parseInt(css.width)) + 'px';
-			ctr.style.height = h - (ctr.offsetHeight - parseInt(css.height)) + 'px';
-		} else {
-			this._metrics.appendChild(ctr);
-			
-			css = getComputedStyle(ctr, '');
-			ctr.style.width = w - (ctr.offsetWidth - parseInt(css.width)) + 'px';
-			ctr.style.height = h - (ctr.offsetHeight - parseInt(css.height)) + 'px';
-			
-			this._metrics.removeChild(ctr);
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * Get/Set outer widget width in pixels.
-	 * Correct width is returned only if widget exists in DOM.
-	 * 
-	 * @method width
-	 * @param {Number} w - width.
-	 * 
-	 * @return {Object} this for chaining or current width, when called without arguments.
-	 **/
-	p.width = function(w) {
-		if (arguments.length == 0) return this.html.container.offsetWidth;
-		
-		var ctr = this.html.container;
-		
-		if ( document.body.contains(ctr) ) {
-			ctr.style.width = w - (ctr.offsetWidth - parseInt(getComputedStyle(ctr, '').width)) + 'px';
-		} else {
-			this._metrics.appendChild(ctr);
-			ctr.style.width = w - (ctr.offsetWidth - parseInt(getComputedStyle(ctr, '').width)) + 'px';
-			this._metrics.removeChild(ctr);
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * Get/Set outer widget height in pixels.
-	 * Correct height is returned only if widget exists in DOM.
-	 * 
-	 * @method height
-	 * @param {Number} h - height.
-	 * 
-	 * @return {Object} this for chaining or current height, when called without arguments.
-	 **/
-	p.height = function(h) {
-		if (arguments.length == 0) return this.html.container.offsetHeight;
-		
-		var ctr = this.html.container;
-		
-		if ( document.body.contains(ctr) ) {
-			ctr.style.height = h - (ctr.offsetHeight - parseInt(getComputedStyle(ctr, '').height)) + 'px';
-		} else {
-			this._metrics.appendChild(ctr);
-			ctr.style.height = h - (ctr.offsetHeight - parseInt(getComputedStyle(ctr, '').height)) + 'px';
-			this._metrics.removeChild(ctr);
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * Add DOM event handler to widget.
-	 * Event is added to html.container. Use its _widget_ property to access widget.
-	 * 
-	 * @method addEvent
-	 * @param {String} type - event type.
-	 * @param {Function} handler - event handler.
-	 * 
-	 * @return {Widget} this for chaining.
-	 **/
-	p.addEvent = function(type, handler) {
-		this.html.container.addEventListener(type, handler, false);
-		return this;
-	}
-	
-	/**
-	 * Remove DOM event handler from widget.html.container.
-	 * 
-	 * @method removeEvent
-	 * @param {String} type - event type.
-	 * @param {Function} handler - event handler.
-	 * 
-	 * @return {Widget} this for chaining.
-	 **/
-	p.removeEvent = function(type, handler) {
-		this.html.container.removeEventListener(type, handler, false);
-		return this;
-	}
-	
-	/**
-	 * Return a string representation of this object.
-	 * 
-	 * @method toString
-	 * 
-	 * @return {String} a string representation of this object.
-	 **/
-	p.toString = function() {
-	    return "[Widget]";
-	}
-	
-	//set up for global use
-	window.Widget = Widget;
-}() );
-/*
- * PopUp by OlegoS, 19 May 2013
- *
- * Draggable popup window.
- */
-
-
-//ANONYMOUS FUNCTION WRAPPER
-( function() {
-//PRIVATE
-	//drag & drop handlers
-	var sx = 0, sy = 0, popup = null;
-	
-	function startDrag(e) {
-		sx = e.pageX; sy = e.pageY; popup = e.currentTarget._popup_;
-		$(document).bind('mousemove', drag).bind('mouseup', stopDrag);
-	}
-	
-	function drag(e) {
-		popup.move(e.pageX - sx, e.pageY - sy);
-		sx = e.pageX; sy = e.pageY;
-	}
-	
-	function stopDrag(e) {
-		$(document).unbind('mousemove', drag).unbind('mouseup', stopDrag);
-	}
-	
-	//close button handlers
-	function preventDrag(e) { e.stopPropagation(); }
-	function closePopup(e) { e.currentTarget._popup_.close(); }
-	
-	
-//CONSTRUCTOR
-	/**
-	 * Draggable popup window.
-	 *
-	 * @class PopUp
-	 * @super DomWidget
-	 * @author OlegoS
-	 *
-	 * @constructor
-	 * @param {Number} x - x position.
-	 * @param {Number} y - y position.
-	 * @param {Number} width - initial width.
-	 * @param {Number} height - initial height.
-	 **/
-	var PopUp = function(x, y, width, height) {
-		/**
-	     * X position.
-	     * 
-	     * @property x
-	     * @type Number
-	     **/
-	    this.x = 0;
-	    
-	    /**
-	     * Y position.
-	     * 
-	     * @property y
-	     * @type Number
-	     **/
-	    this.y = 0;
-	    
-	    /**
-	     * Width.
-	     * 
-	     * @property width
-	     * @type Number
-	     **/
-	    this.width = 0;
-	    
-	    /**
-	     * Height.
-	     * 
-	     * @property height
-	     * @type Number
-	     **/
-	    this.height = 0;
-	    
-	    /**
-	     * Close handler.
-	     * 
-	     * @property onClose
-	     * @type Function
-	     **/
-	    this.onClose = null;
-		
-		/**
-	     * Inner HTML structure.
-	     * 
-	     * @property html
-	     * @type Object
-	     **/
-	    this.html = { container: $("<div class='popup_wnd'></div>")[0] };
-		
-		//craate popup elements
-		var html = this.html;
-		
-		html.titleBar = $("<div class='popup_title'></div>").appendTo(html.container)[0];
-		html.titleTxt = $("<div>Window title</div>").appendTo(html.titleBar)[0];
-		html.closeBtn = $("<div class='popup_closer icon-remove'></div>").appendTo(html.titleBar)[0];
-		html.content = $("<div class='ed_popup_content'></div>").appendTo(html.container)[0];
-		
-		//update popup size and position
-		this.pos(x, y).size(width, height).open();
-		
-		//setup drag & drop and close events
-		html.closeBtn._popup_ = html.titleBar._popup_ = this;
-		
-		$(html.titleBar).mousedown(startDrag);
-		$(html.closeBtn).mousedown(preventDrag).click(closePopup);
-	}
-	
-	
-//STATIC
-	
-	
-//PROTOTYPE
-	//get prototype reference
-	var p = PopUp.prototype;
-	
-	/**
-	 * Append html element to popup.
-	 * 
-	 * @method append
-	 * @param {Object} el - html element.
-	 * 
-	 * @return {PopUp} this for chaining.
-	 **/
-	p.append = function(el) {
-		if (el.html && el.html.container) el = el.html.container;
-		$(this.html.content).append(el);
-		return this;
-	}
-	
-	/**
-	 * Append html element to popup.
-	 * 
-	 * @method append
-	 * @param {String} txt - title text.
-	 * 
-	 * @return {PopUp} this for chaining.
-	 **/
-	p.setTitle = function(txt) {
-		$(this.html.titleTxt).text(txt);
-		return this;
-	}
-	
-	/**
-	 * Open popup.
-	 * 
-	 * @method open
-	 * 
-	 * @return {PopUp} this for chaining.
-	 **/
-	p.open = function() {
-		$(this.html.container).appendTo($('body')[0]);
-		return this;
-	}
-	
-	/**
-	 * Close popup.
-	 * 
-	 * @method close
-	 * 
-	 * @return {PopUp} this for chaining.
-	 **/
-	p.close = function() {
-		if (this.onClose) this.onClose();
-		$(this.html.container).detach();
-		return this;
-	}
-	
-	/**
-	 * Set popup size.
-	 * 
-	 * @method size
-	 * @param {Number} width - width.
-	 * @param {Number} height - height.
-	 * 
-	 * @return {PopUp} this for chaining.
-	 **/
-	p.size = function(width, height) {
-		if (width != null) {
-			this.width = width;
-			$(this.html.container).css({ width: width });
-			
-			$(this.html.titleBar).css({ width: width - 45 });
-			$(this.html.content).css({ width: width });
-			
-			$(this.html.closeBtn).css({ left: width - 33 });
-		}
-		
-		if (height != null) {
-			this.height = height;
-			$(this.html.container).css({ height: height + 54 });
-			$(this.html.content).css({ height: height });
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * Set popup position.
-	 * 
-	 * @method pos
-	 * @param {Number} x - x position.
-	 * @param {Number} y - y position.
-	 * 
-	 * @return {PopUp} this for chaining.
-	 **/
-	p.pos = function(x, y) {
-		this.x = x; this.y = y;
-		$(this.html.container).css({ top: y, left: x });
-		return this;
-	}
-	
-	/**
-	 * Move popup by deltas.
-	 * 
-	 * @method move
-	 * @param {Number} dx - x delta.
-	 * @param {Number} dy - y delta.
-	 * 
-	 * @return {PopUp} this for chaining.
-	 **/
-	p.move = function(dx, dy) {
-		this.pos(this.x + dx, this.y + dy);
-		return this;
-	}
-	
-	/**
-	 * Return a string representation of this object.
-	 * 
-	 * @method toString
-	 * 
-	 * @return {String} a string representation of this object.
-	 **/
-	p.toString = function() {
-	    return "[PopUp]";
-	}
-	
-	//set up for global use
-	window.PopUp = PopUp;
-}() );
-/*
- * TabSwitch by OlegoS, 19 May 2013
- *
- * Simple multitab div.
- */
-
-
-//ANONYMOUS FUNCTION WRAPPER
-( function() {
-//PRIVATE
-	
-	
-//CONSTRUCTOR
-	/**
-	 * Simple multitab div.
-	 *
-	 * @class TabSwitch
-	 * @super DomWidget
-	 * @author OlegoS
-	 *
-	 * @constructor
-	 **/
-	var TabSwitch = function() {
-		//initialize base class
-		DomWidget.call(this);
-	    
-	    /**
-	     * Selected tab reference.
-	     * 
-	     * @property selected
-	     * @type Object
-	     **/
-	    this.selected = null;
-	    
-	    //create tabswitch elements
-	    var html = this.html, tabSwitch = html.container;
-	    
-	    html.tabsBar = $("<div class='dw_tab_switch_bar'></div>").appendTo(tabSwitch)[0];
-	    html.content = $("<div class='dw_tab_switch_content'></div>").appendTo(tabSwitch)[0];
-	}
-	
-	//extend from DomWidget
-	inheritProto(TabSwitch, DomWidget);
-	
-	
-//STATIC
-	
-	
-//PROTOTYPE
-	//get prototype reference
-	var p = TabSwitch.prototype;
-	
-	/**
-	 * Add tab. Name is used in css and js to determine tab style and code.
-	 * 
-	 * @method addTab
-	 * @param {String} name - tab name for inner use.
-	 * @param {String} title - tab title is displayed on tab button. If omitted, name is used.
-	 * 
-	 * @return {Object} this for chaining.
-	 **/
-	p.addTab = function(name, title) {
-		var self = this, html = self.html, txt = title || name, tabBtn;
-		
-		html[name + 'Tab'] = $("<div class='dw_tab_switch_content_new'></div>").appendTo(html.content)[0];
-		html[name + 'TabBtn'] = $("<div class='dw_tab_switch_btn'>" + txt + "</div>").appendTo(html.tabsBar)[0];
-			
-		tabBtn = html[name + 'TabBtn'];
-		tabBtn._content_ = html[name + 'Tab'];
-		
-		$(tabBtn).click(function() {
-			if (self.selected) {
-				$(self.selected).removeClass('dw_tab_switch_btn_active');
-				$(self.selected._content_).css({ visibility: 'hidden' });
-			}
-			
-			self.selected = this;
-			$(this).addClass('dw_tab_switch_btn_active');
-			$(this._content_).css({ visibility: 'visible' });
-		});
-		
-		return this;
-	}
-	
-	/**
-	 * Inner set width method.
-	 * 
-	 * @method _setWidth
-	 * @private
-	 * @param {Number} width - width.
-	 **/
-	p._setWidth = function(width) {
-		var html = this.html;
-		
-		$(html.tabsBar).css({ width: width - 1 });
-		$(html.content).css({ width: width - 2 });
-	}
-	
-	/**
-	 * Inner set height method.
-	 * 
-	 * @method _setHeight
-	 * @private
-	 * @param {Number} height - height.
-	 **/
-	p._setHeight = function(height) {
-		var html = this.html;
-		
-		$(html.container).css({ height: height + 25 });
-		$(html.content).css({ height: height });
-	}
-	
-	/**
-	 * Return a string representation of this object.
-	 * 
-	 * @method toString
-	 * 
-	 * @return {String} a string representation of this object.
-	 **/
-	p.toString = function() {
-	    return "[TabSwitch]";
-	}
-	
-	//set up for global use
-	window.TabSwitch = TabSwitch;
-}() );
-/*
- * ComboBox by OlegoS, 06 Jun 2013
- *
- * Combobox widget.
- */
-
-
-//ANONYMOUS FUNCTION WRAPPER
-( function() {
-//PRIVATE
-	//toggle combo select
-	function toggleSelect() { $(this._widget_.html.content).toggleClass('dw_combo_select_open'); }
-	
-	//select item
-	function selectItem() { this._widget_.selectItem(this); $(this._widget_.html.content).removeClass('dw_combo_select_open'); }
-	
-	
-//CONSTRUCTOR
-	/**
-	 * Combobox widget.
-	 *
-	 * @class ComboBox
-	 * @super DomWidget
-	 * @author OlegoS
-	 *
-	 * @constructor
-	 **/
-	var ComboBox = function() {
-		//initialize base class
-		DomWidget.call(this);
-		
-		/**
-		 * Items array.
-		 * 
-		 * @property items
-		 * @type Array
-		 **/
-		this.items = [];
-		
-		/**
-		 * Item select callback.
-		 * 
-		 * @property onSelect
-		 * @type Function
-		 **/
-		this.onSelect = null;
-		
-		//init html
-		this.addClass('dw_combo');
-		
-		var html = this.html, container = html.container;
-		
-		html.label = $("<div class='dw_combo_label'></div>").appendTo(container)[0];
-		html.button = $("<div class='dw_combo_btn'></div>").click(toggleSelect).appendTo(container)[0];
-		html.button._widget_ = this;
-		html.content = $("<div class='dw_combo_select'></div>").appendTo(container)[0];
-		
-		this.size(150, 20);
-	}
-	
-	//extend from DomWidget
-	inheritProto(ComboBox, DomWidget);
-	
-	
-//STATIC
-	
-	
-//PROTOTYPE
-	//get prototype reference
-	var p = ComboBox.prototype;
-	
-	/**
-	 * Get/Set combo label.
-	 * 
-	 * @method label
-	 * @param {String} label - new label.
-	 * 
-	 * @return {Object} this for chaining or label if no arguments.
-	 **/
-	p.label = function(label) {
-		if (arguments.length == 0) return $(this.html.label).text();
-		
-		$(this.html.label).text(label);
-		return this;
-	}
-	
-	/**
-	 * Add select text item.
-	 * 
-	 * @method addItem
-	 * @param {String} item - new item.
-	 * 
-	 * @return {Object} this for chaining.
-	 **/
-	p.addItem = function(item) {
-		var html = this.html, item = $("<div class='dw_combo_item'>" + item + "</div>").click(selectItem).appendTo(html.content)[0];
-		
-		item._widget_ = this;
-		this.items.push(item);
-		
-		if (!html.selected) this.selectItem(item);
-		return this;
-	}
-	
-	/**
-	 * Select item.
-	 * 
-	 * @method selectItem
-	 * @param {Object} item - item to be selected.
-	 * 
-	 * @return {Object} this for chaining.
-	 **/
-	p.selectItem = function(item) {
-		var html = this.html;
-		if (html.selected) $(html.selected).removeClass('dw_combo_item_selected');
-		
-		html.selected = item;
-		this.label($(item).addClass('dw_combo_item_selected').text());
-		
-		if (this.onSelect) this.onSelect(html.selected);
-		return this;
-	}
-	
-	/**
-	 * Inner set width method.
-	 * 
-	 * @method _setWidth
-	 * @private
-	 * @param {Number} width - width.
-	 **/
-	p._setWidth = function(width) {
-		var html = this.html;
-		
-		$(html.label).css({ width: width - 28 });
-		$(html.content).css({ width: width });
-	}
-	
-	/**
-	 * Inner set height method.
-	 * 
-	 * @method _setHeight
-	 * @private
-	 * @param {Number} height - height.
-	 **/
-	p._setHeight = function(height) {
-		$(this.html.label).css({ height: height, lineHeight: height + 'px' });
-	}
-	
-	/**
-	 * Return a string representation of this object.
-	 * 
-	 * @method toString
-	 * 
-	 * @return {String} a string representation of this object.
-	 **/
-	p.toString = function() {
-	    return "[ComboBox]";
-	}
-	
-	//set up for global use
-	window.ComboBox = ComboBox;
-}() );
-/*
- * Button by OlegoS, 07 Jun 2013
- *
- * Button widget.
- */
-
-
-//ANONYMOUS FUNCTION WRAPPER
-( function() {
-//PRIVATE
-	
-	
-//CONSTRUCTOR
-	/**
-	 * Button widget.
-	 *
-	 * @class Button
-	 * @super DomWidget
-	 * @author OlegoS
-	 *
-	 * @constructor
-	 **/
-	var Button = function() {
-		//initialize base class
-		DomWidget.call(this);
-		
-		//init html
-		this.addClass('dw_button').size(80, 28);
-	}
-	
-	//extend from DomWidget
-	inheritProto(Button, DomWidget);
-	
-	
-//STATIC
-	
-	
-//PROTOTYPE
-	//get prototype reference
-	var p = Button.prototype;
-	
-	/**
-	 * Get/Set combo label.
-	 * 
-	 * @method label
-	 * @param {String} label - new label.
-	 * 
-	 * @return {Object} this for chaining or label if no arguments.
-	 **/
-	p.label = function(label) {
-		if (arguments.length == 0) return $(this.html.content).text();
-		
-		$(this.html.content).text(label);
-		return this;
-	}
-	
-	/**
-	 * Inner set height method.
-	 * 
-	 * @method _setHeight
-	 * @private
-	 * @param {Number} height - height.
-	 **/
-	p._setHeight = function(height) {
-		$(this.html.content).css({ lineHeight: height + 'px' });
-	}
-	
-	/**
-	 * Return a string representation of this object.
-	 * 
-	 * @method toString
-	 * 
-	 * @return {String} a string representation of this object.
-	 **/
-	p.toString = function() {
-	    return "[Button]";
-	}
-	
-	//set up for global use
-	window.Button = Button;
-}() );
-/*
- * Palette by OlegoS, 4 Jun 2013
- *
- * Selectable color palette.
- */
-
-
-//ANONYMOUS FUNCTION WRAPPER
-( function() {
-//PRIVATE
-	//palette color set
-	var colors = [
-		'#ffffff', '#000000', '#ff0000', '#f26522', '#ffff00', '#006600', '#00cc00', '#33ccff', '#000099', '#0000ff', '#ff00ff', '#ff6699', '#603913', '#800000',
-		'#ebebeb', '#e1e1e1', '#d7d7d7', '#cbcbcb', '#c2c2c2', '#b7b7b7', '#acacac', '#a0a0a0', '#959595', '#898989', '#7d7d7d', '#707070', '#626262', '#555555',
-		'#464646', '#2b2b2b', '#262626', '#111111', '#000000', '#c7b299', '#998675', '#736357', '#534741', '#37302d', '#37302d', '#c69c6e', '#a67c52', '#8c6239',
-		'#754c24', '#603913', '#003366', '#336699', '#3366cc', '#003399', '#000099', '#0000cc', '#000066', '#006666', '#006699', '#0099cc', '#0066cc', '#0033cc',
-		'#0000ff', '#3333ff', '#333399', '#008080', '#009999', '#33cccc', '#00ccff', '#0099ff', '#0066ff', '#3366ff', '#3333cc', '#666699', '#339966', '#00cc99',
-		'#00ffcc', '#00ffff', '#33ccff', '#3399ff', '#6699ff', '#6666ff', '#6600ff', '#6600cc', '#339933', '#00cc66', '#00ff99', '#66ffcc', '#66ffff', '#66ccff',
-		'#99ccff', '#9999ff', '#9966ff', '#9933ff', '#9900ff', '#006600', '#00cc00', '#00ff00', '#66ff99', '#99ffcc', '#ccffff', '#ccecff', '#ccccff', '#cc99ff',
-		'#cc66ff', '#cc00ff', '#9900cc', '#003300', '#008000', '#33cc33', '#66ff66', '#99ff99', '#ccffcc', '#ffffff', '#ffccff', '#ff99ff', '#ff66ff', '#cc00cc',
-		'#660066', '#336600', '#009900', '#66ff33', '#99ff66', '#ccff99', '#ffffcc', '#ffcccc', '#ff99cc', '#ff66cc', '#ff33cc', '#cc0099', '#800080', '#333300',
-		'#669900', '#99ff33', '#ccff66', '#ffff99', '#ffcc99', '#ff9999', '#ff6699', '#ff3399', '#cc3399', '#990099', '#666633', '#99cc00', '#ccff33', '#ffff66',
-		'#ffcc66', '#ff9966', '#ff7c80', '#ff0066', '#d60093', '#993366', '#808000', '#cccc00', '#ffcc00', '#ff9933', '#ff6600', '#ff5050', '#cc0066', '#660033',
-		'#996633', '#cc9900', '#ff9900', '#cc6600', '#ff3300', '#cc0000', '#990033', '#663300', '#996600', '#cc3300', '#993300', '#990000', '#800000', '#a50021'
-	];
-	
-	//color element hover
-	function colorOver() { $(this).css('border-color', '#ff6a0a'); }
-	function colorOut() { $(this).css('border-color', $(this).css('background-color')); }
-	
-	
-//CONSTRUCTOR
-	/**
-	 * Selectable color palette.
-	 *
-	 * @class Palette
-	 * @super DomWidget
-	 * @author OlegoS
-	 *
-	 * @constructor
-	 **/
-	var Palette = function() {
-		//initialize base class
-		DomWidget.call(this);
-		
-		//init html
-		this.addClass('dw_pal').size(80, 28);
-	    
-	    for (var i = 0, l = colors.length, pal = this.html.container, c; i < l; i++) {
-	    	c = colors[i];
-	    	$("<div class='dw_pal_color'></div>").css({ borderColor: c, backgroundColor: c }).hover(colorOver, colorOut).appendTo(pal);
-	    }
-	}
-	
-	//extend from DomWidget
-	inheritProto(Palette, DomWidget);
-	
-	
-//STATIC
-	
-	
-//PROTOTYPE
-	//get prototype reference
-	var p = Palette.prototype;
-	
-	/**
-	 * Return a string representation of this object.
-	 * 
-	 * @method toString
-	 * 
-	 * @return {String} a string representation of this object.
-	 **/
-	p.toString = function() {
-	    return "[Palette]";
-	}
-	
-	//set up for global use
-	window.Palette = Palette;
 }() );

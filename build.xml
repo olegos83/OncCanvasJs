@@ -45,18 +45,6 @@
 			<filelist dir="Source/Gl/Svg/">
 				<file name="SvgParser.js"/>
 			</filelist>
-			
-			<filelist dir="Source/Widgets/">
-				<file name="Widget.js"/>
-				
-				<file name="PopUp.js"/>
-				<file name="TabSwitch.js"/>
-				
-				<file name="ComboBox.js"/>
-				<file name="Button.js"/>
-				
-				<file name="Palette.js"/>
-			</filelist>
 		</concat>
 	</target>
 
