@@ -1,7 +1,23 @@
-//WebbyJs core
+/**
+ * @file WebbyJs core object.
+ * @author Olegos <olegos83@yandex.ru>
+ */
+
+/**
+ * WebbyJs base namespace and core methods.
+ * 
+ * @namespace
+ */
 var WebbyJs = {
-	//all created classes
-	_classes: [],
+	/**
+	 * All WebbyJs members, which can be globalized.
+	 * 
+	 * @memberof WebbyJs
+	 * @type {Array}
+	 * 
+	 * @private
+	 */
+	_globals: [],
 	
 	//default prototype for created classes
 	_defaultProto: {
@@ -87,7 +103,14 @@ var WebbyJs = {
 		}
 	},
 	
-	//web browser type
+	/**
+	 * Browser information.
+	 * 
+	 * @memberof WebbyJs
+	 * @type {String}
+	 * 
+	 * @returns {String} vendor of currently used browser.
+	 */
 	BROWSER: ( function() {
 		var nav = navigator.userAgent.toLowerCase();
 		
@@ -98,25 +121,60 @@ var WebbyJs = {
 		if (nav.indexOf('msie') != -1) return 'ie';
 	}() ),
 	
-	//invoke method in WebbyJs scope
+	/**
+	 * Invoke method in WebbyJs 'this' scope.
+	 * 
+	 * @method invoke
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Function} method - method to invoke.
+	 * @param {Array} args - method arguments.
+	 */
 	invoke: function(method, args) {
 		method.apply(this, args);
 	},
 	
-	//throw error
+	/**
+	 * Throw an error exeption.
+	 * 
+	 * @method throwError
+	 * @memberof WebbyJs
+	 * 
+	 * @param {String} msg - error message.
+	 * @param {String} name - error name.
+	 */
 	throwError: function(msg, name) {
 		var err = new Error(msg || 'Something is going wrong');
 		err.name = name || 'WebbyJsError';
 		throw err;
 	},
 	
-	//get class name
+	/**
+	 * Get class name. Use to check class for any instance.
+	 * 
+	 * @method getClassName
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Object} obj - object.
+	 * 
+	 * @returns {String} objects class name or '' for undefined or null obj.
+	 */
 	getClassName: function(obj) {
 		if (obj === null || typeof obj === 'undefined') return '';
 		return obj.constructor.name || obj.constructor._w_className;
 	},
 	
 	//inherit prototype
+	/**
+	 * Get class name. Use to check class for any instance.
+	 * 
+	 * @method getClassName
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Object} obj - object.
+	 * 
+	 * @returns {String} objects class name or '' for undefined or null obj.
+	 */
 	extendClass: function(childClass, parentClass) {
 		if (this.getClassName(childClass) !== 'Function') this.throwError('Child class must be a function');
 		if (this.getClassName(parentClass) !== 'Function') this.throwError('Parent class must be a function');
@@ -129,6 +187,16 @@ var WebbyJs = {
 	},
 	
 	//extend class with interfaces methods
+	/**
+	 * Get class name. Use to check class for any instance.
+	 * 
+	 * @method getClassName
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Object} obj - object.
+	 * 
+	 * @returns {String} objects class name or '' for undefined or null obj.
+	 */
 	extendProto: function(classRef, interfaces) {
 		if (this.getClassName(classRef) !== 'Function') this.throwError('Class must be a function');
 		if (this.getClassName(interfaces) !== 'Array') interfaces = [interfaces];
@@ -146,6 +214,16 @@ var WebbyJs = {
 	},
 	
 	//append static methods
+	/**
+	 * Get class name. Use to check class for any instance.
+	 * 
+	 * @method getClassName
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Object} obj - object.
+	 * 
+	 * @returns {String} objects class name or '' for undefined or null obj.
+	 */
 	addStaticMembers: function(classRef, staticMembers) {
 		if (this.getClassName(classRef) !== 'Function') this.throwError('Class must be a function');
 		if (this.getClassName(staticMembers) !== 'Object') this.throwError('Static class members must be passed as object');
@@ -153,7 +231,19 @@ var WebbyJs = {
 		for (var p in staticMembers) if (staticMembers.hasOwnProperty(p)) classRef[p] = staticMembers[p];
 	},
 	
+	//check name validity
+	
 	//create new class
+	/**
+	 * Get class name. Use to check class for any instance.
+	 * 
+	 * @method getClassName
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Object} obj - object.
+	 * 
+	 * @returns {String} objects class name or '' for undefined or null obj.
+	 */
 	createClass: function(className, superClass, classConstructor, classProto, interfaces, staticMembers) {
 		//check class name
 		if (className === '' || this.getClassName(className) !== 'String') this.throwError('Invalid class name');
@@ -168,7 +258,7 @@ var WebbyJs = {
 		
 		classConstructor = this[className];
 		classConstructor._w_className = className;
-		this._classes.push(className);
+		this._globals.push(className);
 		
 		//setup inheritance, static methods and interfaces
 		if (superClass) this.extendClass(classConstructor, superClass);
@@ -181,6 +271,16 @@ var WebbyJs = {
 	},
 	
 	//append method
+	/**
+	 * Get class name. Use to check class for any instance.
+	 * 
+	 * @method getClassName
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Object} obj - object.
+	 * 
+	 * @returns {String} objects class name or '' for undefined or null obj.
+	 */
 	addMethod: function(name, method) {
 		//check name
 		if (name === '' || this.getClassName(name) !== 'String') this.throwError('Invalid method name');
@@ -191,17 +291,51 @@ var WebbyJs = {
 		
 		//append method
 		this[name] = method;
-		this._classes.push(name);
+		this._globals.push(name);
+	},
+	
+	//append object
+	/**
+	 * Get class name. Use to check class for any instance.
+	 * 
+	 * @method getClassName
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Object} obj - object.
+	 * 
+	 * @returns {String} objects class name or '' for undefined or null obj.
+	 */
+	addObject: function(name, obj) {
+		//check name
+		if (name === '' || this.getClassName(name) !== 'String') this.throwError('Invalid method name');
+		if (this.getClassName(this[name])) this.throwError(name + " allready exists");
+		
+		//check method
+		if (this.getClassName(method) !== 'Object') this.throwError('Method must be an object');
+		
+		//append method
+		this[name] = obj;
+		this._globals.push(name);
 	},
 	
 	//extract all classes to global scope
+	/**
+	 * Get class name. Use to check class for any instance.
+	 * 
+	 * @method getClassName
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Object} obj - object.
+	 * 
+	 * @returns {String} objects class name or '' for undefined or null obj.
+	 */
 	globalize: function(globe) {
 		if (!globe) globe = window;
 		
-		var classes = this._classes, l = classes.length, name;
+		var globals = this._globals, l = globals.length, name;
 		
 		for (var i = 0; i < l; i++) {
-			name = classes[i];
+			name = globals[i];
 			globe[name] = this[name];
 		}
 	}

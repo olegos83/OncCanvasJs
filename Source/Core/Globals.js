@@ -22,7 +22,8 @@ var _BROWSER_ = 'unknown';
 
 /**
  * Options for globalCompositeOperation.
- **/
+ * @enum {String}
+ */
 var Composite = {
     SOURCE_ATOP: 'source-atop',
     SOURCE_IN: 'source-in',
