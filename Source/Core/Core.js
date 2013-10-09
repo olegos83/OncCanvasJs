@@ -241,13 +241,11 @@ var WebbyJs = {
 	 * @param {Object} globe - global object, window by default.
 	 */
 	globalize: function(globe) {
-		if (!globe) globe = window;
+		var global = globe || window, l = this._globals.length;
 		
-		var globals = this._globals, l = globals.length, name;
-		
-		for (var i = 0; i < l; i++) {
-			name = globals[i];
-			globe[name] = this[name];
+		for (var i = 0, name; i < l; i++) {
+			name = this._globals[i];
+			global[name] = this[name];
 		}
 	}
 };
