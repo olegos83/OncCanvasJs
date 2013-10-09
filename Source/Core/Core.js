@@ -192,24 +192,25 @@ var WebbyJs = {
 		if (proto) this.extendProto(construct, proto);
 	},
 	
-	//
 	/**
-	 * Add method to WebbyJs.
+	 * Add methods to WebbyJs.
 	 * 
-	 * @method addMethod
+	 * @method addMethods
 	 * @memberof WebbyJs
 	 * 
-	 * @param {String} name - method name.
-	 * @param {Function} method - method reference.
+	 * @param {Function} methods - methods object reference.
 	 */
-	addMethod: function(name, method) {
-		//check name and method
-		this.checkNameValidity(name);
-		if (this.getClassName(method) !== 'Function') this.throwError('Method must be a function');
+	addMethods: function(methods) {
+		//check methods object
+		if (this.getClassName(methods) !== 'Object') this.throwError('Methods must be passed as an object');
 		
-		//append method
-		this[name] = method;
-		this._globals.push(name);
+		//append methods
+		for (var method in methods) {
+			this.checkNameValidity(method);
+			
+			this[method] = methods[method];
+			this._globals.push(method);
+		}
 	},
 	
 	/**
