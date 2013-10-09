@@ -38,7 +38,7 @@ var WebbyJs = {
 	}() ),
 	
 	/**
-	 * Invoke method in WebbyJs 'this' scope.
+	 * Invoke method with 'this' reference to WebbyJs.
 	 * 
 	 * @method invoke
 	 * @memberof WebbyJs
