@@ -90,6 +90,8 @@ var WebbyJs = {
 	 * @param {Object} parent - parent class reference.
 	 */
 	extendClass: function(child, parent) {
+		if (child == parent) return;
+		
 		if (this.getClassName(child) !== 'Function') this.throwError('Child class must be a function');
 		if (this.getClassName(parent) !== 'Function') this.throwError('Parent class must be a function');
 		
@@ -182,13 +184,13 @@ var WebbyJs = {
 		construct._w_className = name;
 		this._globals.push(name);
 		
-		//setup inheritance, static methods and interfaces
-		if (parent) this.extendClass(construct, parent);
+		//extend class
+		if (!parent) parent = this.BaseWebbyJsClass;
+		this.extendClass(construct, parent);
+		
+		//setup prototype, static methods and interfaces
 		if (staticMembers) this.addStaticMembers(construct, staticMembers);
 		if (interfaces) this.extendProto(construct, interfaces);
-		
-		//setup prototype
-		this.extendProto(construct, this._defaultProto);
 		if (proto) this.extendProto(construct, proto);
 	},
 	
