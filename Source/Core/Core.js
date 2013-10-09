@@ -193,43 +193,22 @@ var WebbyJs = {
 	},
 	
 	/**
-	 * Add methods to WebbyJs.
+	 * Import members to WebbyJs. Imported members can be globalized later.
 	 * 
-	 * @method addMethods
+	 * @method import
 	 * @memberof WebbyJs
 	 * 
-	 * @param {Function} methods - methods object reference.
+	 * @param {Object} members - members object reference.
 	 */
-	addMethods: function(methods) {
-		//check methods object
-		if (this.getClassName(methods) !== 'Object') this.throwError('Methods must be passed as an object');
+	import: function(members) {
+		if (this.getClassName(members) !== 'Object') this.throwError('Members must be passed as an object');
 		
-		//append methods
-		for (var method in methods) {
-			this.checkNameValidity(method);
+		for (var m in members) {
+			this.checkNameValidity(m);
 			
-			this[method] = methods[method];
-			this._globals.push(method);
+			this[m] = members[method];
+			this._globals.push(m);
 		}
-	},
-	
-	/**
-	 * Add object to WebbyJs.
-	 * 
-	 * @method addObject
-	 * @memberof WebbyJs
-	 * 
-	 * @param {String} name - object name.
-	 * @param {Object} obj - object reference.
-	 */
-	addObject: function(name, obj) {
-		//check name and object
-		this.checkNameValidity(name);
-		if (this.getClassName(method) !== 'Object') this.throwError('Object must be an object');
-		
-		//append object
-		this[name] = obj;
-		this._globals.push(name);
 	},
 	
 	/**
