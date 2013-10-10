@@ -14,15 +14,14 @@ WebbyJs.import({
 	 */
 	extendClass: function(child, parent) {
 		if (child == parent) return;
-		
 		if (this.getClassName(child) !== 'Function') this.throwError('Child class must be a function');
 		if (this.getClassName(parent) !== 'Function') this.throwError('Parent class must be a function');
 		
-		function F() {}
-		F.prototype = parent.prototype;
+		var proto = child.prototype = new parent();
+		for (var p in proto) if (proto.hasOwnProperty(p)) delete proto[p];
 		
-		child.prototype = new F();
-		child.prototype.constructor = child;
+		proto.constructor = child;
+		proto.parentclass = parent.prototype;
 	},
 	
 	/**

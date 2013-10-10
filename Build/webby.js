@@ -146,15 +146,14 @@ WebbyJs.import({
 	 */
 	extendClass: function(child, parent) {
 		if (child == parent) return;
-		
 		if (this.getClassName(child) !== 'Function') this.throwError('Child class must be a function');
 		if (this.getClassName(parent) !== 'Function') this.throwError('Parent class must be a function');
 		
-		function F() {}
-		F.prototype = parent.prototype;
+		var proto = child.prototype = new parent();
+		for (var p in proto) if (proto.hasOwnProperty(p)) delete proto[p];
 		
-		child.prototype = new F();
-		child.prototype.constructor = child;
+		proto.constructor = child;
+		proto.parentclass = parent.prototype;
 	},
 	
 	/**
@@ -250,6 +249,9 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 */
 	function() {
 		//empty constructor
+		this.protoProp1 = 0;
+		this.protoProp2 = '3252423';
+		this.protoProp3 = { a: 0, b: '6565' };
 	},
 	
 	/**
