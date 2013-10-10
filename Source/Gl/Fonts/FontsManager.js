@@ -1,3 +1,35 @@
+/**
+ * @file The implementation of WebbyJs class creation.
+ * @author Olegos <olegos83@yandex.ru>
+ */
+WebbyJs.import({
+	/**
+	 * All WebbyJs members, which can be globalized.
+	 * 
+	 * @memberof WebbyJs
+	 * @type {Array}
+	 * 
+	 * @private
+	 */
+	_globals: [],
+	
+	/**
+	 * Class prototype inheritance method.
+	 * 
+	 * @method extendClass
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Object} child - child class reference.
+	 * @param {Object} parent - parent class reference.
+	 * 
+	 * @returns {String} objects class name or '' for undefined or null obj.
+	 */
+	extendClass: function(child, parent) {
+		if (child == parent) return;
+	}
+});
+
+
 /*
  * FontsManager by OlegoS, 10 Apr 2013
  *
