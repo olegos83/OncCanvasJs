@@ -398,6 +398,31 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		},
 		
 		/**
+		 * Clone current instance.
+		 * 
+		 * All non-primitive members are stored as references, so they must have clone method
+		 * to clone themselves. Otherwise, they remaine shared behind original and cloned instances.
+		 * 
+		 * @method clone
+		 * @memberof BaseWebbyJsClass.prototype
+		 * 
+		 * @returns {BaseWebbyJsClass} cloned instance.
+		 */
+		clone: function() {
+			var clone = new this.constructor();
+			
+			for (var p in this) if (this.hasOwnProperty(p)) {
+				var o = this[p];
+				
+				if (o.clone) clone[p] = o.clone(); else {
+					clone[p] = (typeof o === 'object' ? WebbyJs.BaseWebbyJsClass.prototype.clone.call(o) : o);
+				}
+			}
+			
+			return clone;
+		},
+		
+		/**
 		 * Invoke method with 'this' reference to current instance.
 		 * 
 		 * @method invoke
