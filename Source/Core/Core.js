@@ -20,6 +20,28 @@ var WebbyJs = {
 	_globals: [],
 	
 	/**
+	 * Unique global numeric id.
+	 * 
+	 * @memberof WebbyJs
+	 * @type {Number}
+	 * 
+	 * @private
+	 */
+	_uniqId: 0,
+	
+	/**
+	 * Global unique id generator.
+	 * 
+	 * @method getUniqId
+	 * @memberof WebbyJs
+	 * 
+	 * @returns {Number} global numeric id.
+	 */
+	getUniqId: function() {
+		return this._uniqId++;
+	},
+	
+	/**
 	 * Browser information.
 	 * 
 	 * @memberof WebbyJs
