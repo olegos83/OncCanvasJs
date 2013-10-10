@@ -180,6 +180,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 				if (proto.hasOwnProperty(m)) methods[m] = proto[m];
 			}
 			
+			delete methods.constructor;
 			return methods;
 		},
 		

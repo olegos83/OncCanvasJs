@@ -18,10 +18,6 @@ var Test = {
 		console.log('dd2 = new WebbyJs.TestClass()');
 		var dd2 = new WebbyJs.TestClass(15, 'any');
 		console.log(dd2);
-		console.log('');
-		
-		console.log('dd2.getPrototype()');
-		console.log(dd2.getPrototype());
 		
 		console.log('dd2.toObject()');
 		console.log(dd2.toObject());

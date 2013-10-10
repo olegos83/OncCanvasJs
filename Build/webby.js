@@ -249,9 +249,6 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 */
 	function() {
 		//empty constructor
-		this.protoProp1 = 0;
-		this.protoProp2 = '3252423';
-		this.protoProp3 = { a: 0, b: '6565' };
 	},
 	
 	/**
@@ -315,6 +312,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 				if (proto.hasOwnProperty(m)) methods[m] = proto[m];
 			}
 			
+			delete methods.constructor;
 			return methods;
 		},
 		
