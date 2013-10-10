@@ -12,6 +12,7 @@
 			<filelist dir="Source/Core/">
 				<file name="Core.js"/>
 				<file name="Class.js"/>
+				<file name="EventListener.js"/>
 			</filelist>
 		</concat>
 	</target>
