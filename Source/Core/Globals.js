@@ -5,20 +5,6 @@
  */
 
 
-/**
- * Browser detection.
- **/
-var _BROWSER_ = 'unknown';
-
-( function() {
-	var nav = navigator.userAgent.toLowerCase();
-	
-	if (nav.indexOf('firefox') != -1) _BROWSER_ = 'firefox';
-	else if (nav.indexOf('opera') != -1) _BROWSER_ = 'opera';
-	else if (nav.indexOf('chrome') != -1) _BROWSER_ = 'chrome';
-	else if (nav.indexOf('msie') != -1) _BROWSER_ = 'ie';
-}() );
-
 
 /**
  * Options for globalCompositeOperation.
@@ -87,22 +73,6 @@ var _uniqNumId_ = 0;
 function getUniqId() {
 	return _uniqNumId_++;
 }
-
-/**
- * Prototype inheritance global method. Child's prototype is inherited from parent's.
- * 
- * @method inheritProto
- * @param {Object} child - child class.
- * @param {Object} parent - parent class.
- **/
-function inheritProto(child, parent) {
-	function F() {}
-	F.prototype = parent.prototype;
-	
-	child.prototype = new F();
-	child.prototype.constructor = child;
-}
-
 
 /**
  * CrossBrowser request animation frame implementation.

@@ -1,3 +1,45 @@
+/**
+ * @file The implementation of WebbyJs class creation.
+ * @author Olegos <olegos83@yandex.ru>
+ */
+
+/**
+ * Base class for all WebbyJs created classes.
+ * All created classes are inherited from it.
+ * 
+ * @class BaseWebbyJsClass
+ * @memberof WebbyJs
+ */
+WebbyJs.createClass('BaseWebbyJsClass', null,
+	/**
+	 * @constructs BaseWebbyJsClass
+	 */
+	function() {
+		//empty constructor
+	},
+	
+	/**
+	 * Prototype description.
+	 */
+	{
+		/**
+		 * Invoke method with 'this' reference to current instance.
+		 * 
+		 * @method invoke
+		 * @memberof BaseWebbyJsClass.prototype
+		 * 
+		 * @param {Function} method - method to invoke.
+		 * @param {Array} args - method arguments.
+		 * 
+		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 */
+		invoke: function(method, args) {
+			method.apply(this, args);
+			return this;
+		}
+	}
+);
+
 /*
  * EventListener by OlegoS, 09 Apr 2013
  *
