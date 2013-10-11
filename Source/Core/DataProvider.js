@@ -196,7 +196,7 @@ WebbyJs.createClass('DataProvider', null,
 		 * 
 		 * @param {Number} index - index position.
 		 * 
-		 * @return {Object} found item.
+		 * @returns {Object} found item.
 		 */
 		itemAt: function(index) {
 		    return this.dp_storage[index];
@@ -210,7 +210,7 @@ WebbyJs.createClass('DataProvider', null,
 		 * 
 		 * @param {Object} item - item reference.
 		 * 
-		 * @return {Number} item index or -1, if item not found.
+		 * @returns {Number} item index or -1, if item not found.
 		 */
 		indexOf: function(item) {
 			var data = this.dp_storage, l = data.length, i;
@@ -230,7 +230,7 @@ WebbyJs.createClass('DataProvider', null,
 		 * 
 		 * @param {Object} item - item reference.
 		 * 
-		 * @return {Boolean} true, if item is in data provider or false othervise.
+		 * @returns {Boolean} true, if item is in data provider or false othervise.
 		 */
 		contains: function(item) {
 			var data = this.dp_storage, l = data.length, i;
@@ -273,7 +273,7 @@ WebbyJs.createClass('DataProvider', null,
 		 * @method length
 		 * @memberof DataProvider.prototype
 		 * 
-		 * @return {Number} number of items.
+		 * @returns {Number} number of items.
 		 */
 		length: function() {
 			return this.dp_storage.length;
