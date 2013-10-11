@@ -75,7 +75,7 @@ WebbyJs.import({
 	 * @param {Object} parent - parent class reference.
 	 * @param {Function} construct - class constructor.
 	 * @param {Object} proto - object with prototype members.
-	 * @param {Object} interfaces - single or array of interfaces.
+	 * @param {Object|Array} interfaces - single or array of interfaces.
 	 * @param {Object} staticMembers - object with static members.
 	 */
 	createClass: function(name, parent, construct, proto, interfaces, staticMembers) {
