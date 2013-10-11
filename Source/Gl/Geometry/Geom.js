@@ -34,6 +34,7 @@ WebbyJs.createClass('Geom', null,
 		 * @returns {Geom} current instance for chaining.
 		 */
 		move: function(dx, dy) {
+		    this.matrixTransform(WebbyJs.Geom._tm.setTranslation(dx, dy));
 			return this;
 		},
 		
@@ -49,6 +50,7 @@ WebbyJs.createClass('Geom', null,
 		 * @returns {Geom} current instance for chaining.
 		 */
 		moveDir: function(dist, angle) {
+		    this.matrixTransform(WebbyJs.Geom._tm.setTranslation(dist * Math.sin(angle), dist * Math.cos(angle)));
 			return this;
 		},
 		
@@ -64,6 +66,12 @@ WebbyJs.createClass('Geom', null,
 		 * @returns {Geom} current instance for chaining.
 		 */
 		rotate: function(angle, pivot) {
+			var px = pivot.x, py = pivot.y, tm = WebbyJs.Geom._tm, rm = WebbyJs.Geom._rm;
+		    
+		    this.matrixTransform(tm.setTranslation(-px, -py)).
+		    	 matrixTransform(rm.setRotation(angle)).
+		    	 matrixTransform(tm.setTranslation(px, py));
+		    
 			return this;
 		},
 		
@@ -80,6 +88,12 @@ WebbyJs.createClass('Geom', null,
 		 * @returns {Geom} current instance for chaining.
 		 */
 		scale: function(scX, scY, pivot) {
+			var px = pivot.x, py = pivot.y, tm = WebbyJs.Geom._tm, sm = WebbyJs.Geom._sm;
+		    
+			this.matrixTransform(tm.setTranslation(-px, -py)).
+		    	 matrixTransform(sm.setScale(scX, scY)).
+		    	 matrixTransform(tm.setTranslation(px, py));
+		    
 			return this;
 		},
 		
@@ -118,7 +132,34 @@ WebbyJs.createClass('Geom', null,
 		 * @returns {Point} a center point or null if no center.
 		 */
 		getCenter: function() {
-			return null;
+			var r = this.getBoundRect();
+			return (r ? r.getCenter() : null);
+		},
+		
+		/**
+		 * Get object's width.
+		 * 
+		 * @method getWidth
+		 * @memberof Geom.prototype
+		 * 
+		 * @returns {Number} object's width or null.
+		 */
+		getWidth: function() {
+			var r = this.getBoundRect();
+			return (r ? r.getWidth() : null);
+		},
+		
+		/**
+		 * Get object's height.
+		 * 
+		 * @method getHeight
+		 * @memberof Geom.prototype
+		 * 
+		 * @returns {Number} object's height or null.
+		 */
+		getHeight: function() {
+			var r = this.getBoundRect();
+			return (r ? r.getHeight() : null);
 		},
 		
 		/**
@@ -178,16 +219,12 @@ WebbyJs.createClass('Geom', null,
 		 * @returns {Geom} current instance for chaining.
 		 */
 		mirror: function(orientation) {
-		    switch(orientation) {
-		        case 'horiz':
-		            this.scale(-1, 1, this.getCenter());
-		        break;
-
-		        case 'vert':
-		            this.scale(1, -1, this.getCenter());
-		        break;
-		    }
-		    
+			if (orientation === 'horiz') {
+				this.scale(-1, 1, this.getCenter());
+			} else if (orientation === 'vert') {
+				this.scale(1, -1, this.getCenter());
+			}
+			
 		    return this;
 		},
 		
@@ -278,6 +315,36 @@ WebbyJs.createClass('Geom', null,
 	 * Static members.
 	 */
 	{
+		/**
+		 * Translation matrix.
+		 * 
+		 * @memberof Geom
+		 * @type {Matrix}
+		 * 
+		 * @private
+		 */
+		_tm: new Matrix(),
+		
+		/**
+		 * Scale matrix.
+		 * 
+		 * @memberof Geom
+		 * @type {Matrix}
+		 * 
+		 * @private
+		 */
+		_sm: new Matrix(),
+		
+		/**
+		 * Rotation matrix.
+		 * 
+		 * @memberof Geom
+		 * @type {Matrix}
+		 * 
+		 * @private
+		 */
+		_rm: new Matrix(),
+		
 		/**
 		 * Get radians from degrees.
 		 * 
