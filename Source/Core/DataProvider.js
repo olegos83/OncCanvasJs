@@ -1,21 +1,49 @@
 /**
- * @file The implementation of WebbyJs class creation.
+ * @file A wrapper for array to manage event driven data.
  * @author Olegos <olegos83@yandex.ru>
  */
+WebbyJs.import({
+	/**
+	 * Data event types.
+	 * 
+	 * @memberof WebbyJs
+	 * @enum {String}
+	 */
+	DataEvent: {
+		ADD: 'add',
+	    REMOVE: 'remove',
+	    REPLACE: 'replace',
+	    CLEAR: 'clear',
+	    CHANGE: 'change'
+	}
+});
 
 /**
- * Base class for all WebbyJs created classes.
- * All created classes are inherited from it.
+ * DataProvider is designed to work with event driven data collections.
+ * Events support is provided by extending EventListener prototype.
  * 
- * @class BaseWebbyJsClass
+ * Any class may be inherited or extend DataProvider to support data events.
+ * In that case, EventListener is applied to that class too. Don`t forget to
+ * declare 'dp_storage' array in class constructor.
+ * 
+ * Event support can slow down items iteration, so you can directly use 'dp_storage' array
+ * to get more iteration speed, but in that case, events must be processed manually.
+ * 
+ * @class DataProvider
  * @memberof WebbyJs
  */
-WebbyJs.createClass('BaseWebbyJsClass', null,
+WebbyJs.createClass('DataProvider', null,
 	/**
-	 * @constructs BaseWebbyJsClass
+	 * @constructs DataProvider
 	 */
 	function() {
-		//empty constructor
+		/**
+		 * Data array.
+		 * 
+		 * @memberof DataProvider
+		 * @type {Array}
+		 */
+		this.dp_storage = [];
 	},
 	
 	/**
@@ -23,245 +51,254 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 */
 	{
 		/**
-		 * Invoke method with 'this' reference to current instance.
+		 * Append new item to the end and trigger DataEvent.ADD event.
 		 * 
-		 * @method invoke
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @method append
+		 * @memberof DataProvider.prototype
 		 * 
-		 * @param {Function} method - method to invoke.
+		 * @param {Object} item - item reference.
+		 * 
+		 * @returns {DataProvider} current instance for chaining.
+		 */
+		append: function(item) {
+			this.dp_storage.push(item);
+			this.processEvent({ item: item, type: DataEvent.ADD });
+			
+			return this;
+		},
+		
+		/**
+		 * Insert new item to specified index position and trigger DataEvent.ADD event.
+		 * 
+		 * @method appendAt
+		 * @memberof DataProvider.prototype
+		 * 
+		 * @param {Object} item - item reference.
+		 * @param {Number} index - index position.
+		 * 
+		 * @returns {DataProvider} current instance for chaining.
+		 */
+		appendAt: function(item, index) {
+		    this.dp_storage.splice(index, 0, item);
+		    this.processEvent({ item: item, index: index, type: WebbyJs.DataEvent.ADD });
+		    
+		    return this;
+		},
+		
+		/**
+		 * Remove item from data and trigger DataEvent.REMOVE event.
+		 * 
+		 * @method remove
+		 * @memberof DataProvider.prototype
+		 * 
+		 * @param {Object} item - item reference.
+		 * 
+		 * @returns {DataProvider} current instance for chaining.
+		 */
+		remove: function(item) {
+			var data = this.dp_storage, l = data.length, i;
+			
+			for (i = 0; i < l; i++) if (data[i] == item) {
+				data.splice(i, 1);
+				this.processEvent({ item: item, type: WebbyJs.DataEvent.REMOVE });
+				
+				return this;
+			}
+			
+			return this;
+		},
+		
+		/**
+		 * Remove item from data at specified index position and trigger DataEvent.REMOVE event.
+		 * 
+		 * @method removeAt
+		 * @memberof DataProvider.prototype
+		 * 
+		 * @param {Number} index - index position.
+		 * 
+		 * @returns {DataProvider} current instance for chaining.
+		 */
+		removeAt: function(index) {
+			var evt = { item: this.dp_storage[index], index: index, type: WebbyJs.DataEvent.REMOVE };
+			
+		    this.dp_storage.splice(index, 1);
+		    this.processEvent(evt);
+		    
+		    return this;
+		},
+		
+		/**
+		 * Replace item by another item and trigger DataEvent.REPLACE event.
+		 * 
+		 * @method replace
+		 * @memberof DataProvider.prototype
+		 * 
+		 * @param {Object} item - item reference.
+		 * @param {Object} newItem - new item reference.
+		 * 
+		 * @returns {DataProvider} current instance for chaining.
+		 */
+		replace: function(item, newItem) {
+			var data = this.dp_storage, l = data.length, i;
+			
+			for (i = 0; i < l; i++) if (data[i] == item) {
+				data[i] = newItem;
+				this.processEvent({ oldItem: item, newItem: newItem, type: WebbyJs.DataEvent.REPLACE });
+				
+				return this;
+			}
+			
+			return this;
+		},
+		
+		/**
+		 * Replace item by another item at specified index position and trigger DataEvent.REPLACE event.
+		 * 
+		 * @method replaceAt
+		 * @memberof DataProvider.prototype
+		 * 
+		 * @param {Number} index - index position.
+		 * @param {Object} newItem - new item reference.
+		 * 
+		 * @returns {DataProvider} current instance for chaining.
+		 */
+		replaceAt: function(index, newItem) {
+			var evt = { oldItem: this.dp_storage[index], newItem: newItem, index: index, type: WebbyJs.DataEvent.REPLACE };
+			
+		    this.dp_storage[index] = newItem;
+		    this.processEvent(evt);
+		    
+		    return this;
+		},
+		
+		/**
+		 * Remove all data and trigger DataEvent.CLEAR event.
+		 * 
+		 * @method clear
+		 * @memberof DataProvider.prototype
+		 * 
+		 * @returns {DataProvider} current instance for chaining.
+		 */
+		clear: function() {
+			var evt = { data: [].concat(this.dp_storage), type: WebbyJs.DataEvent.CLEAR };
+			
+		    this.dp_storage.length = 0;
+		    this.processEvent(evt);
+		    
+		    return this;
+		},
+		
+		/**
+		 * Get item at specified index.
+		 * 
+		 * @method itemAt
+		 * @memberof DataProvider.prototype
+		 * 
+		 * @param {Number} index - index position.
+		 * 
+		 * @return {Object} found item.
+		 */
+		itemAt: function(index) {
+		    return this.dp_storage[index];
+		},
+		
+		/**
+		 * Get item index.
+		 * 
+		 * @method indexOf
+		 * @memberof DataProvider.prototype
+		 * 
+		 * @param {Object} item - item reference.
+		 * 
+		 * @return {Number} item index or -1, if item not found.
+		 */
+		indexOf: function(item) {
+			var data = this.dp_storage, l = data.length, i;
+			
+		    for (i = 0; i < l; i++) {
+		    	if (data[i] == item) return i;
+		    }
+		    
+		    return -1;
+		},
+		
+		/**
+		 * Check if this data provider contains specified item.
+		 * 
+		 * @method contains
+		 * @memberof DataProvider.prototype
+		 * 
+		 * @param {Object} item - item reference.
+		 * 
+		 * @return {Boolean} true, if item is in data provider or false othervise.
+		 */
+		contains: function(item) {
+			var data = this.dp_storage, l = data.length, i;
+			
+		    for (i = 0; i < l; i++) {
+		    	if (data[i] == item) return true;
+		    }
+		    
+		    return false;
+		},
+		
+		/**
+		 * Change item index position and trigger DataEvent.CHANGE event.
+		 * 
+		 * @method setItemIndex
+		 * @memberof DataProvider.prototype
+		 * 
+		 * @param {Object} item - item reference.
+		 * @param {Number} index - new index position.
+		 * 
+		 * @returns {DataProvider} current instance for chaining.
+		 */
+		setItemIndex: function(item, index) {
+			var data = this.dp_storage, l = data.length, i;
+		    
+			for (i = 0; i < l; i++) if (data[i] == item) {
+				data.splice(i, 1);
+			    data.splice(index, 0, item);
+			    
+			    this.processEvent({ item: item, oldIndex: i, newIndex: index, type: WebbyJs.DataEvent.CHANGE });
+			    return this;
+		    }
+			
+			return this;
+		},
+		
+		/**
+		 * Get number of items in data.
+		 * 
+		 * @method length
+		 * @memberof DataProvider.prototype
+		 * 
+		 * @return {Number} number of items.
+		 */
+		length: function() {
+			return this.dp_storage.length;
+		},
+		
+		/**
+		 * Iterate items form the begining to the end and invoke
+		 * method with 'this' pointing to iterated item.
+		 * 
+		 * @method forEach
+		 * @memberof DataProvider.prototype
+		 * 
+		 * @param {Function} method - method reference.
 		 * @param {Array} args - method arguments.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returns {DataProvider} current instance for chaining.
 		 */
-		invoke: function(method, args) {
-			method.apply(this, args);
+		forEach: function(method, args) {
+			var data = this.dp_storage, l = data.length, i;
+			
+			for (i = 0; i < l; i++) {
+				method.apply(data[i], args);
+			}
+			
 			return this;
 		}
-	}
-);
-
-
-/*
- * DataProvider by OlegoS, 09 Apr 2013
- *
- * A wrapper for array to manage data collections.
- */
-
-
-//ANONYMOUS FUNCTION WRAPPER
-( function() {
-//PRIVATE
-	
-	
-//CONSTRUCTOR
-	/**
-	 * DataProvider is designed to work with data collections.
-	 * Support of events are imlemented via EventListener inheritance.
-	 * 
-	 * Any class may be inherited from DataProvider to support data events.
-	 * Class instances, inherited from DataProvider have 'data' property, which must not be overriden.
-	 * 
-	 * Event support can slow down items iteration, so you can directly use 'data' property
-	 * to get more iteration speed, but in that case, events must be processed manually. 
-	 * 
-	 * @class DataProvider
-	 * @super EventListener
-	 * @author OlegoS
-	 *
-	 * @constructor
-	 * @param {Array} data - initial data array. By default it is empty.
-	 **/
-	var DataProvider = function(data) {
-		//initialize base class
-		EventListener.call(this);
-		
-	    /**
-	     * Data array.
-	     * 
-	     * @property data
-	     * @type Array
-	     **/
-	    this.data = (data == null ? [] : data);
-	}
-	
-	//extend from EventListener
-	inheritProto(DataProvider, EventListener);
-	
-	
-//STATIC
-	/**
-	 * Data event types.
-	 **/
-	var DataEvent = {
-	    ADD: 'add',
-	    REMOVE: 'remove',
-	    CLEAR: 'clear',
-	    CHANGE: 'change'
-	};
-	
-//PROTOTYPE
-	//get prototype reference
-	var p = DataProvider.prototype;
-	
-	/**
-	 * Add item to the end of data.
-	 * 
-	 * @method add
-	 * @param {Object} item - item.
-	 **/
-	p.add = function(item) {
-		this.data.push(item);
-		this.processEvent({ item: item, type: DataEvent.ADD });
-	}
-
-	/**
-	 * Add item to data at specified index.
-	 * 
-	 * @method addAt
-	 * @param {Object} item - item.
-	 * @param {Number} index - index.
-	 **/
-	p.addAt = function(item, index) {
-	    this.data.splice(index, 0, item);
-	    this.processEvent({ item: item, index: index, type: DataEvent.ADD });
-	}
-
-	/**
-	 * Remove item from data.
-	 * 
-	 * @method remove
-	 * @param {Object} item - item.
-	 **/
-	p.remove = function(item) {
-		var data = this.data, l = data.length, i;
-		
-		for (i = 0; i < l; i++) if (data[i] == item) {
-			data.splice(i, 1);
-			this.processEvent({ item: item, type: DataEvent.REMOVE });
-			break;
-		}
-	}
-
-	/**
-	 * Remove item from data at specified index.
-	 * 
-	 * @method removeAt
-	 * @param {Number} index - index.
-	 **/
-	p.removeAt = function(index) {
-		var evt = { item: this.data[index], index: index, type: DataEvent.REMOVE };
-		
-	    this.data.splice(index, 1);
-	    this.processEvent(evt);
-	}
-
-	/**
-	 * Remove all data.
-	 * 
-	 * @method clear
-	 **/
-	p.clear = function() {
-		var evt = { data: this.data, type: DataEvent.CLEAR };
-		
-	    this.data = [];
-	    this.processEvent(evt);
-	}
-
-	/**
-	 * Get item at specified index.
-	 * 
-	 * @method itemAt
-	 * @param {Number} index - index.
-	 * 
-	 * @return {Object} found item.
-	 **/
-	p.itemAt = function(index) {
-	    return this.data[index];
-	}
-
-	/**
-	 * Get item index.
-	 * 
-	 * @method indexOf
-	 * @param {Object} item - item.
-	 * 
-	 * @return {Number} item index or -1, if no item found.
-	 **/
-	p.indexOf = function(item) {
-		var data = this.data, l = data.length, i;
-		
-	    for (i = 0; i < l; i++) if (data[i] == item) return i;
-	    return -1;
-	}
-
-	/**
-	 * Set item index.
-	 * 
-	 * @method setItemIndex
-	 * @param {Object} item - item.
-	 * @param {Number} index - index.
-	 **/
-	p.setItemIndex = function(item, index) {
-		var data = this.data, l = data.length, i;
-	    
-		for (i = 0; i < l; i++) if (data[i] == item) {
-			data.splice(i, 1);
-		    data.splice(index, 0, item);
-		    
-		    this.processEvent({ item: item, oldIndex: i, newIndex: index, type: DataEvent.CHANGE });
-		    break;
-	    }
-	}
-
-	/**
-	 * Get number of items in data.
-	 * 
-	 * @method length
-	 * 
-	 * @return {Number} number of items.
-	 **/
-	p.length = function() {
-		return this.data.length;
-	}
-
-	/**
-	 * Invoke method for all items.
-	 * 
-	 * @method each
-	 * @param {Function} method - method.
-	 * @param {Array} parameters - parameters.
-	 **/
-	p.each = function(method, parameters) {
-		var data = this.data, l = data.length, i;
-		for (i = 0; i < l; i++) method.apply(data[i], parameters);
-	}
-
-	/**
-	 * Clone data provider. Event handlers are not cloned.
-	 * 
-	 * @method clone
-	 * 
-	 * @return {DataProvider} a cloned DataProvider.
-	 **/
-	p.clone = function() {
-	    var data = this.data, l = data.length, tmpArr = [], i;
-	    
-	    for (i = 0; i < l; i++) tmpArr.push(data[i]);
-	    return new DataProvider(tmpArr);
-	}
-
-	/**
-	 * Returns a string representation of this object.
-	 * 
-	 * @method toString
-	 * 
-	 * @return {String} a string representation of this object.
-	 **/
-	p.toString = function() {
-	    return "[DataProvider(" + this.data + ")]";
-	}
-	
-	//set up for global use
-	window.DataEvent = DataEvent;
-	window.DataProvider = DataProvider;
-}() );
+	},
+WebbyJs.EventListener);
