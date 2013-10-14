@@ -32,11 +32,16 @@ WebbyJs.import({
  * @class DataProvider
  * @memberof WebbyJs
  */
-WebbyJs.createClass('DataProvider', null,
+WebbyJs.createClass({
 	/**
-	 * @constructs DataProvider
+	 * Class name.
 	 */
-	function() {
+	name: 'DataProvider',
+	
+	/**
+	 * @constructor
+	 */
+	construct: function DataProvider() {
 		/**
 		 * Data array.
 		 * 
@@ -47,9 +52,9 @@ WebbyJs.createClass('DataProvider', null,
 	},
 	
 	/**
-	 * Prototype description.
+	 * Prototype.
 	 */
-	{
+	proto: {
 		/**
 		 * Append new item to the end and trigger DataEvent.ADD event.
 		 * 
@@ -301,4 +306,9 @@ WebbyJs.createClass('DataProvider', null,
 			return this;
 		}
 	},
-WebbyJs.EventListener);
+	
+	/**
+	 * Interfaces.
+	 */
+	interfaces: WebbyJs.EventListener
+});

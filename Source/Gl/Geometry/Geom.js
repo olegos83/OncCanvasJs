@@ -10,18 +10,23 @@
  * @class Geom
  * @memberof WebbyJs
  */
-WebbyJs.createClass('Geom', null,
+WebbyJs.createClass({
 	/**
-	 * @constructs Geom
+	 * Class name.
 	 */
-	function() {
+	name: 'Geom',
+	
+	/**
+	 * @constructor
+	 */
+	construct: function Geom() {
 		//empty constructor
 	},
 	
 	/**
-	 * Prototype description.
+	 * Prototype.
 	 */
-	{
+	proto: {
 		/**
 		 * Move object by x/y deltas.
 		 * 
@@ -66,10 +71,10 @@ WebbyJs.createClass('Geom', null,
 		 * @returns {Geom} current instance for chaining.
 		 */
 		rotate: function(angle, pivot) {
-			var px = pivot.x, py = pivot.y, tm = WebbyJs.Geom._tm, rm = WebbyJs.Geom._rm;
+			var px = pivot.x, py = pivot.y, tm = WebbyJs.Geom._tm;
 		    
 		    this.matrixTransform(tm.setTranslation(-px, -py)).
-		    	 matrixTransform(rm.setRotation(angle)).
+		    	 matrixTransform(WebbyJs.Geom._rm.setRotation(angle)).
 		    	 matrixTransform(tm.setTranslation(px, py));
 		    
 			return this;
@@ -88,10 +93,10 @@ WebbyJs.createClass('Geom', null,
 		 * @returns {Geom} current instance for chaining.
 		 */
 		scale: function(scX, scY, pivot) {
-			var px = pivot.x, py = pivot.y, tm = WebbyJs.Geom._tm, sm = WebbyJs.Geom._sm;
+			var px = pivot.x, py = pivot.y, tm = WebbyJs.Geom._tm;
 		    
 			this.matrixTransform(tm.setTranslation(-px, -py)).
-		    	 matrixTransform(sm.setScale(scX, scY)).
+		    	 matrixTransform(WebbyJs.Geom._sm.setScale(scX, scY)).
 		    	 matrixTransform(tm.setTranslation(px, py));
 		    
 			return this;
@@ -240,7 +245,7 @@ WebbyJs.createClass('Geom', null,
 		 * @returns {Geom} current instance for chaining.
 		 */
 		placeAroundPoint: function(pt, dist) {
-		    this.placeIntoRect(new Rectangle().placeAroundPoint(pt, dist));
+		    this.placeIntoRect(new WebbyJs.Rectangle().placeAroundPoint(pt, dist));
 		    return this;
 		},
 		
@@ -309,12 +314,12 @@ WebbyJs.createClass('Geom', null,
 		toContext: function(ctx) {
 			return this;
 		}
-	}, null,
+	},
 	
 	/**
 	 * Static members.
 	 */
-	{
+	statics: {
 		/**
 		 * Translation matrix.
 		 * 
@@ -323,7 +328,7 @@ WebbyJs.createClass('Geom', null,
 		 * 
 		 * @private
 		 */
-		_tm: new Matrix(),
+		_tm: new WebbyJs.Matrix(),
 		
 		/**
 		 * Scale matrix.
@@ -333,7 +338,7 @@ WebbyJs.createClass('Geom', null,
 		 * 
 		 * @private
 		 */
-		_sm: new Matrix(),
+		_sm: new WebbyJs.Matrix(),
 		
 		/**
 		 * Rotation matrix.
@@ -343,7 +348,7 @@ WebbyJs.createClass('Geom', null,
 		 * 
 		 * @private
 		 */
-		_rm: new Matrix(),
+		_rm: new WebbyJs.Matrix(),
 		
 		/**
 		 * Get radians from degrees.
@@ -373,4 +378,4 @@ WebbyJs.createClass('Geom', null,
 			return rad * 180 / 3.14159;
 		}
 	}
-);
+});

@@ -43,11 +43,16 @@ WebbyJs.import({
  * @class EventListener
  * @memberof WebbyJs
  */
-WebbyJs.createClass('EventListener', null,
+WebbyJs.createClass({
 	/**
-	 * @constructs EventListener
+	 * Class name.
 	 */
-	function() {
+	name: 'EventListener',
+
+	/**
+	 * @constructor
+	 */
+	construct: function EventListener() {
 		/**
 		 * Events hash, containing arrays of functions by event type as key.
 		 * 
@@ -60,9 +65,9 @@ WebbyJs.createClass('EventListener', null,
 	},
 	
 	/**
-	 * Prototype description.
+	 * Prototype.
 	 */
-	{
+	proto: {
 		/**
 		 * Add event listener for specified event type.
 		 * 
@@ -134,4 +139,4 @@ WebbyJs.createClass('EventListener', null,
 		    return this;
 		}
 	}
-);
+});

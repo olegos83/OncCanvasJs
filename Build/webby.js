@@ -225,36 +225,36 @@ WebbyJs.import({
 	 * @method createClass
 	 * @memberof WebbyJs
 	 * 
-	 * @param {String} name - class name.
-	 * @param {Object} parent - parent class reference.
-	 * @param {Function} construct - class constructor.
-	 * @param {Object} proto - object with prototype members.
-	 * @param {Object|Array} interfaces - single or array of interfaces.
-	 * @param {Object} staticMembers - object with static members.
+	 * @param {Object} newClass - new class declaration object, like in example below.
+	 * 
+	 * 							  var newClassSample = {
+	 * 								  name: 'ClassName',
+	 * 								  parent: parentClassReference,
+	 * 								  construct: function ClassName(args) { ... },
+	 * 								  proto: { prototype },
+	 * 								  interfaces: [interfaceRferencesArr] || interfaceReference,
+	 * 								  statics: { static members }
+	 * 							  };
 	 */
-	createClass: function(name, parent, construct, proto, interfaces, staticMembers) {
-		//check name and constructor
-		this.checkNameValidity(name);
-		
-		if (this.getClassName(construct) !== 'Function') this.throwError('Constructor must be a function');
-		if (construct.name) this.throwError('Constructor must be an anonymous function');
+	createClass: function(newClass) {
+		//check input object, name and constructor
+		if (this.getClassName(newClass) !== 'Object') this.throwError('New class must be passed as object');
+		if (this.getClassName(newClass.construct) !== 'Function') this.throwError('Constructor must be a function');
+		this.checkNameValidity(newClass.name);
 		
 		//setup constructor
-		var src = 'WebbyJs.' + name + ' = ' + construct.toString().replace('function', 'function ' + name);
-		window.eval(src);
-		
-		construct = this[name];
-		construct._w_className = name;
-		this._globals.push(name);
+		newClass.construct._w_className = newClass.name;
+		this[newClass.name] = newClass.construct;
+		this._globals.push(newClass.name);
 		
 		//extend class
-		if (!parent) parent = this.BaseWebbyJsClass;
-		this.extendClass(construct, parent);
+		if (!newClass.parent) newClass.parent = this.BaseWebbyJsClass;
+		this.extendClass(newClass.construct, newClass.parent);
 		
-		//setup prototype, static methods and interfaces
-		if (staticMembers) this.addStaticMembers(construct, staticMembers);
-		if (interfaces) this.extendProto(construct, interfaces);
-		if (proto) this.extendProto(construct, proto);
+		//setup static methods, interfaces and prototype
+		if (newClass.statics) this.addStaticMembers(newClass.construct, newClass.statics);
+		if (newClass.interfaces) this.extendProto(newClass.construct, newClass.interfaces);
+		if (newClass.proto) this.extendProto(newClass.construct, newClass.proto);
 	}
 }, true);
 
@@ -265,18 +265,23 @@ WebbyJs.import({
  * @class BaseWebbyJsClass
  * @memberof WebbyJs
  */
-WebbyJs.createClass('BaseWebbyJsClass', null,
+WebbyJs.createClass({
 	/**
-	 * @constructs BaseWebbyJsClass
+	 * Class name.
 	 */
-	function() {
+	name: 'BaseWebbyJsClass',
+	
+	/**
+	 * @constructor
+	 */
+	construct: function BaseWebbyJsClass() {
 		//empty constructor
 	},
 	
 	/**
-	 * Prototype description.
+	 * Prototype.
 	 */
-	{
+	proto: {
 		/**
 		 * Get class name of current instance.
 		 * 
@@ -460,7 +465,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 			return this;
 		}
 	}
-);
+});
 /**
  * @file WebbyJs events interface and basic event types.
  * @author Olegos <olegos83@yandex.ru>
@@ -506,11 +511,16 @@ WebbyJs.import({
  * @class EventListener
  * @memberof WebbyJs
  */
-WebbyJs.createClass('EventListener', null,
+WebbyJs.createClass({
 	/**
-	 * @constructs EventListener
+	 * Class name.
 	 */
-	function() {
+	name: 'EventListener',
+
+	/**
+	 * @constructor
+	 */
+	construct: function EventListener() {
 		/**
 		 * Events hash, containing arrays of functions by event type as key.
 		 * 
@@ -523,9 +533,9 @@ WebbyJs.createClass('EventListener', null,
 	},
 	
 	/**
-	 * Prototype description.
+	 * Prototype.
 	 */
-	{
+	proto: {
 		/**
 		 * Add event listener for specified event type.
 		 * 
@@ -597,7 +607,7 @@ WebbyJs.createClass('EventListener', null,
 		    return this;
 		}
 	}
-);
+});
 /**
  * @file A wrapper for array to manage event driven data.
  * @author Olegos <olegos83@yandex.ru>
@@ -632,11 +642,16 @@ WebbyJs.import({
  * @class DataProvider
  * @memberof WebbyJs
  */
-WebbyJs.createClass('DataProvider', null,
+WebbyJs.createClass({
 	/**
-	 * @constructs DataProvider
+	 * Class name.
 	 */
-	function() {
+	name: 'DataProvider',
+	
+	/**
+	 * @constructor
+	 */
+	construct: function DataProvider() {
 		/**
 		 * Data array.
 		 * 
@@ -647,9 +662,9 @@ WebbyJs.createClass('DataProvider', null,
 	},
 	
 	/**
-	 * Prototype description.
+	 * Prototype.
 	 */
-	{
+	proto: {
 		/**
 		 * Append new item to the end and trigger DataEvent.ADD event.
 		 * 
@@ -796,7 +811,7 @@ WebbyJs.createClass('DataProvider', null,
 		 * 
 		 * @param {Number} index - index position.
 		 * 
-		 * @return {Object} found item.
+		 * @returns {Object} found item.
 		 */
 		itemAt: function(index) {
 		    return this.dp_storage[index];
@@ -810,7 +825,7 @@ WebbyJs.createClass('DataProvider', null,
 		 * 
 		 * @param {Object} item - item reference.
 		 * 
-		 * @return {Number} item index or -1, if item not found.
+		 * @returns {Number} item index or -1, if item not found.
 		 */
 		indexOf: function(item) {
 			var data = this.dp_storage, l = data.length, i;
@@ -830,7 +845,7 @@ WebbyJs.createClass('DataProvider', null,
 		 * 
 		 * @param {Object} item - item reference.
 		 * 
-		 * @return {Boolean} true, if item is in data provider or false othervise.
+		 * @returns {Boolean} true, if item is in data provider or false othervise.
 		 */
 		contains: function(item) {
 			var data = this.dp_storage, l = data.length, i;
@@ -873,7 +888,7 @@ WebbyJs.createClass('DataProvider', null,
 		 * @method length
 		 * @memberof DataProvider.prototype
 		 * 
-		 * @return {Number} number of items.
+		 * @returns {Number} number of items.
 		 */
 		length: function() {
 			return this.dp_storage.length;
@@ -901,4 +916,9 @@ WebbyJs.createClass('DataProvider', null,
 			return this;
 		}
 	},
-WebbyJs.EventListener);
+	
+	/**
+	 * Interfaces.
+	 */
+	interfaces: WebbyJs.EventListener
+});

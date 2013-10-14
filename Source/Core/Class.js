@@ -71,36 +71,36 @@ WebbyJs.import({
 	 * @method createClass
 	 * @memberof WebbyJs
 	 * 
-	 * @param {String} name - class name.
-	 * @param {Object} parent - parent class reference.
-	 * @param {Function} construct - class constructor.
-	 * @param {Object} proto - object with prototype members.
-	 * @param {Object|Array} interfaces - single or array of interfaces.
-	 * @param {Object} staticMembers - object with static members.
+	 * @param {Object} newClass - new class declaration object, like in example below.
+	 * 
+	 * 							  var newClassSample = {
+	 * 								  name: 'ClassName',
+	 * 								  parent: parentClassReference,
+	 * 								  construct: function ClassName(args) { ... },
+	 * 								  proto: { prototype },
+	 * 								  interfaces: [interfaceRferencesArr] || interfaceReference,
+	 * 								  statics: { static members }
+	 * 							  };
 	 */
-	createClass: function(name, parent, construct, proto, interfaces, staticMembers) {
-		//check name and constructor
-		this.checkNameValidity(name);
-		
-		if (this.getClassName(construct) !== 'Function') this.throwError('Constructor must be a function');
-		if (construct.name) this.throwError('Constructor must be an anonymous function');
+	createClass: function(newClass) {
+		//check input object, name and constructor
+		if (this.getClassName(newClass) !== 'Object') this.throwError('New class must be passed as object');
+		if (this.getClassName(newClass.construct) !== 'Function') this.throwError('Constructor must be a function');
+		this.checkNameValidity(newClass.name);
 		
 		//setup constructor
-		var src = 'WebbyJs.' + name + ' = ' + construct.toString().replace('function', 'function ' + name);
-		window.eval(src);
-		
-		construct = this[name];
-		construct._w_className = name;
-		this._globals.push(name);
+		newClass.construct._w_className = newClass.name;
+		this[newClass.name] = newClass.construct;
+		this._globals.push(newClass.name);
 		
 		//extend class
-		if (!parent) parent = this.BaseWebbyJsClass;
-		this.extendClass(construct, parent);
+		if (!newClass.parent) newClass.parent = this.BaseWebbyJsClass;
+		this.extendClass(newClass.construct, newClass.parent);
 		
-		//setup prototype, static methods and interfaces
-		if (staticMembers) this.addStaticMembers(construct, staticMembers);
-		if (interfaces) this.extendProto(construct, interfaces);
-		if (proto) this.extendProto(construct, proto);
+		//setup static methods, interfaces and prototype
+		if (newClass.statics) this.addStaticMembers(newClass.construct, newClass.statics);
+		if (newClass.interfaces) this.extendProto(newClass.construct, newClass.interfaces);
+		if (newClass.proto) this.extendProto(newClass.construct, newClass.proto);
 	}
 }, true);
 
@@ -111,18 +111,23 @@ WebbyJs.import({
  * @class BaseWebbyJsClass
  * @memberof WebbyJs
  */
-WebbyJs.createClass('BaseWebbyJsClass', null,
+WebbyJs.createClass({
 	/**
-	 * @constructs BaseWebbyJsClass
+	 * Class name.
 	 */
-	function() {
+	name: 'BaseWebbyJsClass',
+	
+	/**
+	 * @constructor
+	 */
+	construct: function BaseWebbyJsClass() {
 		//empty constructor
 	},
 	
 	/**
-	 * Prototype description.
+	 * Prototype.
 	 */
-	{
+	proto: {
 		/**
 		 * Get class name of current instance.
 		 * 
@@ -306,4 +311,4 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 			return this;
 		}
 	}
-);
+});

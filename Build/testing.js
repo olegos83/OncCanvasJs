@@ -1,27 +1,33 @@
 //WebbyJs class tests
-WebbyJs.createClass('TestClass', null, function(x, y, z) {
-	this.prop1 = x;
-	this.prop2 = y;
-	this.prop3 = z;
-	this.objMember = {};
-	this.arrMember = [0, 1];
-}, {
-	method1: function(x) {
+WebbyJs.createClass({
+	name:'TestClass',
+	
+	construct:function TestClass(x, y, z) {
 		this.prop1 = x;
+		this.prop2 = y;
+		this.prop3 = z;
+		this.objMember = {};
+		this.arrMember = [0, 1];
 	},
 	
-	method2: function(x) {
-		this.prop2 = x;
+	proto: {
+		method1: function(x) {
+			this.prop1 = x;
+		},
+		
+		method2: function(x) {
+			this.prop2 = x;
+		}
 	}
 });
 
-WebbyJs.createClass('CloneTester', null, function() {
+WebbyJs.createClass({name: 'CloneTester', construct: function CloneTester() {
 	this.test = 'original';
-}, {
+}, proto: {
 	change: function(x) {
 		this.test = x;
 	}
-});
+}});
 
 //test
 var Test = {
