@@ -243,7 +243,7 @@ WebbyJs.createClass({
 		 * @returns {Matrix} a cloned Matrix.
 		 */
 		clone: function() {
-			var m = new Matrix(), i, j, mi, ti;
+			var m = new WebbyJs.Matrix(), i, j, mi, ti;
 			
 			for (i = 0; i < 3; i++) {
 				mi = m[i]; ti = this[i];
@@ -291,9 +291,9 @@ WebbyJs.createClass({
 		toString: function() {
 			var m0 = this[0], m1 = this[1], m2 = this[2];
 			
-		    return "[Matrix ([ [" + m0[0] + ", " + m0[1] + ", " + m0[2] + "], " +
-		    				  "[" + m1[0] + ", " + m1[1] + ", " + m1[2] + "], " +
-		    				  "[" + m2[0] + ", " + m2[1] + ", " + m2[2] + "] ])]";
+		    return "[WebbyJs.Matrix([ [" + m0[0] + ", " + m0[1] + ", " + m0[2] + "], " +
+		    						 "[" + m1[0] + ", " + m1[1] + ", " + m1[2] + "], " +
+		    						 "[" + m2[0] + ", " + m2[1] + ", " + m2[2] + "] ])]";
 		}
 	}
 });

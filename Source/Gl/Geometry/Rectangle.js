@@ -4,49 +4,55 @@
  */
 
 /**
- * Base class for all WebbyJs created classes.
- * All created classes are inherited from it.
+ * EventListener interface provides events processing support.
  * 
- * @class BaseWebbyJsClass
+ * To add events support, inherit or extend class with EventListener
+ * and declare '_events' object in its constructor.
+ * 
+ * @class EventListener
  * @memberof WebbyJs
  */
-WebbyJs.createClass('BaseWebbyJsClass', null,
+WebbyJs.createClass({
 	/**
-	 * @constructs BaseWebbyJsClass
+	 * Class name.
 	 */
-	function() {
+	name: 'EventListener',
+	
+	/**
+	 * @constructor
+	 */
+	construct: function EventListener() {
 		/**
-		 * All WebbyJs members, which can be globalized.
+		 * Events hash, containing arrays of functions by event type as key.
 		 * 
-		 * @memberof BaseWebbyJsClass
-		 * @type {Array}
+		 * @memberof EventListener
+		 * @type {Object}
 		 * 
 		 * @private
 		 */
-		_globals: [];
+		this._events = {};
 	},
 	
 	/**
-	 * Prototype description.
+	 * Prototype.
 	 */
-	{
+	proto: {
 		/**
-		 * Invoke method with 'this' reference to current instance.
+		 * Add event listener for specified event type.
 		 * 
-		 * @method invoke
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @method addEventListener
+		 * @memberof EventListener.prototype
 		 * 
-		 * @param {Function} method - method to invoke.
-		 * @param {Array} args - method arguments.
+		 * @param {String} type - event type.
+		 * @param {Function} handler - event handler.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returns {EventListener} current instance for chaining.
 		 */
-		invoke: function(method, args) {
-			method.apply(this, args);
+		addEventListener: function(type, handler) {
 			return this;
 		}
 	}
-);
+});
 
 
 /*
