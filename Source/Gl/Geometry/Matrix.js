@@ -14,7 +14,7 @@ WebbyJs.createClass({
 	 * Class name.
 	 */
 	name: 'Matrix',
-
+	
 	/**
 	 * @constructor
 	 */
@@ -293,7 +293,7 @@ WebbyJs.createClass({
 			
 		    return "[Matrix ([ [" + m0[0] + ", " + m0[1] + ", " + m0[2] + "], " +
 		    				  "[" + m1[0] + ", " + m1[1] + ", " + m1[2] + "], " +
-		    				  "[" + m2[0] + ", " + m2[1] + ", " + m2[2] + "] ])";
+		    				  "[" + m2[0] + ", " + m2[1] + ", " + m2[2] + "] ])]";
 		}
 	}
 });
