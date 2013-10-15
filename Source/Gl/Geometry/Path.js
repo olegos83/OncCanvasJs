@@ -4,50 +4,55 @@
  */
 
 /**
- * Base class for all WebbyJs created classes.
- * All created classes are inherited from it.
+ * EventListener interface provides events processing support.
  * 
- * @class BaseWebbyJsClass
+ * To add events support, inherit or extend class with EventListener
+ * and declare '_events' object in its constructor.
+ * 
+ * @class EventListener
  * @memberof WebbyJs
  */
-WebbyJs.createClass('BaseWebbyJsClass', null,
+WebbyJs.createClass({
 	/**
-	 * @constructs BaseWebbyJsClass
+	 * Class name.
 	 */
-	function() {
+	name: 'EventListener',
+
+	/**
+	 * @constructor
+	 */
+	construct: function EventListener() {
 		/**
-		 * All WebbyJs members, which can be globalized.
+		 * Events hash, containing arrays of functions by event type as key.
 		 * 
-		 * @memberof BaseWebbyJsClass
-		 * @type {Array}
+		 * @memberof EventListener
+		 * @type {Object}
 		 * 
 		 * @private
 		 */
-		_globals: [];
+		this._events = {};
 	},
 	
 	/**
-	 * Prototype description.
+	 * Prototype.
 	 */
-	{
+	proto: {
 		/**
-		 * Invoke method with 'this' reference to current instance.
+		 * Add event listener for specified event type.
 		 * 
-		 * @method invoke
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @method addEventListener
+		 * @memberof EventListener.prototype
 		 * 
-		 * @param {Function} method - method to invoke.
-		 * @param {Array} args - method arguments.
+		 * @param {String} type - event type.
+		 * @param {Function} handler - event handler.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returns {EventListener} current instance for chaining.
 		 */
-		invoke: function(method, args) {
-			method.apply(this, args);
+		addEventListener: function(type, handler) {
 			return this;
 		}
 	}
-);
-
+});
 
 /*
  * Path by OlegoS, 09 Apr 2013
@@ -265,119 +270,6 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	}
 	
 	/**
-	 * Returns a center point of this Path.
-	 * 
-	 * @method getCenter
-	 * 
-	 * @return {Point} a center point.
-	 **/
-	p.getCenter = function() {
-	    if (this.points.data.length > 0) return this.getBoundRect().getCenter(); else return null;
-	}
-	
-	/**
-	 * Align Path by base in bounds of specified rectangle.
-	 * 
-	 * @method align
-	 * @param {String} base - align base: 'left', 'right', 'center', 'top', 'bottom', 'vert'.
-	 * @param {Rectangle} rect - align rectangle.
-	 **/
-	p.align = function(base, rect) {
-		var or = this.getBoundRect(), dx = 0, dy = 0;
-		
-	    //calculate deltas
-	    switch (base) {
-	        case 'left':
-	            dx = rect.from.x - or.from.x;
-	        break;
-	
-	        case 'right':
-	            dx = rect.to.x - or.to.x;
-	        break;
-	
-	        case 'center':
-	        	dx = (rect.from.x + rect.to.x - (or.from.x + or.to.x)) / 2;
-	        break;
-	
-	        case 'top':
-	            dy = rect.from.y - or.from.y;
-	        break;
-	
-	        case 'bottom':
-	            dy = rect.to.y - or.to.y;
-	        break;
-	
-	        case 'vert':
-	        	dy = (rect.from.y + rect.to.y - (or.from.y + or.to.y)) / 2;
-	        break;
-	    }
-	
-	    //move object
-	    this.move(dx, dy);
-	}
-	
-	/**
-	 * Mirror Path acording to orientation.
-	 * 
-	 * @method mirror
-	 * @param {String} orientation - 'horiz' - horizontal, 'vert' - vertical.
-	 **/
-	p.mirror = function(orientation) {
-	    switch(orientation) {
-	        case 'horiz':
-	            this.scale(-1, 1, this.getCenter());
-	        break;
-
-	        case 'vert':
-	            this.scale(1, -1, this.getCenter());
-	        break;
-	    }
-	}
-	
-	/**
-	 * Place Path around specified Point.
-	 * 
-	 * @method placeAroundPoint
-	 * @param {Point} pt - center point.
-	 * @param {Number} dist - distance from center to sides.
-	 **/
-	p.placeAroundPoint = function(pt, dist) {
-	    var r = new Rectangle();
-	    r.placeAroundPoint(pt, dist);
-	    this.placeIntoRect(r);
-	}
-	
-	/**
-	 * Place Path into specified rectangle.
-	 * 
-	 * @method placeIntoRect
-	 * @param {Rectangle} tR - the Rectangle.
-	 **/
-	p.placeIntoRect = function(tR) {
-		//init vars
-		var trFrom = tR.from;
-		
-	    //Mirror shape if needed
-		if (trFrom.x > tR.to.x) this.mirror('horiz');
-	    if (trFrom.y > tR.to.y) this.mirror('vert');
-	    
-	    //move shape
-	    var oR = this.getBoundRect();
-	    
-	    tR.normalize();
-	    this.move(trFrom.x - oR.from.x, trFrom.y - oR.from.y);
-	    
-	    //scale shape
-	    var w1 = tR.getWidth(), w2 = oR.getWidth();
-	    if (w1 == 0) w1 = 1; if (w2 == 0) w2 = 1;
-	    
-	    var h1 = tR.getHeight(), h2 = oR.getHeight();
-	    if (h1 == 0) h1 = 1; if (h2 == 0) h2 = 1;
-	    
-	    this.scale(w1 / w2, h1 / h2, trFrom);
-	}
-	
-	/**
 	 * Clone this Path.
 	 * 
 	 * @method clone
@@ -465,7 +357,10 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		//return path as svg 'd' string
 		if (!d) {
 			var l = points.length, str = '', cp;
-			if (l == 0) return str; else { pt = points[0]; str = 'M' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3); }
+			if (l == 0) return str;
+			
+			pt = points[0];
+			str = 'M' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3);
 			
 			for (i = 1; i < l; i++) {
 				pt = points[i];
@@ -500,34 +395,17 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 			//close and return
 			if (this.closed) str += 'Z';
 			return str;
-			
-		//or apply regexp, copied from canvg to prepare 'd' string for parsing
-		} else {
-			//get rid of all commas
-			d = d.replace(/,/gm,' ');
-			
-			//separate commands from commands
-			d = d.replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm,'$1 $2');
-			d = d.replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm,'$1 $2');
-			
-			//separate commands from points
-			d = d.replace(/([MmZzLlHhVvCcSsQqTtAa])([^\s])/gm,'$1 $2');
-			d = d.replace(/([^\s])([MmZzLlHhVvCcSsQqTtAa])/gm,'$1 $2');
-			
-			//separate digits when no comma
-			d = d.replace(/([0-9])([+\-])/gm,'$1 $2');
-			d = d.replace(/(\.[0-9]*)(\.)/gm,'$1 $2');
-			
-			//shorthand elliptical arc path syntax
-			d = d.replace(/([Aa](\s+[0-9]+){3})\s+([01])\s*([01])/gm,'$1 $3 $4 ');
-			
-			//compress multiple spaces and trim
-			d = d.replace(/[\s\r\t\n]+/gm, ' ');
-			d = d.replace(/^\s+|\s+$/g, '');
-			
-			//split tokens
-			d = d.split(' ');
 		}
+		
+		//prepare 'd' string for parsing
+		d = d.replace(/,/gm, ' '). //get rid of all commas
+			  replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2'). //separate commands from commands
+			  replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2').
+			  replace(/([MmZzLlHhVvCcSsQqTtAa])([^\s])/gm, '$1 $2'). //separate commands from points
+			  replace(/([^\s])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2').
+			  replace(/([0-9])([+\-])/gm, '$1 $2').replace(/(\.[0-9]*)(\.)/gm, '$1 $2'). //separate digits when no comma
+			  replace(/([Aa](\s+[0-9]+){3})\s+([01])\s*([01])/gm, '$1 $3 $4 '). //shorthand elliptical arc path syntax
+			  replace(/[\s\r\t\n]+/gm, ' ').replace(/^\s+|\s+$/g, '').split(' '); //compress multiple spaces, trim and split
 		
 		//parse svg path 'd' string
 		var cmd, prevCmd, last = d.length - 1, startX = 0, startY = 0, curX = 0, curY = 0, cpX = 0, cpY = 0;
@@ -722,17 +600,4 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		
 	}
 	
-	/**
-	 * Returns a string representation of this object.
-	 * 
-	 * @method toString
-	 * 
-	 * @return {String} a string representation of this object.
-	 **/
-	p.toString = function() {
-	    return "[Path(" + this.points.data + ")]";
-	}
-	
-	//set up for global use
-	window.Path = Path;
 }() );
