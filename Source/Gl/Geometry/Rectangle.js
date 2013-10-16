@@ -44,6 +44,23 @@ WebbyJs.createClass({
 	 */
 	proto: {
 		/**
+		 * Apply matrix transformation.
+		 * 
+		 * @method matrixTransform
+		 * @memberof Rectangle.prototype
+		 * 
+		 * @param {Matrix} m - matrix.
+		 * 
+		 * @returns {Rectangle} current instance for chaining.
+		 */
+		matrixTransform: function(m) {
+			this.from.matrixTransform(m);
+			this.to.matrixTransform(m);
+			
+			return this;
+		},
+		
+		/**
 		 * Returns top right point of this Rectangle.
 		 * 
 		 * @method topRight
@@ -95,7 +112,7 @@ WebbyJs.createClass({
 		 * Get bounding rectangle of this object.
 		 * 
 		 * @method getBoundRect
-		 * @memberof Geom.prototype
+		 * @memberof Rectangle.prototype
 		 * 
 		 * @returns {Rectangle} a bounding rectangle or null if no rectangle.
 		 */
@@ -237,5 +254,10 @@ WebbyJs.createClass({
 		toString: function() {
 		    return "[WebbyJs.Rectangle(from:" + this.from.toString() + ", to:" + this.to.toString() + ")]";
 		}
-	}
+	},
+	
+	/**
+	 * Interfaces.
+	 */
+	interfaces: WebbyJs.Geom
 });
