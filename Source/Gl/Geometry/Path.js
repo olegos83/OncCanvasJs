@@ -58,14 +58,14 @@ WebbyJs.createClass({
 		 * @returns {Path} current instance for chaining.
 		 */
 		move: function(dx, dy) {
-		    var pt = this.points.data, l = pt.length, p = null;
+		    var pt = this.dp_storage, l = pt.length, p;
 		    
 		    for (var i = 0; i < l; i++) {
 		    	p = pt[i];
-		    	move(dx, dy);
+		    	p.move(dx, dy);
 		    	
-		    	if (prev) prev.move(dx, dy);
-		    	if (next) next.move(dx, dy);
+		    	if (p.prev) p.prev.move(dx, dy);
+		    	if (p.next) p.next.move(dx, dy);
 		    }
 		    
 		    return this;
@@ -83,14 +83,14 @@ WebbyJs.createClass({
 		 * @returns {Path} current instance for chaining.
 		 */
 		moveDir: function(dist, angle) {
-		    var pt = this.points.data, l = pt.length, p = null;
+		    var pt = this.dp_storage, l = pt.length, p;
 		    
 		    for (var i = 0; i < l; i++) {
 		    	p = pt[i];
-		    	moveDir(dist, angle);
+		    	p.moveDir(dist, angle);
 		    	
-				if (prev) prev.moveDir(dist, angle);
-				if (next) next.moveDir(dist, angle);
+				if (p.prev) p.prev.moveDir(dist, angle);
+				if (p.next) p.next.moveDir(dist, angle);
 		    }
 		    
 		    return this;
@@ -108,14 +108,14 @@ WebbyJs.createClass({
 		 * @returns {Path} current instance for chaining.
 		 */
 		rotate: function(angle, pivot) {
-		    var pt = this.points.data, l = pt.length, p = null;
+		    var pt = this.dp_storage, l = pt.length, p;
 		    
 		    for (var i = 0; i < l; i++) {
 		    	p = pt[i];
-		    	rotate(angle, pivot);
+		    	p.rotate(angle, pivot);
 		    	
-		    	if (prev) prev.rotate(angle, pivot);
-		    	if (next) next.rotate(angle, pivot);
+		    	if (p.prev) p.prev.rotate(angle, pivot);
+		    	if (p.next) p.next.rotate(angle, pivot);
 		    }
 		    
 		    return this;
@@ -134,14 +134,14 @@ WebbyJs.createClass({
 		 * @returns {Path} current instance for chaining.
 		 */
 		scale: function(scX, scY, pivot) {
-		    var pt = this.points.data, l = pt.length, p = null;
+		    var pt = this.dp_storage, l = pt.length, p;
 		    
 		    for (var i = 0; i < l; i++) {
 		    	p = pt[i];
-		    	scale(scX, scY, pivot);
+		    	p.scale(scX, scY, pivot);
 		    	
-		   		if (prev) prev.scale(scX, scY, pivot);
-		   		if (next) next.scale(scX, scY, pivot);
+		   		if (p.prev) p.prev.scale(scX, scY, pivot);
+		   		if (p.next) p.next.scale(scX, scY, pivot);
 		    }
 		    
 		    return this;
@@ -158,14 +158,14 @@ WebbyJs.createClass({
 		 * @returns {Path} current instance for chaining.
 		 */
 		matrixTransform: function(m) {
-		    var pt = this.points.data, l = pt.length, p = null;
+		    var pt = this.dp_storage, l = pt.length, p;
 		    
 		    for (var i = 0; i < l; i++) {
 		    	p = pt[i];
-		    	matrixTransform(m);
+		    	p.matrixTransform(m);
 		    	
-		   		if (prev) prev.matrixTransform(m);
-		   		if (next) next.matrixTransform(m);
+		   		if (p.prev) p.prev.matrixTransform(m);
+		   		if (p.next) p.next.matrixTransform(m);
 		    }
 		    
 		    return this;
@@ -177,27 +177,27 @@ WebbyJs.createClass({
 		 * @method getBoundRect
 		 * @memberof Path.prototype
 		 * 
-		 * @returns {Rectangle} a bounding rectangle.
+		 * @returns {Rectangle} a bounding rectangle or null if no rectangle.
 		 */
 		getBoundRect: function() {
-		    //init vars
-		    var pt = this.points.data, l = pt.length;
+			//init vars
+		    var pt = this.dp_storage, l = pt.length;
 		    if (l == 0) return null;
 		    
 		    //set min and max to first point
-		    var p = pt[0], x = x, y = y, minX = x, minY = y, maxX = x, maxY = y;
+		    var p = pt[0], x = p.x, y = p.y, minX = x, minY = y, maxX = x, maxY = y;
 		    
 		    //find min and max points
 		    for (var i = 0; i < l; i++) {
 		    	//check min/max in main points
-		    	p = pt[i]; x = x; y = y;
+		    	p = pt[i]; x = p.x; y = p.y;
 		    	
 		        if (x < minX) minX = x; if (y < minY) minY = y;
 		        if (x > maxX) maxX = x; if (y > maxY) maxY = y;
 		        
 		        //check control points
 		        var endi = i + 1; if (endi >= l) endi = 0;
-		        var cp1 = next, cp2 = pt[endi].prev;
+		        var cp1 = p.next, cp2 = pt[endi].prev;
 		        
 		        if (cp1 || cp2) {
 		        	//init temporary points
@@ -212,17 +212,17 @@ WebbyJs.createClass({
 		        		var mx1 = (x + cpx1) / 2, my1 = (y + cpy1) / 2,
 		        			mx3 = (cpx1 + cpx2) / 2, my3 = (cpy1 + cpy2) / 2,
 		        			mx2 = (mx1 + mx3) / 2, my2 = (my1 + my3) / 2,
-		        			mx5 = (cpx2 + ex) / 2, my5 = (cpy2 + ey) / 2,
+		        			mx5 = (cpx2 + ep.x) / 2, my5 = (cpy2 + ep.y) / 2,
 		        			mx4 = (mx3 + mx5) / 2, my4 = (my3 + my5) / 2;
 		        		
 		        		xx.push(mx1, mx2, mx4, mx5);
 		        		yy.push(my1, my2, my4, my5);
 		        	} else {
 		        		//quadratic curve rect correction
-		        		var cp = cp1 || cp2, cpx = cx, cpy = cy;
+		        		var cp = cp1 || cp2, cpx = cp.x, cpy = cp.y;
 		        		
-		        		xx.push((x + cpx) / 2, (cpx + ex) / 2);
-		        		yy.push((y + cpy) / 2, (cpy + ey) / 2);
+		        		xx.push((x + cpx) / 2, (cpx + ep.x) / 2);
+		        		yy.push((y + cpy) / 2, (cpy + ep.y) / 2);
 		        	}
 		        	
 		        	//check min/max in temporary points
@@ -248,15 +248,15 @@ WebbyJs.createClass({
 		 */
 		clone: function() {
 			//init vars
-		    var pt = this.points.data, l = pt.length, tmpArr = [], p = null, p2 = null;;
+		    var pt = this.dp_storage, l = pt.length, tmpArr = [], p, p2;
 			
 		    //clone points
 		    for (var i = 0; i < l; i++) {
-		    	p = pt[i]; p2 = clone();
+		    	p = pt[i]; p2 = p.clone();
 		    	
-		    	if (mv) p2.mv = mv;
-		    	if (prev) p2.prev = prev.clone();
-		    	if (next) p2.next = next.clone();
+		    	if (p.mv) p2.mv = p.mv;
+		    	if (p.prev) p2.prev = p.prev.clone();
+		    	if (p.next) p2.next = p.next.clone();
 		    	
 		    	tmpArr.push(p2);
 		    }
@@ -277,12 +277,12 @@ WebbyJs.createClass({
 		 */
 		svg: function(d) {
 			//init vars
-			var points = this.points.data, i = 0, pt;
+			var points = this.dp_storage, i = 0, pt;
 			
 			//return path as svg 'd' string
 			if (!d) {
 				var l = points.length, str = '', cp;
-				if (l == 0) return str;
+				if (l == 0) return str; 
 				
 				pt = points[0];
 				str = 'M' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3);
@@ -302,12 +302,12 @@ WebbyJs.createClass({
 						if (cp) {
 							//quadratic
 							if (cp == pt.prev) {
-								str += ' Q' + cx.toFixed(3) + ',' + cy.toFixed(3) +
+								str += ' Q' + cp.x.toFixed(3) + ',' + cp.y.toFixed(3) +
 										' ' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3);
 								
 							//cubic bezier
 							} else {
-								str += ' C' + cx.toFixed(3) + ',' + cy.toFixed(3) +
+								str += ' C' + cp.x.toFixed(3) + ',' + cp.y.toFixed(3) +
 										' ' + pt.prev.x.toFixed(3) + ',' + pt.prev.y.toFixed(3) +
 										' ' + pt.x.toFixed(3) + ',' + pt.y.toFixed(3);
 							}
@@ -322,7 +322,7 @@ WebbyJs.createClass({
 				return str;
 			}
 			
-			//prepare 'd' string for parsing
+			//apply regexps, copied from canvg to prepare 'd' string for parsing
 			d = d.replace(/,/gm, ' '). //get rid of all commas
 				  replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2'). //separate commands from commands
 				  replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2').
@@ -334,7 +334,9 @@ WebbyJs.createClass({
 			
 			//parse svg path 'd' string
 			var cmd, prevCmd, last = d.length - 1, startX = 0, startY = 0, curX = 0, curY = 0, cpX = 0, cpY = 0;
-			points.length = 0; this.closed = false;
+			
+			points.length = 0;
+			this.closed = false;
 			
 			//process path commands
 			while (i <= last) {
@@ -515,7 +517,7 @@ WebbyJs.createClass({
 			}
 			
 			//return current instance
-			return this;
+			return this;			
 		},
 		
 		/**
