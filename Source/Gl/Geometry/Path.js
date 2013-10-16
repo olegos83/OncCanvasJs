@@ -266,61 +266,6 @@ WebbyJs.createClass({
 		},
 		
 		/**
-		 * Create ellipse and return it as Path.
-		 * 
-		 * @method ellipse
-		 * @memberof Geom
-		 * 
-		 * @param {Point} c - center.
-		 * @param {Number} r1 - radius 1.
-		 * @param {Number} r2 - radius 2.
-		 * 
-		 * @returns {Path} ellipse path.
-		 */
-		ellipse: function(c, r1, r2) {
-			this.points.clear(); this.closed = true;
-			
-			//init vars
-			var pt = this.points.data, x = c.x, y = c.y, qr1 = r1 / 2, qr2 = r2 / 2;
-			pt.push(new Point(x, y - r1), new Point(x + r2, y), new Point(x, y + r1), new Point(x - r2, y));
-			
-			//setup curve
-			pt[0].prev = new Point(x - qr2, y - r1); pt[0].next = new Point(x + qr2, y - r1);
-			pt[1].prev = new Point(x + r2, y - qr1); pt[1].next = new Point(x + r2, y + qr1);
-			pt[2].prev = new Point(x + qr2, y + r1); pt[2].next = new Point(x - qr2, y + r1);
-			pt[3].prev = new Point(x - r2, y + qr1); pt[3].next = new Point(x - r2, y - qr1);
-		},
-		
-		/**
-		 * Create star and return it as Path.
-		 * 
-		 * @method star
-		 * @memberof Geom
-		 * 
-		 * @param {Point} c - center.
-		 * @param {Number} r1 - radius 1.
-		 * @param {Number} r2 - radius 2.
-		 * @param {Number} num_v - number of vertices.
-		 * @param {Number} ofs - angle offset.
-		 * 
-		 * @returns {Path} star path.
-		 */
-		star: function(c, r1, r2, num_v, ofs) {
-			this.points.clear(); this.closed = true;
-			
-			//init vars
-			num_v *= 2;
-			var alfa = 0, step = 2 * Math.PI / num_v, r = 0, ang = 0;
-			
-			//setup path
-			for (var i = 0; i < num_v; i++) {
-				if (r == r1) { r = r2; ang = alfa + ofs; } else { r = r1; ang = alfa; }
-				this.points.add(new Point(c.x + r * Math.sin(ang), c.y + r * Math.cos(ang)));
-				alfa += step;
-			}
-		},
-		
-		/**
 		 * Get/Set Path svg value.
 		 * 
 		 * @method svg
@@ -562,6 +507,7 @@ WebbyJs.createClass({
 				//'z' and 'Z'
 				} else if (cmd == 'Z' || cmd == 'z') {
 					curX = startX; curY = startY;
+					this.closed = true;
 				}
 				
 				//set previous cmd
