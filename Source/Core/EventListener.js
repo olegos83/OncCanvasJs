@@ -48,7 +48,7 @@ WebbyJs.createClass({
 	 * Class name.
 	 */
 	name: 'EventListener',
-
+	
 	/**
 	 * @constructor
 	 */
