@@ -93,7 +93,7 @@ WebbyJs.createClass({
 		 * @returns {Number} width of this Rectangle.
 		 */
 		getWidth: function() {
-		    return this.to.x - this.from.x;
+		    return Math.abs(this.to.x - this.from.x);
 		},
 		
 		/**
@@ -105,7 +105,7 @@ WebbyJs.createClass({
 		 * @returns {Number} height of this Rectangle.
 		 */
 		getHeight: function() {
-		    return this.to.y - this.from.y;
+		    return Math.abs(this.to.y - this.from.y);
 		},
 		
 		/**
@@ -194,29 +194,31 @@ WebbyJs.createClass({
 		 * 
 		 * @param {Point} pt - point to test.
 		 * 
-		 * @returns {Boolean} true if point is inside this Rectangle.
+		 * @returns {Boolean} true if point is inside or false otherwise.
 		 */
 		hasPoint: function(pt) {
 		    return ( (this.from.x <= pt.x) && (pt.x <= this.to.x) && (this.from.y <= pt.y) && (pt.y <= this.to.y) );
 		},
 		
 		/**
-		 * Check intersection between two rectangles.
+		 * Check intersection between this and target bounding rectangle.
 		 * 
-		 * @method intersect
+		 * @method intersectBounds
 		 * @memberof Rectangle.prototype
 		 * 
-		 * @param {Rectangle} r - rectangle to test.
+		 * @param {Rectangle} target - target to test.
 		 * 
-		 * @returns {Boolean} true if rectangles intersect or false otherwise.
+		 * @returns {Boolean} true if intersect or false otherwise.
 		 */
-		intersect: function(r) {
-		    var w = (Math.abs(this.getWidth()) + Math.abs(r.getWidth())) / 2,
-		    	h = (Math.abs(this.getHeight()) + Math.abs(r.getHeight())) / 2,
-		    	c1 = this.getCenter(), c2 = r.getCenter(),
-		    	dx = c1.x - c2.x, dy = c1.y - c2.y;
+		intersectBounds: function(target) {
+			var r = (target instanceof WebbyJs.Rectangle ? target : target.getBoundRect());
+			if (!r) return false;
+			
+		    var w = (this.getWidth() + r.getWidth()) / 2,
+		    	h = (this.getHeight() + r.getHeight()) / 2,
+		    	c1 = this.getCenter(), c2 = r.getCenter();
 		    
-		    return ( (Math.abs(dx) <= w) && (Math.abs(dy) <= h) );
+		    return ( (Math.abs(c1.x - c2.x) <= w) && (Math.abs(c1.y - c2.y) <= h) );
 		},
 		
 		/**

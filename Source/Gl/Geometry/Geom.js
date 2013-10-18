@@ -168,6 +168,64 @@ WebbyJs.createClass({
 		},
 		
 		/**
+		 * Check if point is inside this object.
+		 * 
+		 * @method hasPoint
+		 * @memberof Geom.prototype
+		 * 
+		 * @param {Point} pt - point to test.
+		 * 
+		 * @returns {Boolean} true if point is inside or false otherwise.
+		 */
+		hasPoint: function(pt) {
+		    return this.hasPointInBounds(pt);
+		},
+		
+		/**
+		 * Check if point is inside this object's bounding rectangle.
+		 * 
+		 * @method hasPointInBounds
+		 * @memberof Geom.prototype
+		 * 
+		 * @param {Point} pt - point to test.
+		 * 
+		 * @returns {Boolean} true if point is inside or false otherwise.
+		 */
+		hasPointInBounds: function(pt) {
+			var r = this.getBoundRect();
+			return (r ? r.hasPoint(pt) : false);
+		},
+		
+		/**
+		 * Check intersection between this object and target.
+		 * 
+		 * @method intersect
+		 * @memberof Geom.prototype
+		 * 
+		 * @param {Rectangle} target - target to test.
+		 * 
+		 * @returns {Boolean} true if intersect or false otherwise.
+		 */
+		intersect: function(target) {
+		    return this.intersectBounds(target);
+		},
+		
+		/**
+		 * Check intersection between this object and target bounding rectangles.
+		 * 
+		 * @method intersectBounds
+		 * @memberof Geom.prototype
+		 * 
+		 * @param {Rectangle} target - target to test.
+		 * 
+		 * @returns {Boolean} true if intersect or false otherwise.
+		 */
+		intersectBounds: function(target) {
+			var r = this.getBoundRect();
+		    return (r ? r.intersectBounds(target) : false);
+		},
+		
+		/**
 		 * Align object by base in bounds of specified rectangle.
 		 * 
 		 * @method align
@@ -179,9 +237,12 @@ WebbyJs.createClass({
 		 * @returns {Geom} current instance for chaining.
 		 */
 		align: function(base, rect) {
-			var or = this.getBoundRect(), dx = 0, dy = 0;
+			var or = this.getBoundRect();
+			if (!or) return this;
 			
 		    //calculate deltas
+			var dx = 0, dy = 0;
+			
 		    switch (base) {
 		        case 'left':
 		            dx = rect.from.x - or.from.x;
@@ -261,23 +322,22 @@ WebbyJs.createClass({
 		 */
 		placeIntoRect: function(tR) {
 			//init vars
-			var trFrom = tR.from;
+			var trFrom = tR.from, oR = this.getBoundRect();
+			if (!oR) return this;
 			
 		    //Mirror shape if needed
 			if (trFrom.x > tR.to.x) this.mirror('horiz');
 		    if (trFrom.y > tR.to.y) this.mirror('vert');
 		    
 		    //move shape
-		    var oR = this.getBoundRect();
-		    
 		    tR.normalize();
 		    this.move(trFrom.x - oR.from.x, trFrom.y - oR.from.y);
 		    
 		    //scale shape
-		    var w1 = tR.getWidth(), w2 = oR.getWidth();
-		    if (w1 == 0) w1 = 1; if (w2 == 0) w2 = 1;
+		    var w1 = tR.to.x - trFrom.x, w2 = oR.to.x - oR.from.x,
+		    	h1 = tR.to.y - trFrom.y, h2 = oR.to.y - oR.from.y;
 		    
-		    var h1 = tR.getHeight(), h2 = oR.getHeight();
+		    if (w1 == 0) w1 = 1; if (w2 == 0) w2 = 1;
 		    if (h1 == 0) h1 = 1; if (h2 == 0) h2 = 1;
 		    
 		    this.scale(w1 / w2, h1 / h2, trFrom);
