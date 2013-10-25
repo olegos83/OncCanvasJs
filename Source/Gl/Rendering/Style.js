@@ -166,7 +166,7 @@ WebbyJs.createClass({
 		 * 
 		 * @returns {Style} cloned style.
 		 */
-		clone: function(ctx) {
+		clone: function() {
 			return new WebbyJs.Style(this);
 		}
 	}
