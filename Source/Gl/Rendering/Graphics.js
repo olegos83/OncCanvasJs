@@ -1,58 +1,66 @@
 /**
- * @file The implementation of WebbyJs class creation.
+ * @file Abstract graphics object implementation.
  * @author Olegos <olegos83@yandex.ru>
  */
 
 /**
- * Base class for all WebbyJs created classes.
- * All created classes are inherited from it.
+ * Rectangle is very important in geometry and rendering calculations.
  * 
- * @class BaseWebbyJsClass
+ * @class Rectangle
  * @memberof WebbyJs
  */
-WebbyJs.createClass('BaseWebbyJsClass', null,
+WebbyJs.createClass({
 	/**
-	 * @constructs BaseWebbyJsClass
+	 * Class name.
 	 */
-	function() {
+	name: 'Rectangle',
+	
+	/**
+	 * @constructor
+	 * 
+	 * @param {Point} from - up left point. Default is Point(0, 0).
+	 * @param {Point} to - bottom right point. Default is Point(0, 0).
+	 */
+	construct: function Rectangle(from, to) {
 		/**
-		 * All WebbyJs members, which can be globalized.
-		 * 
-		 * @memberof BaseWebbyJsClass
-		 * @type {Array}
-		 * 
-		 * @private
-		 */
-		_globals: [];
+	     * Up left point of rectangle.
+	     * 
+	     * @memberof Rectangle
+	     * @type {Point}
+	     */
+		this.from = from || new WebbyJs.Point();
 	},
 	
 	/**
-	 * Prototype description.
+	 * Prototype.
 	 */
-	{
+	proto: {
 		/**
-		 * Invoke method with 'this' reference to current instance.
+		 * Check intersection between this and target bounding rectangle.
 		 * 
-		 * @method invoke
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @method intersectBounds
+		 * @memberof Rectangle.prototype
 		 * 
-		 * @param {Function} method - method to invoke.
-		 * @param {Array} args - method arguments.
+		 * @param {Rectangle} target - target to test.
 		 * 
-		 * @returnss {BaseWebbyJsClass} current instance for chaining.
+		 * @returns {Rectangle} current instance for chaining.
 		 */
-		invoke: function(method, args) {
-			method.apply(this, args);
-			return this;
+		intersectBounds: function(target) {
+		    return this;
 		}
-	}
-);
+	},
+	
+	/**
+	 * Interfaces.
+	 */
+	interfaces: WebbyJs.Geom
+});
 
 
 /*
- * LayerObject by OlegoS, 10 Apr 2013
+ * Graphics by OlegoS, 10 Apr 2013
  *
- * LayerObject is an abstraction for object which can be added to Layer.
+ * 
  */
 
 
@@ -63,22 +71,22 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	
 //CONSTRUCTOR
 	/**
-	 * LayerObject is a base to all graphic objects, but it can not be used itself.
+	 * Graphics is a base to all graphic objects, but it can not be used itself.
 	 * Inherited from EventListener to support events.
 	 * 
-	 * @class LayerObject
+	 * @class Graphics
 	 * @super EventListener
 	 * @author OlegoS
 	 *
 	 * @constructor
-	 * @param {String} id - LayerObject id. Default is "".
+	 * @param {String} id - Graphics id. Default is "".
 	 */
-	var LayerObject = function(id) {
+	var Graphics = function(id) {
 		//initialize base class
 		EventListener.call(this);
 
 	   /**
-	    * LayerObject id.
+	    * Graphics id.
 	    * 
 	    * @property id
 	    * @type String
@@ -94,7 +102,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	    this.layer = null;
 
 	   /**
-	    * LayerObject visibility. Default is true.
+	    * Graphics visibility. Default is true.
 	    * 
 	    * @property visible
 	    * @type Boolean
@@ -128,7 +136,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	}
 
 	//extend from EventListener
-	inheritProto(LayerObject, EventListener);
+	inheritProto(Graphics, EventListener);
 	
 	
 //STATIC
@@ -136,7 +144,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	
 //PROTOTYPE
 	//get prototype reference
-	var p = LayerObject.prototype;
+	var p = Graphics.prototype;
 	
 	/**
 	 * Make object draggable.
@@ -320,9 +328,9 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @returns {String} a string representation of this object.
 	 */
 	p.toString = function() {
-	    return "[LayerObject(id:" + this.id + ")]";
+	    return "[Graphics(id:" + this.id + ")]";
 	}
 	
 	//set up for global use
-	window.LayerObject = LayerObject;
+	window.Graphics = Graphics;
 }() );

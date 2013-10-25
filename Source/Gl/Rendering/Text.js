@@ -1,58 +1,65 @@
 /**
- * @file The implementation of WebbyJs class creation.
+ * @file Text object implementation.
  * @author Olegos <olegos83@yandex.ru>
  */
 
 /**
- * Base class for all WebbyJs created classes.
- * All created classes are inherited from it.
+ * Rectangle is very important in geometry and rendering calculations.
  * 
- * @class BaseWebbyJsClass
+ * @class Rectangle
  * @memberof WebbyJs
  */
-WebbyJs.createClass('BaseWebbyJsClass', null,
+WebbyJs.createClass({
 	/**
-	 * @constructs BaseWebbyJsClass
+	 * Class name.
 	 */
-	function() {
+	name: 'Rectangle',
+	
+	/**
+	 * @constructor
+	 * 
+	 * @param {Point} from - up left point. Default is Point(0, 0).
+	 * @param {Point} to - bottom right point. Default is Point(0, 0).
+	 */
+	construct: function Rectangle(from, to) {
 		/**
-		 * All WebbyJs members, which can be globalized.
-		 * 
-		 * @memberof BaseWebbyJsClass
-		 * @type {Array}
-		 * 
-		 * @private
-		 */
-		_globals: [];
+	     * Up left point of rectangle.
+	     * 
+	     * @memberof Rectangle
+	     * @type {Point}
+	     */
+		this.from = from || new WebbyJs.Point();
 	},
 	
 	/**
-	 * Prototype description.
+	 * Prototype.
 	 */
-	{
+	proto: {
 		/**
-		 * Invoke method with 'this' reference to current instance.
+		 * Check intersection between this and target bounding rectangle.
 		 * 
-		 * @method invoke
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @method intersectBounds
+		 * @memberof Rectangle.prototype
 		 * 
-		 * @param {Function} method - method to invoke.
-		 * @param {Array} args - method arguments.
+		 * @param {Rectangle} target - target to test.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returns {Rectangle} current instance for chaining.
 		 */
-		invoke: function(method, args) {
-			method.apply(this, args);
-			return this;
+		intersectBounds: function(target) {
+		    return this;
 		}
-	}
-);
-
+	},
+	
+	/**
+	 * Interfaces.
+	 */
+	interfaces: WebbyJs.Geom
+});
 
 /*
  * Text by OlegoS, 10 Apr 2013
  *
- * Text object implementation - to render vector text on canvas.
+ *  - to render vector text on canvas.
  */
 
 
