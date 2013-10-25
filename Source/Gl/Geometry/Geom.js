@@ -358,7 +358,7 @@ WebbyJs.createClass({
 		 */
 		svg: function(svg) {
 			if (svg) return this;
-			return "<g info='no svg'></g>";
+			return '';
 		},
 		
 		/**
