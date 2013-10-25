@@ -140,16 +140,22 @@ WebbyJs.createClass({
 			var stroke = this.strokeColor, fill = this.fillColor, shadow = this.shadowColor;
 			
 			if (stroke) {
-				if (stroke.toContext) stroke.toContext(); else ctx.strokeStyle = stroke;
+				if (stroke instanceof WebbyJs.Color) stroke = stroke.hex();
+				else if (stroke instanceof WebbyJs.Gradient) stroke = stroke.toCanvasGradient(ctx);
+				
+				ctx.strokeStyle = stroke;
 				ctx.lineWidth = this.strokeWidth;
 			}
 	        
 	        if (fill) {
-	        	if (fill.toContext) fill.toContext(); else ctx.fillStyle = fill;
+	        	if (fill instanceof WebbyJs.Color) fill = fill.hex();
+	        	else if (fill instanceof WebbyJs.Gradient) fill = fill.toCanvasGradient(ctx);
+	        	
+	        	ctx.fillStyle = fill;
 	        }
 	        
 	        if (shadow) {
-	        	if (shadow.toContext) shadow.toContext(); else ctx.shadowColor = shadow;
+	        	ctx.shadowColor = (shadow instanceof WebbyJs.Color ? shadow.hex() : shadow);
 	    		ctx.shadowBlur = this.shadowBlur;
 	        }
 	        
