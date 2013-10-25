@@ -23,14 +23,34 @@ WebbyJs.createClass({
 	 */
 	construct: function Color(val) {
 		/**
-	     * Init RGB values for internal calculations. Stored as values between 0 and 1.
+	     * Red value for internal calculations. Stored as number between 0 and 1.
 	     * 
 	     * @memberof Color
-	     * @type {Object}
+	     * @type {Number}
 	     * 
 	     * @private
 	     */
-		this._rgb = { r: 0, g: 0, b: 0 };
+		this._r = 0;
+		
+		/**
+	     * Green value for internal calculations. Stored as number between 0 and 1.
+	     * 
+	     * @memberof Color
+	     * @type {Number}
+	     * 
+	     * @private
+	     */
+		this._g = 0;
+		
+		/**
+	     * Blue value for internal calculations. Stored as number between 0 and 1.
+	     * 
+	     * @memberof Color
+	     * @type {Number}
+	     * 
+	     * @private
+	     */
+		this._b = 0;
 		
 		//init color
 		if (val) this.set(val);
@@ -42,10 +62,10 @@ WebbyJs.createClass({
 	proto: {
 		/**
 		 * Set color from specified value.
-		 * 
 		 * Color may be initialized from RGB, HSV, CMYK or CSS color string.
-		 * Also supports standart colors by names or integer numbers, which are
-		 * interpreted as hex.
+		 * 
+		 * Also standart colors by names or integer numbers, which are
+		 * interpreted as hex, are accepted.
 		 * 
 		 * @method set
 		 * @memberof Color.prototype
@@ -55,15 +75,264 @@ WebbyJs.createClass({
 		 * @returns {Color} current instance for chaining.
 		 */
 		set: function(val) {
-			if (val.r != null) this.rgb(val); else if (val.h != null) this.hsv(val); else if (val.c != null) this.cmyk(val);
+			if (val instanceof WebbyJs.Color) {
+				this._r = val._r; this._g = val._g; this._b = val._b;
+				return this;
+			}
 			
-			else if (val.substr) {
-				if (val.substr(0, 3).toLowerCase() == 'rgb') this.rgb(val);
-				else if (val.substr(0, 1) == '#') this.hex(val); else this.name(val);
+			if (typeof val == 'number') return this.num(val);
+			
+			if (typeof val == 'string') {
+				if (val.substr(0, 1) == '#') return this.hex(val);
+				if (val.substr(0, 3).toLowerCase() == 'rgb') return this.rgb(val);
+				
+				return this.name(val);
+			}
+			
+			if (typeof val == 'object') {
+				if (val.r != null) return this.rgb(val);
+				if (val.h != null) return this.hsv(val);
+				if (val.c != null) return this.cmyk(val);
 			}
 			
 		    return this;
-		}
+		},
+		
+		/**
+		 * GET/SET color from integer number.
+		 * 
+		 * @method num
+		 * @memberof Color.prototype
+		 * 
+		 * @param {Number} n - integer value.
+		 * 
+		 * @returns {Number|Color} current instance for chaining or color value as integer.
+		 */
+		num: function(n) {
+			if (n == null) return parseInt(this.hex().substr(1), 16);
+			
+			var hex = n.toString(16), l = 6 - hex.length;
+			
+			if (l > 0) {
+				for (var i = 0, a = ''; i < l; i++) a += '0';
+				hex = a + hex;
+			}
+			
+			this._r = parseInt(hex.substr(0, 2), 16) / 255;
+			this._g = parseInt(hex.substr(2, 2), 16) / 255;
+			this._b = parseInt(hex.substr(4, 2), 16) / 255;
+			
+			return this;
+		},
+		
+		/**
+		 * GET/SET color from name.
+		 * 
+		 * @method name
+		 * @memberof Color.prototype
+		 * 
+		 * @param {String} name - color name.
+		 * 
+		 * @returns {String|Color} current instance for chaining or if no args - color name || color hex value.
+		 */
+		name: function(name) {
+			var hex;
+			
+			if (!name) {
+				hex = this.hex();
+				return WebbyJs.Color.NameByHex[hex.substr(1)] || hex;
+			}
+			
+			hex = WebbyJs.Color.HexByName[name];
+			
+			if (hex) {
+				this._r = parseInt(hex.substr(0, 2), 16) / 255;
+				this._g = parseInt(hex.substr(2, 2), 16) / 255;
+				this._b = parseInt(hex.substr(4, 2), 16) / 255;
+			}
+			
+			return this;
+		},
+		
+		/**
+		 * GET/SET color from hex string.
+		 * 
+		 * @method hex
+		 * @memberof Color.prototype
+		 * 
+		 * @param {String} hex - '#rrggbb' or '#rgb'.
+		 * 
+		 * @returns {String|Color} current instance for chaining or if no args - hex as '#rrggbb'.
+		 */
+		hex: function(hex) {
+			var r, g, b;
+			
+			if (!hex)  {
+				r = Math.round(this._r * 255).toString(16); if (r.length == 1) r = '0' + r;
+				g = Math.round(this._g * 255).toString(16); if (g.length == 1) g = '0' + g;
+				b = Math.round(this._b * 255).toString(16); if (b.length == 1) b = '0' + b;
+				
+				return ('#' + r + g + b);
+			}
+			
+			if (hex.substr(0, 1) == '#') hex = hex.substr(1);
+			
+			if (hex.length == 6) {
+				this._r = parseInt(hex.substr(0, 2), 16) / 255;
+				this._g = parseInt(hex.substr(2, 2), 16) / 255;
+				this._b = parseInt(hex.substr(4, 2), 16) / 255;
+				
+			} else if (hex.length == 3) {
+				r = hex.substr(0, 1); this._r = parseInt(r + r, 16) / 255;
+				g = hex.substr(1, 1); this._g = parseInt(g + g, 16) / 255;
+				b = hex.substr(2, 1); this._b = parseInt(b + b, 16) / 255;
+			}
+			
+			return this;
+		},
+		
+		/**
+		 * GET/SET color from rgb.
+		 * 
+		 * @method rgb
+		 * @memberof Color.prototype
+		 * 
+		 * @param {Object|String} rgb - { r: red, g: green, b: blue } or 'rgb(r, g, b)'.
+		 * 
+		 * @returns {Object|Color} current instance for chaining or if no args - rgb as { r: red, g: green, b: blue }.
+		 */
+		rgb: function(rgb) {
+			if (!rgb) return { r: Math.round(this._r * 255), g: Math.round(this._g * 255), b: Math.round(this._b * 255) };
+			
+			if (typeof rgb == 'string') {
+				rgb = rgb.split('(')[1].split(',');
+				
+				this._r = parseInt(rgb[0]) / 255;
+				this._g = parseInt(rgb[1]) / 255;
+				this._b = parseInt(rgb[2]) / 255;
+				
+			} else {
+				this._r = rgb.r / 255;
+				this._g = rgb.g / 255;
+				this._b = rgb.b / 255;
+			}
+			
+			return this;
+		},
+		
+		/**
+	     * Get color as rgba string.
+	     * 
+	     * @method rgba
+	     * @memberof Color.prototype
+	     * 
+	     * @param {Number} a - alpha value.
+	     * 
+	     * @returns {String} color as 'rgba(r, g, b, a)' or 'rgb(r, g, b)' if no alpha.
+	     */
+		rgba: function(a) {
+	        var rgb = this.rgb();
+	        return (a == null ? 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')' : 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + a + ')');
+	    },
+		
+		/**
+		 * GET/SET color from hsv.
+		 * 
+		 * @method hsv
+		 * @memberof Color.prototype
+		 * 
+		 * @param {Object} hsv - { h: hue, s: saturation, v: value }.
+		 * 
+		 * @returns {Object|Color} current instance for chaining or if no args - hsv as { h: hue, s: saturation, v: value }.
+		 */
+		hsv: function(hsv) {
+			var s = 0, v;
+			
+			if (!hsv) {
+				var r = this._r, g = this._g, b = this._b, h = 0, min = Math.min(Math.min(r, g), b);
+				
+				v = Math.max(Math.max(r, g), b);
+				
+				if (v != 0) s = 1 - min / v;
+				if (v == min) return { h: h, s: s, v: v };
+				
+				var d = v - min;
+				
+				if (v == r) h = (g - b) / d; else if (v == g) h = 2 + ((b - r) / d); else h = 4 + ((r - g) / d);
+				  
+				h = h * 60;
+				if (h < 0) h += 360;
+				
+				return { h: Math.round(h), s: s, v: v };
+			}
+			
+			v = hsv.v; s = hsv.s;
+			if (v == 0 || s == 0) { this._r = this._g = this._b = v; return this; }
+			
+			var tHue = hsv.h / 60, i = Math.floor(tHue), f = tHue - i,
+				p = v * (1 - s), q = v * (1 - s * f), t = v * (1 - s * (1 - f));
+			
+			switch (i) {
+				 case 0: this._r = v; this._g = t; this._b = p; break;
+				 case 1: this._r = q; this._g = v; this._b = p; break;
+				 case 2: this._r = p; this._g = v; this._b = t; break;
+				 case 3: this._r = p; this._g = q; this._b = v; break;
+				 case 4: this._r = t; this._g = p; this._b = v; break;
+				default: this._r = v; this._g = p; this._b = q; break;
+			}
+			
+			return this;
+		},
+		
+		/**
+		 * GET/SET color from cmyk values.
+		 * 
+		 * @method cmyk
+		 * @memberof Color.prototype
+		 * 
+		 * @param {Object} cmyk - { c: cyan, m: magenta, y: yellow, k: key }.
+		 * 
+		 * @returns {Object|Color} current instance for chaining or if no args - cmyk as { c: cyan, m: magenta, y: yellow, k: key }.
+		 */
+		cmyk: function(cmyk) {
+			var c, m, y, k, d;
+			
+			if (!cmyk) {
+				c = 1 - this._r; m = 1 - this._g; y = 1 - this._b; k = Math.min(c, m, y, 1);
+				if (k == 1) c = m = y = 0; else { d = 1 - k; c = (c - k) / d; m = (m - k) / d; y = (y - k) / d; }
+				
+				return { c: Math.round(c * 100), m: Math.round(m * 100), y: Math.round(y * 100), k: Math.round(k * 100) };
+			}
+			
+			c = cmyk.c / 100; m = cmyk.m / 100; y = cmyk.y / 100; k = cmyk.k / 100; d = 1 - k;
+			this._r = (1 - c) * d; this._g = (1 - m) * d; this._b = (1 - y) * d;
+			
+			return this;
+		},
+		
+		/**
+		 * Clone this color.
+		 * 
+		 * @method clone
+		 * @memberof Color.prototype
+		 * 
+		 * @returns {Color} cloned color.
+		 */
+		clone: function() {
+			return new WebbyJs.Color(this);
+		},
+		
+		/**
+	     * Get string representation of this object.
+	     * 
+	     * @method toString
+	     * @memberof Color.prototype
+	     * 
+	     * @returns {String} object as string.
+	     */
+		toString: function() {
+	        return "[Color(" + this.hex() + ")]";
+	    }
 	},
 	
 	/**
@@ -119,224 +388,3 @@ WebbyJs.invoke(function() {
 	this.Color.HexByName = hexByName;
 	this.Color.NameByHex = nameByHex;
 });
-
-
-//ANONYMOUS FUNCTION WRAPPER
-( function() {
-//PROTOTYPE
-	//get prototype reference
-	var p = Color.prototype;
-	
-	/**
-	 * SET color from number.
-	 * 
-	 * @method num
-	 * @param {Number} n - number value.
-	 * 
-	 * @returns {Color} current instance for chaining.
-	 */
-	p.num = function(n) {
-		var rgb = this._rgb, hex = n.toString(16), l = 6 - hex.length;
-		
-		if (l > 0) {
-			for (var i = 0, a = ''; i < l; i++) a += '0';
-			hex = a + hex;
-		}
-		
-		rgb.r = parseInt(hex.substr(0, 2), 16) / 255;
-		rgb.g = parseInt(hex.substr(2, 2), 16) / 255;
-		rgb.b = parseInt(hex.substr(4, 2), 16) / 255;
-		
-		return this;
-	}
-	
-	/**
-	 * GET/SET color from name.
-	 * 
-	 * @method name
-	 * @param {String} name - color name.
-	 * 
-	 * @returns {String|Color} current instance for chaining or if no args - color name || hex.
-	 */
-	p.name = function(name) {
-		var hex;
-		
-		if (!name) {
-			hex = this.hex();
-			return WebbyJs.Color.NameByHex[hex.substr(1)] || hex;
-		}
-		
-		var rgb = this._rgb; hex = WebbyJs.Color.HexByName[name];
-		
-		if (hex) {
-			rgb.r = parseInt(hex.substr(0, 2), 16) / 255;
-			rgb.g = parseInt(hex.substr(2, 2), 16) / 255;
-			rgb.b = parseInt(hex.substr(4, 2), 16) / 255;
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * GET/SET color from hex string.
-	 * 
-	 * @method hex
-	 * @param {String} hex - '#rrggbb' or '#rgb'.
-	 * 
-	 * @returns {String|Color} current instance for chaining or if no args - hex as '#rrggbb'.
-	 */
-	p.hex = function(hex) {
-		var rgb = this._rgb, r, g, b;
-		
-		if (!hex)  {
-			rgb = this.rgb();
-			r = rgb.r.toString(16); g = rgb.g.toString(16); b = rgb.b.toString(16);
-			
-			if (r.length == 1) r = '0' + r;
-			if (g.length == 1) g = '0' + g;
-			if (b.length == 1) b = '0' + b;
-			  
-			return ('#' + r + g + b);
-		}
-		
-		if (hex.substr(0, 1) == '#') hex = hex.substr(1);
-		
-		if (hex.length == 6) {
-			rgb.r = parseInt(hex.substr(0, 2), 16) / 255;
-			rgb.g = parseInt(hex.substr(2, 2), 16) / 255;
-			rgb.b = parseInt(hex.substr(4, 2), 16) / 255;
-		} else if (hex.length == 3) {
-			r = hex.substr(0, 1), g = hex.substr(1, 1), b = hex.substr(2, 1);
-			rgb.r = parseInt(r + r, 16) / 255;
-			rgb.g = parseInt(g + g, 16) / 255;
-			rgb.b = parseInt(b + b, 16) / 255;
-		} else {
-			rgb.r = rgb.g = rgb.b = 0;
-		}
-		    
-		return this;
-	}
-	
-	/**
-	 * GET/SET color from rgb.
-	 * 
-	 * @method rgb
-	 * @param {Object|String} rgb - { r: red, g: green, b: blue } or 'rgb(r, g, b)'.
-	 * 
-	 * @returns {Object|Color} current instance for chaining or if no args - rgb as { r: red, g: green, b: blue }.
-	 */
-	p.rgb = function(rgb) {
-		var _rgb = this._rgb;
-		if (!rgb) return { r: Math.round(_rgb.r * 255), g: Math.round(_rgb.g * 255), b: Math.round(_rgb.b * 255) };
-		
-		if (rgb.substr && rgb.substr(0, 3).toLowerCase() == 'rgb') {
-			var tmp = rgb.split('(')[1].split(',');
-			_rgb.r = parseInt(tmp[0]) / 255;
-			_rgb.g = parseInt(tmp[1]) / 255;
-			_rgb.b = parseInt(tmp[2]) / 255;
-		} else if (rgb.r != null) {
-			_rgb.r = rgb.r / 255;
-			_rgb.g = rgb.g / 255;
-			_rgb.b = rgb.b / 255;
-		} else {
-			_rgb.r = _rgb.g = _rgb.b = 0;
-		}
-		
-		return this;
-	}
-
-	/**
-     * Get color as rgba string.
-     * 
-     * @method rgba
-     * @param {Number} a - alpha value.
-     * 
-     * @returns {String} color as 'rgba(r, g, b, a)' or 'rgb(r, g, b)' if no alpha.
-     */
-	p.rgba = function(a) {
-        var rgb = this.rgb();
-        return (a == null ? 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')' : 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + a + ')');
-    }
-	
-	/**
-	 * GET/SET color from hsv.
-	 * 
-	 * @method hsv
-	 * @param {Object} hsv - { h: hue, s: saturation, v: value }.
-	 * 
-	 * @returns {Object|Color} current instance for chaining or if no args - hsv as { h: hue, s: saturation, v: value }.
-	 */
-	p.hsv = function(hsv) {
-		var rgb = this._rgb, s = 0, v;
-		
-		if (!hsv) {
-			var h = 0, min = Math.min(Math.min(rgb.r, rgb.g), rgb.b); v = Math.max(Math.max(rgb.r, rgb.g), rgb.b);
-			
-			if (v != 0) s = 1 - min / v;
-			if (v == min) return { h: h, s: s, v: v };
-			
-			var d = v - min;
-			if (v == rgb.r) h = (rgb.g - rgb.b) / d; else if (v == rgb.g) h = 2 + ((rgb.b - rgb.r) / d); else h = 4 + ((rgb.r - rgb.g) / d);
-			  
-			h = h * 60;
-			if (h < 0) h += 360;
-			
-			return { h: Math.round(h), s: s, v: v };
-		}
-		
-		v = hsv.v; s = hsv.s;
-		if (v == 0 || s == 0) { rgb.r = rgb.g = rgb.b = v; return this; }
-		
-		var tHue = hsv.h / 60, i = Math.floor(tHue), f = tHue - i,
-			p = v * (1 - s), q = v * (1 - s * f), t = v * (1 - s * (1 - f));
-		
-		switch(i) {
-			 case 0: rgb.r = v; rgb.g = t; rgb.b = p; break;
-			 case 1: rgb.r = q; rgb.g = v; rgb.b = p; break;
-			 case 2: rgb.r = p; rgb.g = v; rgb.b = t; break;
-			 case 3: rgb.r = p; rgb.g = q; rgb.b = v; break;
-			 case 4: rgb.r = t; rgb.g = p; rgb.b = v; break;
-			default: rgb.r = v; rgb.g = p; rgb.b = q; break;
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * GET/SET color from cmyk values.
-	 * 
-	 * @method cmyk
-	 * @param {Object} cmyk - { c: cyan, m: magenta, y: yellow, k: key }.
-	 * 
-	 * @returns {Object|Color} current instance for chaining or if no args - cmyk as { c: cyan, m: magenta, y: yellow, k: key }.
-	 */
-	p.cmyk = function(cmyk) {
-		var rgb = this._rgb, c, m, y, k, d;
-		
-		if (!cmyk) {
-			c = 1 - rgb.r; m = 1 - rgb.g; y = 1 - rgb.b; k = Math.min(c, m, y, 1);
-			if (k == 1) c = m = y = 0; else d = 1 - k; c = (c - k) / d; m = (m - k) / d; y = (y - k) / d;
-			
-			return { c: Math.round(c * 100), m: Math.round(m * 100), y: Math.round(y * 100), k: Math.round(k * 100) };
-		}
-		
-		c = cmyk.c / 100; m = cmyk.m / 100; y = cmyk.y / 100; k = cmyk.k / 100;
-		d = 1 - k; rgb.r = (1 - c) * d; rgb.g = (1 - m) * d; rgb.b = (1 - y) * d;
-		
-		return this;
-	}
-	
-	/**
-     * Get string representation of this object.
-     * 
-     * @method toString
-     * 
-     * @returns {String} object as string.
-     */
-	p.toString = function() {
-        return "[Color(" + this.hex() + ")]";
-    }
-	
-	//set up for global use
-	window.Color = Color;
-}() );
