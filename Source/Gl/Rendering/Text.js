@@ -6,14 +6,14 @@
 /**
  * Rectangle is very important in geometry and rendering calculations.
  * 
- * @class Rectangle
+ * @class Text
  * @memberof WebbyJs
  */
 WebbyJs.createClass({
 	/**
 	 * Class name.
 	 */
-	name: 'Rectangle',
+	name: 'Text',
 	
 	/**
 	 * @constructor
@@ -21,11 +21,11 @@ WebbyJs.createClass({
 	 * @param {Point} from - up left point. Default is Point(0, 0).
 	 * @param {Point} to - bottom right point. Default is Point(0, 0).
 	 */
-	construct: function Rectangle(from, to) {
+	construct: function Text(from, to) {
 		/**
 	     * Up left point of rectangle.
 	     * 
-	     * @memberof Rectangle
+	     * @memberof Text
 	     * @type {Point}
 	     */
 		this.from = from || new WebbyJs.Point();
@@ -39,11 +39,11 @@ WebbyJs.createClass({
 		 * Check intersection between this and target bounding rectangle.
 		 * 
 		 * @method intersectBounds
-		 * @memberof Rectangle.prototype
+		 * @memberof Text.prototype
 		 * 
-		 * @param {Rectangle} target - target to test.
+		 * @param {Text} target - target to test.
 		 * 
-		 * @returns {Rectangle} current instance for chaining.
+		 * @returns {Text} current instance for chaining.
 		 */
 		intersectBounds: function(target) {
 		    return this;
@@ -55,12 +55,6 @@ WebbyJs.createClass({
 	 */
 	interfaces: WebbyJs.Geom
 });
-
-/*
- * Text by OlegoS, 10 Apr 2013
- *
- *  - to render vector text on canvas.
- */
 
 
 //ANONYMOUS FUNCTION WRAPPER

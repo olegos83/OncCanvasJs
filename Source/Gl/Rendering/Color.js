@@ -1,19 +1,19 @@
 /**
- * @file Color utilities.
+ * @file Color utility class.
  * @author Olegos <olegos83@yandex.ru>
  */
 
 /**
  * Rectangle is very important in geometry and rendering calculations.
  * 
- * @class Rectangle
+ * @class Color
  * @memberof WebbyJs
  */
 WebbyJs.createClass({
 	/**
 	 * Class name.
 	 */
-	name: 'Rectangle',
+	name: 'Color',
 	
 	/**
 	 * @constructor
@@ -21,11 +21,11 @@ WebbyJs.createClass({
 	 * @param {Point} from - up left point. Default is Point(0, 0).
 	 * @param {Point} to - bottom right point. Default is Point(0, 0).
 	 */
-	construct: function Rectangle(from, to) {
+	construct: function Color(from, to) {
 		/**
 	     * Up left point of rectangle.
 	     * 
-	     * @memberof Rectangle
+	     * @memberof Color
 	     * @type {Point}
 	     */
 		this.from = from || new WebbyJs.Point();
@@ -39,11 +39,11 @@ WebbyJs.createClass({
 		 * Check intersection between this and target bounding rectangle.
 		 * 
 		 * @method intersectBounds
-		 * @memberof Rectangle.prototype
+		 * @memberof Color.prototype
 		 * 
 		 * @param {Rectangle} target - target to test.
 		 * 
-		 * @returns {Rectangle} current instance for chaining.
+		 * @returns {Color} current instance for chaining.
 		 */
 		intersectBounds: function(target) {
 		    return this;
@@ -55,13 +55,6 @@ WebbyJs.createClass({
 	 */
 	interfaces: WebbyJs.Geom
 });
-
-
-/*
- * Color by OlegoS, 4 Apr 2013
- * 
- * 
- */
 
 
 //ANONYMOUS FUNCTION WRAPPER

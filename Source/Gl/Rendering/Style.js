@@ -6,14 +6,14 @@
 /**
  * Rectangle is very important in geometry and rendering calculations.
  * 
- * @class Rectangle
+ * @class Style
  * @memberof WebbyJs
  */
 WebbyJs.createClass({
 	/**
 	 * Class name.
 	 */
-	name: 'Rectangle',
+	name: 'Style',
 	
 	/**
 	 * @constructor
@@ -21,11 +21,11 @@ WebbyJs.createClass({
 	 * @param {Point} from - up left point. Default is Point(0, 0).
 	 * @param {Point} to - bottom right point. Default is Point(0, 0).
 	 */
-	construct: function Rectangle(from, to) {
+	construct: function Style(from, to) {
 		/**
 	     * Up left point of rectangle.
 	     * 
-	     * @memberof Rectangle
+	     * @memberof Style
 	     * @type {Point}
 	     */
 		this.from = from || new WebbyJs.Point();
@@ -39,19 +39,14 @@ WebbyJs.createClass({
 		 * Check intersection between this and target bounding rectangle.
 		 * 
 		 * @method intersectBounds
-		 * @memberof Rectangle.prototype
+		 * @memberof Style.prototype
 		 * 
-		 * @param {Rectangle} target - target to test.
+		 * @param {Style} target - target to test.
 		 * 
-		 * @returns {Rectangle} current instance for chaining.
+		 * @returns {Style} current instance for chaining.
 		 */
 		intersectBounds: function(target) {
 		    return this;
 		}
-	},
-	
-	/**
-	 * Interfaces.
-	 */
-	interfaces: WebbyJs.Geom
+	}
 });
