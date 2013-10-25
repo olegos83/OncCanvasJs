@@ -39,7 +39,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * @param {Function} method - method to invoke.
 		 * @param {Array} args - method arguments.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returnss {BaseWebbyJsClass} current instance for chaining.
 		 */
 		invoke: function(method, args) {
 			method.apply(this, args);
@@ -100,14 +100,14 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @class SvgParser
 	 * @author OlegoS
-	 **/
+	 */
 	var SvgParser = function() {
 		/**
 	     * Svg source as it was loaded.
 	     * 
 	     * @property source
 	     * @type String
-	     **/
+	     */
 	    this.source = '';
 	    
 	    /**
@@ -115,7 +115,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property dom
 	     * @type Document
-	     **/
+	     */
 	    this.dom = null;
 	    
 	    /**
@@ -123,7 +123,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property version
 	     * @type String
-	     **/
+	     */
 	    this.version = '';
 	    
 	    /**
@@ -131,7 +131,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property id
 	     * @type String
-	     **/
+	     */
 	    this.id = '';
 	    
 	    /**
@@ -139,7 +139,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property width
 	     * @type Number
-	     **/
+	     */
 	    this.width = 0;
 	    
 	    /**
@@ -147,7 +147,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property height
 	     * @type Number
-	     **/
+	     */
 	    this.height = 0;
 		
 		/**
@@ -155,7 +155,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property layerObjects
 	     * @type Array
-	     **/
+	     */
 	    this.layerObjects = [];
 	}
 	
@@ -172,7 +172,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method loadSvgString
 	 * @param {String} str - svg source string.
-	 **/
+	 */
 	p.loadSvgString = function(str) {
 		this.source = str;
 		this.dom = parseXml(str);
@@ -183,7 +183,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method loadSvgUrl
 	 * @param {String} url - svg source url.
-	 **/
+	 */
 	p.loadSvgUrl = function(url) {
 		this.source = ajax(url);
 		this.dom = parseXml(this.source);
@@ -195,7 +195,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method parseSvg
 	 * @param {Element} el - starting element.
-	 **/
+	 */
 	p.parseSvg = function(el) {
 		//return if not element
 		if (el.nodeType != 1) return;
@@ -306,8 +306,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method toString
 	 * 
-	 * @return {String} a string representation of this object.
-	 **/
+	 * @returns {String} a string representation of this object.
+	 */
 	p.toString = function() {
 	    return "[SvgParser]";
 	}

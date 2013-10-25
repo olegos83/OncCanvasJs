@@ -63,14 +63,14 @@ WebbyJs.import({
 	 * @author OlegoS
 	 *
 	 * @static
-	 **/
+	 */
 	var FontsManager = {
 		/**
 	     * Font filenames stored by font family_weight_style as key.
 	     * 
 	     * @property fileByStyle
 	     * @type Object
-	     **/
+	     */
 	    fileByStyle: {},
 	    
 		/**
@@ -78,7 +78,7 @@ WebbyJs.import({
 	     * 
 	     * @property fontByStyle
 	     * @type Object
-	     **/
+	     */
 	    fontByStyle: {},
 	    
 	    /**
@@ -87,7 +87,7 @@ WebbyJs.import({
 	     * 
 	     * @property styleByPostscript
 	     * @type Object
-	     **/
+	     */
 	    styleByPostscript: {},
 		
 	    /**
@@ -95,7 +95,7 @@ WebbyJs.import({
 		 * 
 		 * @method load
 		 * @param {String} src - path to font file.
-		 **/
+		 */
 	    load: function(src) {
 	    	var ajax = ( XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP') );
 			
@@ -110,7 +110,7 @@ WebbyJs.import({
 		 * 
 		 * @method setConfig
 		 * @param {Array} cfg - config info.
-		 **/
+		 */
 		setConfig: function(cfg) {
 			for (var i = 0, l = cfg.length, f, s; i < l; i++) {
 				f = cfg[i]; s = { fontFamily: f.family, fontWeight: f.weight, fontStyle: f.style };
@@ -125,7 +125,7 @@ WebbyJs.import({
 		 * 
 		 * @method addFont
 		 * @param {Object} fnt - font data.
-		 **/
+		 */
 		addFont: function(fnt) {
 			var font = new Font(fnt);
 			this.fontByStyle[font.family + '_' + font.weight + '_' + font.style] = font;
@@ -141,8 +141,8 @@ WebbyJs.import({
 		 * @method getStyleKey
 		 * @param {Object} style - font style.
 		 * 
-		 * @return {String} font key.
-		 **/
+		 * @returns {String} font key.
+		 */
 		getStyleKey: function(style) {
 			return style.fontFamily.toLowerCase() + '_' + style.fontWeight.toLowerCase() + '_' + style.fontStyle.toLowerCase();
 		},
@@ -153,8 +153,8 @@ WebbyJs.import({
 		 * @method getFileByStyle
 		 * @param {Object} style - font style.
 		 * 
-		 * @return {String} font filename.
-		 **/
+		 * @returns {String} font filename.
+		 */
 		getFileByStyle: function(style) {
 			var file = this.fileByStyle[ this.getStyleKey(style) ];
 			if (file) return Main.baseDir + 'fonts/' + file; else return '';
@@ -166,8 +166,8 @@ WebbyJs.import({
 		 * @method getFontByStyle
 		 * @param {Object} style - font style.
 		 * 
-		 * @return {Font} font reference.
-		 **/
+		 * @returns {Font} font reference.
+		 */
 		getFontByStyle: function(style) {
 			var font = this.fontByStyle[ this.getStyleKey(style) ];
 			

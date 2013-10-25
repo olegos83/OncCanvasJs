@@ -79,7 +79,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @param {String} id - object id. Default is "".
 	 * @param {String} text - text value. Default is "".
 	 * @param {Object} style - rendering style.
-	 **/
+	 */
 	var Text = function(id, text, style) {
 		//initialize base class
 	    Shaper.call(this, id);
@@ -93,7 +93,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property font
 	     * @type Font
-	     **/
+	     */
 	    this.font = null;
 	    
 	    /**
@@ -101,7 +101,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property text
 	     * @type String
-	     **/
+	     */
 	    this.text = '';
 	    if (text) this.setText(text);
 	}
@@ -122,7 +122,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method setText
 	 * @param {Sting} text - text to set.
-	 **/
+	 */
 	p.setText = function(text) {
 		//init vars
 		var style = this.style, font = this.font = FontsManager.getFontByStyle(style),
@@ -180,7 +180,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method setFont
 	 * @param {Object} style - style.
-	 **/
+	 */
 	p.setFont = function(style) {
 		this.setStyle(style);
 		this.setText(this.text);
@@ -192,8 +192,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method hasPoint
 	 * @param {Point} p - point to test.
 	 * 
-	 * @return {Boolean} - true if point is inside and false otherwise.
-	 **/
+	 * @returns {Boolean} - true if point is inside and false otherwise.
+	 */
 	p.hasPoint = function(p) {
 		if (!this.layer || !this.visible || this.shapes.length() == 0) return;
 		
@@ -213,8 +213,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method clone
 	 * 
-	 * @return {Text} a cloned Text.
-	 **/
+	 * @returns {Text} a cloned Text.
+	 */
 	p.clone = function() {
 		var cloned = new Text(this.id, this.text, this.style);
 		cloned.matrixTransform(this.matrix);
@@ -226,8 +226,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method svg
 	 * 
-	 * @return {String} svg code string.
-	 **/
+	 * @returns {String} svg code string.
+	 */
 	p.svg = function() {
 		var data = this.shapes.data, l = data.length, style = this.style, fill = style.fillColor, i,
 			
@@ -270,8 +270,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method toString
 	 * 
-	 * @return {String} a string representation of this object.
-	 **/
+	 * @returns {String} a string representation of this object.
+	 */
 	p.toString = function() {
 	    return "[Text(id:" + this.id + ")]";
 	}

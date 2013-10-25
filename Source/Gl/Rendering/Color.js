@@ -39,7 +39,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * @param {Function} method - method to invoke.
 		 * @param {Array} args - method arguments.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returnss {BaseWebbyJsClass} current instance for chaining.
 		 */
 		invoke: function(method, args) {
 			method.apply(this, args);
@@ -95,7 +95,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 *
 	 * @constructor
 	 * @param {Object} val - initial color.
-	 **/
+	 */
 	var Color = function(val) {
 		/**
 	     * Init RGB values for internal calculations. Stored as values between 0 and 1.
@@ -104,7 +104,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * @type Object
 	     * 
 	     * @private
-	     **/
+	     */
 		this._rgb = { r: 0, g: 0, b: 0 };
 		
 		//init color
@@ -135,8 +135,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method num
 	 * @param {Number} n - number value.
 	 * 
-	 * @return {Object} this for chaining.
-	 **/
+	 * @returns {Object} this for chaining.
+	 */
 	p.num = function(n) {
 		var rgb = this._rgb, hex = n.toString(16), l = 6 - hex.length;
 		
@@ -158,8 +158,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method name
 	 * @param {String} name - color name.
 	 * 
-	 * @return {Object} this for chaining or if no args - color name or 'black'.
-	 **/
+	 * @returns {Object} this for chaining or if no args - color name or 'black'.
+	 */
 	p.name = function(name) {
 		if (!name) return nameByHex[this.hex().substr(1)] || 'black';
 		
@@ -177,8 +177,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method hex
 	 * @param {String} hex - '#rrggbb' or '#rgb'.
 	 * 
-	 * @return {Object} this for chaining or if no args - hex as '#rrggbb'.
-	 **/
+	 * @returns {Object} this for chaining or if no args - hex as '#rrggbb'.
+	 */
 	p.hex = function(hex) {
 		var rgb = this._rgb, r, g, b;
 		
@@ -217,8 +217,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method rgb
 	 * @param {Object} rgb - { r: red, g: green, b: blue } or 'rgb(r, g, b)'.
 	 * 
-	 * @return {Object} this for chaining or if no args - rgb as { r: red, g: green, b: blue }.
-	 **/
+	 * @returns {Object} this for chaining or if no args - rgb as { r: red, g: green, b: blue }.
+	 */
 	p.rgb = function(rgb) {
 		var _rgb = this._rgb;
 		if (!rgb) return { r: Math.round(_rgb.r * 255), g: Math.round(_rgb.g * 255), b: Math.round(_rgb.b * 255) };
@@ -245,8 +245,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
      * @method rgba
      * @param {Number} alpha - alpha value.
      * 
-     * @return {String} color as 'rgba(r, g, b, a)' or 'rgb(r, g, b)' if no alpha.
-     **/
+     * @returns {String} color as 'rgba(r, g, b, a)' or 'rgb(r, g, b)' if no alpha.
+     */
 	p.rgba = function(alpha) {
         var rgb = this.rgb();
         
@@ -263,8 +263,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method hsv
 	 * @param {Object} hsv - { h: hue, s: saturation, v: value }.
 	 * 
-	 * @return {Object} this for chaining or if no args - hsv as { h: hue, s: saturation, v: value }.
-	 **/
+	 * @returns {Object} this for chaining or if no args - hsv as { h: hue, s: saturation, v: value }.
+	 */
 	p.hsv = function(hsv) {
 		var rgb = this._rgb, s = 0, v;
 		
@@ -307,8 +307,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method cmyk
 	 * @param {Object} cmyk - { c: cyan, m: magenta, y: yellow, k: key }.
 	 * 
-	 * @return {Object} this for chaining or if no args - cmyk as { c: cyan, m: magenta, y: yellow, k: key }.
-	 **/
+	 * @returns {Object} this for chaining or if no args - cmyk as { c: cyan, m: magenta, y: yellow, k: key }.
+	 */
 	p.cmyk = function(cmyk) {
 		var rgb = this._rgb, c, m, y, k, d;
 		
@@ -335,8 +335,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
      * 
      * @method toString
      * 
-     * @return {String} object as string.
-     **/
+     * @returns {String} object as string.
+     */
 	p.toString = function() {
         return "[Color(" + this.hex() + ")]";
     }

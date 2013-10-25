@@ -39,7 +39,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * @param {Function} method - method to invoke.
 		 * @param {Array} args - method arguments.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returnss {BaseWebbyJsClass} current instance for chaining.
 		 */
 		invoke: function(method, args) {
 			method.apply(this, args);
@@ -141,7 +141,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @constructor
 	 * @param {String} id - stage id.
 	 * @param {Element} parent - DOM element to assign Stage.
-	 **/
+	 */
 	var Stage = function(id, parent) {
 		//initialize base class
 		DataProvider.call(this);
@@ -151,7 +151,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property id
  	     * @type String
-	     **/
+	     */
 	    this.id = (id == null ? '' : id);
 		
 		/**
@@ -159,7 +159,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property parent
 	     * @type Element
-	     **/
+	     */
 	    this.parent = null;
 	    
 	    /**
@@ -167,7 +167,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property canvasDiv
 	     * @type Element
-	     **/
+	     */
 	    this.canvasDiv = document.createElement('div');
 	    
 	    /**
@@ -175,7 +175,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property eventDiv
 	     * @type Element
-	     **/
+	     */
 	    this.eventDiv = document.createElement('div');
 	    
 	    //start events processing
@@ -240,7 +240,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method attach
 	 * @param {Element} parent - element.
-	 **/
+	 */
 	p.attach = function(parent) {
 		this.detach(); this.parent = parent;
 		
@@ -268,7 +268,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * Detach Stage from DOM element.
 	 * 
 	 * @method detach
-	 **/
+	 */
 	p.detach = function() {
 	    if (this.parent) {
 	    	this.parent.innerHTML = '';
@@ -280,7 +280,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * Invalidate Stage parameters.
 	 * 
 	 * @method invalidate
-	 **/
+	 */
 	p.invalidate = function() {
 		var ed = this.eventDiv, bb = ed.getBoundingClientRect(), body = document.body;
 		
@@ -293,8 +293,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method clone
 	 * 
-	 * @return {Stage} a cloned Stage.
-	 **/
+	 * @returns {Stage} a cloned Stage.
+	 */
 	p.clone = function() {
 	    //need to implement
 	}
@@ -304,8 +304,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method toString
 	 * 
-	 * @return {String} a string representation of this object.
-	 **/
+	 * @returns {String} a string representation of this object.
+	 */
 	p.toString = function() {
 	    return "[Stage(" + this.data + ")]";
 	}

@@ -39,7 +39,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * @param {Function} method - method to invoke.
 		 * @param {Array} args - method arguments.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returnss {BaseWebbyJsClass} current instance for chaining.
 		 */
 		invoke: function(method, args) {
 			method.apply(this, args);
@@ -75,7 +75,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @param {Number} width - width.
 	 * @param {Number} height - height.
 	 * @param {Object} style - rendering style.
-	 **/
+	 */
 	var Bitmap = function(id, src, width, height, style) {
 		//initialize base class
 		LayerObject.call(this, id);
@@ -88,7 +88,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property image
 	     * @type Image
-	     **/
+	     */
 	    this.image = new Image();
 	    
 	    //init
@@ -117,8 +117,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method hasPoint
 	 * @param {Point} p - point to test.
 	 * 
-	 * @return {Boolean} - true if point is inside and false otherwise.
-	 **/
+	 * @returns {Boolean} - true if point is inside and false otherwise.
+	 */
 	p.hasPoint = function(p) {
 		if (this.layer && this.visible) {
 			var ctx = this.layer.ctx;
@@ -135,7 +135,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * Draw function. Is called by layer to draw this Bitmap.
 	 * 
 	 * @method draw
-	 **/
+	 */
 	p.draw = function() {
 	    if (this.layer && this.visible) {
 	    	var ctx = this.layer.ctx, img = this.image, style = this.style;
@@ -156,8 +156,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method clone
 	 * 
-	 * @return {Bitmap} a cloned Bitmap.
-	 **/
+	 * @returns {Bitmap} a cloned Bitmap.
+	 */
 	p.clone = function() {
 	    var img = this.image, cloned = new Bitmap('copy_' + this.id, img.src, img.width, img.height, this.style);
 	    cloned.matrixTransform(this.matrix);
@@ -169,8 +169,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method svg
 	 * 
-	 * @return {String} svg code string.
-	 **/
+	 * @returns {String} svg code string.
+	 */
 	p.svg = function() {
 		var img = this.image;
 		
@@ -183,8 +183,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method toString
 	 * 
-	 * @return {String} a string representation of this object.
-	 **/
+	 * @returns {String} a string representation of this object.
+	 */
 	p.toString = function() {
 	    return "[Bitmap(id:" + this.id + ")]";
 	}

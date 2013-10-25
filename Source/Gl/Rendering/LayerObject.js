@@ -39,7 +39,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * @param {Function} method - method to invoke.
 		 * @param {Array} args - method arguments.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returnss {BaseWebbyJsClass} current instance for chaining.
 		 */
 		invoke: function(method, args) {
 			method.apply(this, args);
@@ -72,7 +72,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 *
 	 * @constructor
 	 * @param {String} id - LayerObject id. Default is "".
-	 **/
+	 */
 	var LayerObject = function(id) {
 		//initialize base class
 		EventListener.call(this);
@@ -82,7 +82,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	    * 
 	    * @property id
 	    * @type String
-	    **/
+	    */
 	    this.id = (id == null ? '' : id);
 
 	   /**
@@ -90,7 +90,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	    * 
 	    * @property layer
 	    * @type Layer
-	    **/
+	    */
 	    this.layer = null;
 
 	   /**
@@ -98,7 +98,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	    * 
 	    * @property visible
 	    * @type Boolean
-	    **/
+	    */
 	    this.visible = true;
 	    
 	    /**
@@ -106,7 +106,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property matrix
 	     * @type Matrix
-	     **/
+	     */
 	    this.matrix = new Matrix();
 	    
 	    /**
@@ -114,7 +114,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property bounds
 	     * @type Path
-	     **/
+	     */
 	    this.bounds = null;
 	    
 	    /**
@@ -123,7 +123,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property style
 	     * @type Number
-	     **/
+	     */
 	    this.style = { strokeWidth: 1, opacity: 1, strokeColor: '#000000', fillColor: '#ffffff', shadowColor: '', shadowBlur: 0 };
 	}
 
@@ -142,7 +142,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * Make object draggable.
 	 * 
 	 * @method startDrag
-	 **/
+	 */
 	p.startDrag = function() {
 	    this.addEventListener(MouseEvent.DOWN, Stage.dragStart);
 	}
@@ -151,7 +151,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * Stop object draggable ability.
 	 * 
 	 * @method stopDrag
-	 **/
+	 */
 	p.stopDrag = function() {
 	    this.removeEventListener(MouseEvent.DOWN, Stage.dragStart);
 	}
@@ -161,7 +161,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method setStyle
 	 * @param {Object} style - style to set.
-	 **/
+	 */
 	p.setStyle = function(style) {
 		for (var p in style) this.style[p] = style[p];
 	}
@@ -171,8 +171,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method cloneStyle
 	 * 
-	 * @return {Object} cloned object style.
-	 **/
+	 * @returns {Object} cloned object style.
+	 */
 	p.cloneStyle = function() {
 		var style = this.style, res = {};
 		for (var p in style) res[p] = style[p];
@@ -184,8 +184,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method getBoundRect
 	 * 
-	 * @return {Rectangle} - bounding rectangle.
-	 **/
+	 * @returns {Rectangle} - bounding rectangle.
+	 */
 	p.getBoundRect = function() {
 	    var s = this.bounds.clone();
 	    s.matrixTransform(this.matrix);
@@ -197,8 +197,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method getCenter
 	 * 
-	 * @return {Point} - center point.
-	 **/
+	 * @returns {Point} - center point.
+	 */
 	p.getCenter = function() {
 	    return this.getBoundRect().getCenter();
 	}
@@ -208,8 +208,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method getWidth
 	 * 
-	 * @return {Number} - width.
-	 **/
+	 * @returns {Number} - width.
+	 */
 	p.getWidth = function() {
 	    return this.getBoundRect().getWidth();
 	}
@@ -219,8 +219,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method getHeight
 	 * 
-	 * @return {Number} - height.
-	 **/
+	 * @returns {Number} - height.
+	 */
 	p.getHeight = function() {
 	    return this.getBoundRect().getHeight();
 	}
@@ -231,7 +231,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method move
 	 * @param {Number} dx - X delta.
 	 * @param {Number} dy - Y delta.
-	 **/
+	 */
 	p.move = function(dx, dy) {
 	    this.matrix.translate(dx, dy);
 	    //this.dirty = true;
@@ -244,7 +244,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @param {Number} scX - x scale koef.
 	 * @param {Number} scY - y scale koef.
 	 * @param {Point} pivot - pivot to scale from.
-	 **/
+	 */
 	p.scale = function(scX, scY, pivot) {
 		this.matrix.scale(scX, scY, pivot);
 	}
@@ -255,7 +255,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method rotate
 	 * @param {Number} angle - rotation angle (in radians).
 	 * @param {Point} pivot - pivot to rotate around.
-	 **/
+	 */
 	p.rotate = function(angle, pivot) {
 	    this.matrix.rotate(angle, pivot);
 	}
@@ -265,7 +265,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method matrixTransform
 	 * @param {Matrix} m - matrix.
-	 **/
+	 */
 	p.matrixTransform = function(m) {
 	    this.matrix.multiply(m);
 	}
@@ -275,7 +275,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method mirror
 	 * @param {String} orientation - 'horiz' - horizontal, 'vert' - vertical.
-	 **/
+	 */
 	p.mirror = function(orientation) {
 		Path.prototype.mirror.call(this, orientation);
 	}
@@ -286,7 +286,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method align
 	 * @param {String} base - align base: 'left', 'right', 'center', 'top', 'bottom', 'vert'.
 	 * @param {Rectangle} rect - align rectangle.
-	 **/
+	 */
 	p.align = function(base, rect) {
 		Path.prototype.align.call(this, base, rect);
 	}
@@ -296,7 +296,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method placeIntoRect
 	 * @param {Rectangle} tR - the Rectangle.
-	 **/
+	 */
 	p.placeIntoRect = function(tR) {
 		Path.prototype.placeIntoRect.call(this, tR);
 	}  
@@ -307,7 +307,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method placeAroundPoint
 	 * @param {Point} pt - center point.
 	 * @param {Number} dist - distance from center to sides.
-	 **/
+	 */
 	p.placeAroundPoint = function(pt, dist) {
 		Path.prototype.placeAroundPoint.call(this, pt, dist);
 	}
@@ -317,8 +317,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method toString
 	 * 
-	 * @return {String} a string representation of this object.
-	 **/
+	 * @returns {String} a string representation of this object.
+	 */
 	p.toString = function() {
 	    return "[LayerObject(id:" + this.id + ")]";
 	}

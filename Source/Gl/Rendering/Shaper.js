@@ -39,7 +39,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * @param {Function} method - method to invoke.
 		 * @param {Array} args - method arguments.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returnss {BaseWebbyJsClass} current instance for chaining.
 		 */
 		invoke: function(method, args) {
 			method.apply(this, args);
@@ -73,7 +73,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @param {String} id - Shaper id. Default is "".
 	 * @param {Array} shapes - content of the Shaper. Can be array of shapes or one shape.
 	 * @param {Object} style - rendering style.
-	 **/
+	 */
 	var Shaper = function(id, shapes, style) {
 		//initialize base class
 		LayerObject.call(this, id);
@@ -84,7 +84,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	    * 
 	    * @property shapes
 	    * @type DataProvider
-	    **/
+	    */
 		if (!shapes) shapes = [];
 		if (shapes instanceof Array) this.shapes = new DataProvider(shapes); else this.shapes = new DataProvider([shapes]);
 		
@@ -93,7 +93,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		* 
 		* @property cachedShapes
 		* @type DataProvider
-		**/
+		*/
 		this.cachedShapes = new DataProvider();
 		
 		//cache shapes
@@ -115,7 +115,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * Cache shapes for optimization.
 	 * 
 	 * @method cacheBounds
-	 **/
+	 */
 	p.cacheShapes = function() {
 		this.cachedShapes.clear();
 		
@@ -131,8 +131,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method getBoundRect
 	 * 
-	 * @return {Rectangle} - bounding rectangle.
-	 **/
+	 * @returns {Rectangle} - bounding rectangle.
+	 */
 	p.getBoundRect = function() {
 		var data = this.cachedShapes.data, tp = new Path(), tp_pt = tp.points.data;
 		
@@ -150,7 +150,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method move
 	 * @param {Number} dx - X delta.
 	 * @param {Number} dy - Y delta.
-	 **/
+	 */
 	p.move = function(dx, dy) {
 	    this.matrix.translate(dx, dy);
 	    this.cachedShapes.each(Path.prototype.move, [dx, dy]);
@@ -163,7 +163,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @param {Number} scX - x scale koef.
 	 * @param {Number} scY - y scale koef.
 	 * @param {Point} pivot - pivot to scale from.
-	 **/
+	 */
 	p.scale = function(scX, scY, pivot) {
 		this.matrix.scale(scX, scY, pivot);
 		this.cachedShapes.each(Path.prototype.scale, [scX, scY, pivot]);
@@ -175,7 +175,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method rotate
 	 * @param {Number} angle - rotation angle (in radians).
 	 * @param {Point} pivot - pivot to rotate around.
-	 **/
+	 */
 	p.rotate = function(angle, pivot) {
 	    this.matrix.rotate(angle, pivot);
 	    this.cachedShapes.each(Path.prototype.rotate, [angle, pivot]);
@@ -186,7 +186,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method matrixTransform
 	 * @param {Matrix} m - matrix.
-	 **/
+	 */
 	p.matrixTransform = function(m) {
 	    this.matrix.multiply(m);
 	    this.cachedShapes.each(Path.prototype.matrixTransform, [m]);
@@ -198,8 +198,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method hasPoint
 	 * @param {Point} p - point to test.
 	 * 
-	 * @return {Boolean} - true if point is inside and false otherwise.
-	 **/
+	 * @returns {Boolean} - true if point is inside and false otherwise.
+	 */
 	p.hasPoint = function(p) {
 		if (!this.layer || !this.visible || this.shapes.length() == 0) return;
 		var ctx = this.layer.ctx, data = this.cachedShapes.data;
@@ -215,7 +215,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * Draw function. Is called by layer to draw this Shaper.
 	 * 
 	 * @method draw
-	 **/
+	 */
 	p.draw = function() {
 		//get style info
 		var style = this.style, stroke = style.strokeColor, fill = style.fillColor;
@@ -276,8 +276,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method clone
 	 * 
-	 * @return {Shaper} a cloned Shaper.
-	 **/
+	 * @returns {Shaper} a cloned Shaper.
+	 */
 	p.clone = function() {
 		var pt = this.shapes.data, l = pt.length, tmpArr = [];
 	    for (var i = 0; i < l; i++) tmpArr.push(pt[i].clone());
@@ -293,8 +293,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method svg
 	 * 
-	 * @return {String} svg code string.
-	 **/
+	 * @returns {String} svg code string.
+	 */
 	p.svg = function() {
 		var data = this.shapes.data, l = data.length, svg = '<g transform="' + this.matrix.svg() + '">\n',
 			style = this.style, fill = style.fillColor, i;
@@ -330,8 +330,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method toString
 	 * 
-	 * @return {String} a string representation of this object.
-	 **/
+	 * @returns {String} a string representation of this object.
+	 */
 	p.toString = function() {
 	    return "[Shaper(id:" + this.id + ")]";
 	}

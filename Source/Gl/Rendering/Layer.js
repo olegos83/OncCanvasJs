@@ -39,7 +39,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * @param {Function} method - method to invoke.
 		 * @param {Array} args - method arguments.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returnss {BaseWebbyJsClass} current instance for chaining.
 		 */
 		invoke: function(method, args) {
 			method.apply(this, args);
@@ -133,7 +133,7 @@ var requestFrame = window.webkitRequestAnimationFrame || window.mozRequestAnimat
 /**
  * CanvasRenderingContext2D extension with methods to simplify drawing.
  * All methods have a prefix 'oc_' to preserve native prototype garbaging.
- **/
+ */
 if (CanvasRenderingContext2D) { ( function() {
 	var p = CanvasRenderingContext2D.prototype;
 	
@@ -142,7 +142,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	 * 
 	 * @method oc_setTransform
 	 * @param {Matrix} m - matrix.
-	 **/
+	 */
     p.oc_setTransform = function(m) {
     	this.setTransform(m[0][0], m[0][1], m[1][0], m[1][1], m[2][0], m[2][1]);
     }
@@ -155,7 +155,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	 * @param {Point} p - point.
 	 * @param {Point} c1 - control point 1.
 	 * @param {Point} c2 - control point 2.
-	 **/
+	 */
     p.oc_segmentTo = function(p, c1, c2) {
 		if (p.mv) this.moveTo(p.x, p.y); else {
 			var cp = c1 || c2;
@@ -175,7 +175,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	 * 
 	 * @method oc_addPath
 	 * @param {Path} path - path object.
-	 **/
+	 */
     p.oc_addPath = function(path) {
     	var pt = path.points.data, l = pt.length - 1, p = pt[0];
 		if (l <= 0) return;
@@ -241,7 +241,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	 * @constructor
 	 * @param {String} id - layer id.
 	 * @param {Stage} stage - stage to add layer.
-	 **/
+	 */
 	var Layer = function(id, stage) {
 		//initialize base class
 		DataProvider.call(this);
@@ -251,7 +251,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	    * 
 	    * @property id
 	    * @type String
-	    **/
+	    */
 	    this.id = (id == null ? '' : id);
 	    
 	    /**
@@ -259,7 +259,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	     * 
 	     * @property animated
 	     * @type Boolean
-	     **/
+	     */
 	     this.animated = true;
 	     
 	    /**
@@ -269,7 +269,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	     * @type Boolean
 	     * 
 	     * @private
-	     **/
+	     */
 	    this._dirty = false;
 	    
 	    /**
@@ -277,7 +277,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	     * 
 	     * @property stage
 	     * @type Stage
-	     **/
+	     */
 	    this.stage = null;
 	    
 	    /**
@@ -285,7 +285,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	     * 
 	     * @property canvas
 	     * @type Canvas
-	     **/
+	     */
 	    this.canvas = document.createElement('canvas');
 	    this.canvas.id = this.id;
 	    
@@ -294,7 +294,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	     * 
 	     * @property ctx
 	     * @type CanvasContext
-	     **/
+	     */
 	    this.ctx = this.canvas.getContext("2d");
 	    
 	    //init
@@ -324,8 +324,8 @@ if (CanvasRenderingContext2D) { ( function() {
 	 * 
 	 * @method getRect
 	 * 
-	 * @return {Rectangle} - layer rectangle.
-	 **/
+	 * @returns {Rectangle} - layer rectangle.
+	 */
 	p.getRect = function() {
 	    return new Rectangle(new Point(), new Point(this.canvas.width, this.canvas.height));
 	}
@@ -335,8 +335,8 @@ if (CanvasRenderingContext2D) { ( function() {
 	 * 
 	 * @method getCenter
 	 * 
-	 * @return {Point} - center point.
-	 **/
+	 * @returns {Point} - center point.
+	 */
 	p.getCenter = function() {
 	    return new Point(this.canvas.width / 2, this.canvas.height / 2);
 	}
@@ -348,8 +348,8 @@ if (CanvasRenderingContext2D) { ( function() {
 	 * @param {Point} p - point to test.
 	 * @param {Number} limit - limit of objects to get.
 	 * 
-	 * @return {Array} - array of objects from top to bottom.
-	 **/
+	 * @returns {Array} - array of objects from top to bottom.
+	 */
 	p.getObjectsUnderPoint = function(p, limit) {
 	    var objs = this.data, objArr = [];
 	    
@@ -365,7 +365,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	 * Force layer redraw.
 	 * 
 	 * @method redraw
-	 **/
+	 */
 	p.redraw = function() {
 		this._dirty = true;
 		if (!this.animated) this.draw();
@@ -376,7 +376,7 @@ if (CanvasRenderingContext2D) { ( function() {
 	 * Objects must have draw method to be drawn. They are drawn in z order.
 	 * 
 	 * @method draw
-	 **/
+	 */
 	p.draw = function() {
 		if (this._dirty) {
 	        var objs = this.data;
@@ -393,8 +393,8 @@ if (CanvasRenderingContext2D) { ( function() {
 	 * 
 	 * @method clone
 	 * 
-	 * @return {Layer} a cloned Layer.
-	 **/
+	 * @returns {Layer} a cloned Layer.
+	 */
 	p.clone = function() {
 	    //need to implement
 	}
@@ -404,8 +404,8 @@ if (CanvasRenderingContext2D) { ( function() {
 	 * 
 	 * @method toString
 	 * 
-	 * @return {String} a string representation of this object.
-	 **/
+	 * @returns {String} a string representation of this object.
+	 */
 	p.toString = function() {
 	    return "[Layer(" + this.data + ")]";
 	}

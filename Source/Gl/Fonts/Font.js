@@ -39,7 +39,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * @param {Function} method - method to invoke.
 		 * @param {Array} args - method arguments.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returnss {BaseWebbyJsClass} current instance for chaining.
 		 */
 		invoke: function(method, args) {
 			method.apply(this, args);
@@ -71,14 +71,14 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 *
 	 * @constructor
 	 * @param {Object} fnt - source font object.
-	 **/
+	 */
 	var Font = function(fnt) {
 		/**
 		 * Family name.
 		 * 
 		 * @property family
 		 * @type String
-		 **/
+		 */
 		this.family = fnt.original_font_information.font_family_name.toLowerCase();
 		
 		/**
@@ -86,7 +86,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * 
 		 * @property fullName
 		 * @type String
-		 **/
+		 */
 		this.fullName = fnt.original_font_information.full_font_name.toLowerCase();
 		
 		/**
@@ -94,7 +94,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * 
 		 * @property postscriptName
 		 * @type String
-		 **/
+		 */
 		this.postscriptName = fnt.original_font_information.postscript_name.toLowerCase();
 		
 		/**
@@ -102,7 +102,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * 
 		 * @property weight
 		 * @type String
-		 **/
+		 */
 		this.weight = fnt.cssFontWeight.toLowerCase();
 		
 		/**
@@ -110,7 +110,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * 
 		 * @property style
 		 * @type String
-		 **/
+		 */
 		this.style = fnt.cssFontStyle.toLowerCase();
 		
 		/**
@@ -118,7 +118,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * 
 		 * @property ascender
 		 * @type Number
-		 **/
+		 */
 		this.ascender = Number(fnt.ascender);
 		
 		/**
@@ -126,7 +126,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * 
 		 * @property descender
 		 * @type Number
-		 **/
+		 */
 		this.descender = Number(fnt.descender);
 		
 		/**
@@ -134,7 +134,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * 
 		 * @property ascender
 		 * @type Number
-		 **/
+		 */
 		this.underlinePosition = Number(fnt.underlinePosition);
 		
 		/**
@@ -142,7 +142,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * 
 		 * @property underlineThickness
 		 * @type Number
-		 **/
+		 */
 		this.underlineThickness = Number(fnt.underlineThickness);
 		
 		/**
@@ -150,7 +150,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * 
 		 * @property lineHeight
 		 * @type Number
-		 **/
+		 */
 		this.lineHeight = Number(fnt.lineHeight);
 		
 		/**
@@ -158,7 +158,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * 
 		 * @property resolution
 		 * @type Number
-		 **/
+		 */
 		this.resolution = Number(fnt.resolution);
 		
 		/**
@@ -167,7 +167,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * 
 		 * @property rawGlyphsInfo
 		 * @type Object
-		 **/
+		 */
 		this.rawGlyphsInfo = fnt.glyphs;
 		
 		/**
@@ -176,7 +176,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * 
 		 * @property glyphs
 		 * @type Object
-		 **/
+		 */
 		this.glyphs = {};
 		
 		/**
@@ -184,7 +184,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * 
 		 * @property sHeight
 		 * @type Number
-		 **/
+		 */
 		this.sHeight = this.getGlyph('S').path.getBoundRect().getHeight();
 	}
 	
@@ -201,7 +201,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method _unpackGlyph
 	 * @param {String} ch - character.
-	 **/
+	 */
 	p.unpackGlyph = function(ch) {
 		//check glyph info and set empty path if none
 		var glyphInfo = this.rawGlyphsInfo[ch];
@@ -257,8 +257,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method getGlyph
 	 * @param {String} ch - character.
 	 * 
-	 * @return {Object} unpacked glyph as { ha: x offset, path: path as Path }.
-	 **/
+	 * @returns {Object} unpacked glyph as { ha: x offset, path: path as Path }.
+	 */
 	p.getGlyph = function(ch) {
 		if (!this.glyphs[ch]) this.unpackGlyph(ch);
 		return this.glyphs[ch];
@@ -269,8 +269,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method toString
 	 * 
-	 * @return {String} a string representation of this object.
-	 **/
+	 * @returns {String} a string representation of this object.
+	 */
 	p.toString = function() {
 	    return "[Font(" + this.fullName + ")]";
 	}

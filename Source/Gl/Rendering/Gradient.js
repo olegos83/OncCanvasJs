@@ -39,7 +39,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 		 * @param {Function} method - method to invoke.
 		 * @param {Array} args - method arguments.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returnss {BaseWebbyJsClass} current instance for chaining.
 		 */
 		invoke: function(method, args) {
 			method.apply(this, args);
@@ -72,7 +72,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @constructor
 	 * @param {String} type - gradient type. Can be 'linear' or 'radial'.
 	 * @param {Object} colorStops - array of color stops.
-	 **/
+	 */
 	var Gradient = function(type, colorStops) {
 		/**
 	     * Gradient type.
@@ -81,7 +81,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * @type String
 	     * 
 	     * @private
-	     **/
+	     */
 		this._type = (type == null ? 'linear' : type);
 		if (this._type != 'radial') this._type = 'linear';
 		
@@ -92,7 +92,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * @type Array
 	     * 
 	     * @private
-	     **/
+	     */
 	    this._colorStops = (colorStops == null ? {} : colorStops);
 	    
 	    
@@ -101,7 +101,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property scale
 	     * @type Number
-	     **/
+	     */
 	    this.scale = 1;
 	    
 	    /**
@@ -109,7 +109,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	     * 
 	     * @property rotation
 	     * @type Number
-	     **/
+	     */
 	    this.rotation = 0;
 	}
 	
@@ -127,8 +127,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method type
 	 * @param {String} type - gradient type. Can be 'linear' or 'radial'.
 	 * 
-	 * @return {String} if no args - return current type.
-	 **/
+	 * @returns {String} if no args - return current type.
+	 */
 	p.type = function(type) {
 		if (type) {
 			this._type = type;
@@ -142,7 +142,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method addColorStop
 	 * @param {Number} index - index of stop.
 	 * @param {String} color - css color value.
-	 **/
+	 */
 	p.addColorStop = function(index, color) {
 		this._colorStops[index] = color;
 	}
@@ -152,7 +152,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method removeColorStop
 	 * @param {Number} index - index of stop.
-	 **/
+	 */
 	p.removeColorStop = function(index) {
 		delete this._colorStops[index];
 	}
@@ -163,8 +163,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method hasStop
 	 * @param {Number} index - index of stop.
 	 * 
-	 * @return {Boolean} - true if stop exists or false if not.
-	 **/
+	 * @returns {Boolean} - true if stop exists or false if not.
+	 */
 	p.hasStop = function(index) {
 		if (this._colorStops[index]) return true; else return false;
 	}
@@ -175,8 +175,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method getStopColor
 	 * @param {Number} index - index of stop.
 	 * 
-	 * @return {String} color of stop with specified index or '' - if there is no stop.
-	 **/
+	 * @returns {String} color of stop with specified index or '' - if there is no stop.
+	 */
 	p.getStopColor = function(index) {
 		if (this.hasStop(index)) return this._colorStops[index]; else return '';
 	}
@@ -187,7 +187,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method setStopIndex
 	 * @param {Number} oldIndex - index of stop.
 	 * @param {Number} newIndex - new index to set.
-	 **/
+	 */
 	p.setStopIndex = function(oldIndex, newIndex) {
 		var c = this.getStopColor(oldIndex);
 		
@@ -203,8 +203,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @method getStopIndexes
 	 * @param {String} color - color to test. If no color passed - return all indexes.
 	 * 
-	 * @return {Array} array of stop indexes with specified color or null if no stops.
-	 **/
+	 * @returns {Array} array of stop indexes with specified color or null if no stops.
+	 */
 	p.getStopIndexes = function(color) {
 		var indexes = [];
 		for (var i in this._colorStops) if ( !color || (this._colorStops[i] == color) ) indexes.push(i);
@@ -217,7 +217,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * Clear all color stops.
 	 * 
 	 * @method clearStops
-	 **/
+	 */
 	p.clearStops = function() {
 		this._colorStops = {};
 	}
@@ -227,7 +227,7 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method setStops
 	 * @param {CanvasGradient} gr - gradient.
-	 **/
+	 */
 	p.setStops = function(gr) {
 		for (var i in this._colorStops) gr.addColorStop(i, this._colorStops[i]);
 	}
@@ -240,8 +240,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * @param {Point} from - start point.
 	 * @param {Point} to - end point.
 	 * 
-	 * @return {CanvasGradient} CanvasGradient instance.
-	 **/
+	 * @returns {CanvasGradient} CanvasGradient instance.
+	 */
 	p.toCanvasGradient = function(ctx, from, to) {
 		//init vars
 		var c = new Point((from.x + to.x) / 2, (from.y + to.y) / 2);
@@ -275,8 +275,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method clone
 	 * 
-	 * @return {Gradient} a cloned gradient.
-	 **/
+	 * @returns {Gradient} a cloned gradient.
+	 */
 	p.clone = function() {
 	    var gr = new Gradient(this._type);
 	    this.setStops(gr);
@@ -292,8 +292,8 @@ WebbyJs.createClass('BaseWebbyJsClass', null,
 	 * 
 	 * @method toString
 	 * 
-	 * @return {String} a string representation of this object.
-	 **/
+	 * @returns {String} a string representation of this object.
+	 */
 	p.toString = function() {
 	    return "[Gradient(type: " + this.type() + ")]";
 	}
