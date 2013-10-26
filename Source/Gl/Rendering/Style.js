@@ -81,7 +81,11 @@ WebbyJs.createClass({
 	 */
 	proto: {
 		/**
-		 * Set this style from another one.
+		 * Set this style properties from any object. Non-style properties
+		 * of source object are ignored.
+		 * 
+		 * All non-primitive properties are shared by reference with
+		 * original style and primitives are copied.
 		 * 
 		 * @method set
 		 * @memberof Style.prototype
@@ -96,12 +100,32 @@ WebbyJs.createClass({
 		},
 		
 		/**
+		 * Reset this style properties to their default values.
+		 * 
+		 * @method reset
+		 * @memberof Style.prototype
+		 * 
+		 * @returns {Style} current instance for chaining.
+		 */
+		reset: function(style) {
+			this.strokeWidth = 1;
+			this.strokeColor = null;
+			this.fillColor = null;
+			
+			this.opacity = 1;
+			this.shadowColor = null;
+			this.shadowBlur = 0;
+			
+			return this;
+		},
+		
+		/**
 		 * Apply this style to another style or object with style.
 		 * 
 		 * @method applyTo
 		 * @memberof Style.prototype
 		 * 
-		 * @param {Object} obj - style ot object with style.
+		 * @param {Object|Style} obj - style or object with style.
 		 * 
 		 * @returns {Style} current instance for chaining.
 		 */
@@ -165,7 +189,8 @@ WebbyJs.createClass({
 		},
 		
 		/**
-		 * Clone this style.
+		 * Clone this style. All non-primitive properties are shared
+		 * by reference with original style and primitives are copied.
 		 * 
 		 * @method clone
 		 * @memberof Style.prototype
