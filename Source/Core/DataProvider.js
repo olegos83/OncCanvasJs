@@ -43,6 +43,16 @@ WebbyJs.createClass({
 	 */
 	construct: function DataProvider() {
 		/**
+		 * Events hash, containing arrays of functions by event type as key.
+		 * 
+		 * @memberof DataProvider
+		 * @type {Object}
+		 * 
+		 * @private
+		 */
+		this._events = {};
+		
+		/**
 		 * Data array.
 		 * 
 		 * @memberof DataProvider
