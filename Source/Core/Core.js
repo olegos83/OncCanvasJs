@@ -20,7 +20,7 @@ var WebbyJs = {
 	_globals: [],
 	
 	/**
-	 * Global ids cache.
+	 * Global ids cache. Contains references to objects with coresponding id.
 	 * 
 	 * @memberof WebbyJs
 	 * @type {Object}
