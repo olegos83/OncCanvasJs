@@ -20,6 +20,16 @@ var WebbyJs = {
 	_globals: [],
 	
 	/**
+	 * Global ids cache.
+	 * 
+	 * @memberof WebbyJs
+	 * @type {Object}
+	 * 
+	 * @private
+	 */
+	_idCache: {},
+	
+	/**
 	 * Unique global numeric id.
 	 * 
 	 * @memberof WebbyJs
