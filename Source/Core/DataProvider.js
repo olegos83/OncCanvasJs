@@ -245,7 +245,7 @@ WebbyJs.createClass({
 		 * 
 		 * @param {Object} item - item reference.
 		 * 
-		 * @returns {Boolean} true, if item is in data provider or false othervise.
+		 * @returns {Boolean} true, if item is in data provider or false otherwise.
 		 */
 		contains: function(item) {
 			var data = this.dp_storage, l = data.length, i;
