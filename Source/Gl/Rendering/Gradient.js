@@ -15,9 +15,11 @@
  * stops array - it can work not as you expect.
  * 
  * @class Gradient
+ * @extends WObject
+ * 
  * @memberof WebbyJs
  */
-WebbyJs.createClass({
+WebbyJs.Class({
 	/**
 	 * Class name.
 	 */
@@ -81,6 +83,35 @@ WebbyJs.createClass({
 	     * @type {Object}
 	     */
 	    this.stops = {};
+	},
+	
+	/**
+	 * Static members.
+	 */
+	statics: {
+		/**
+		 * Color converter.
+		 * 
+		 * @memberof Gradient
+		 * @type {Color}
+		 */
+		COLOR: new Color(),
+		
+		/**
+		 * Linear gradient type constant.
+		 * 
+		 * @memberof Gradient
+		 * @type {Number}
+		 */
+		LINEAR: 0,
+		
+		/**
+		 * Radial gradient type constant.
+		 * 
+		 * @memberof Gradient
+		 * @type {Number}
+		 */
+		RADIAL: 1
 	},
 	
 	/**
@@ -302,34 +333,5 @@ WebbyJs.createClass({
 		toString: function() {
 		    return "[Gradient(" + this.stops + ")]";
 		}
-	},
-	
-	/**
-	 * Static members.
-	 */
-	statics: {
-		/**
-		 * Color converter.
-		 * 
-		 * @memberof Gradient
-		 * @type {Color}
-		 */
-		COLOR: new Color(),
-		
-		/**
-		 * Linear gradient type constant.
-		 * 
-		 * @memberof Gradient
-		 * @type {Number}
-		 */
-		LINEAR: 0,
-		
-		/**
-		 * Radial gradient type constant.
-		 * 
-		 * @memberof Gradient
-		 * @type {Number}
-		 */
-		RADIAL: 1
 	}
 });

@@ -9,7 +9,7 @@
  * @class Bitmap
  * @memberof WebbyJs
  */
-WebbyJs.createClass({
+WebbyJs.Class({
 	/**
 	 * Class name.
 	 */

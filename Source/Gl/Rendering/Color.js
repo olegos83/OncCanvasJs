@@ -8,9 +8,11 @@
  * between different color formats, such as CSS notations, CMYK, RGB, HSV or integer number.
  * 
  * @class Color
+ * @extends WObject
+ * 
  * @memberof WebbyJs
  */
-WebbyJs.createClass({
+WebbyJs.Class({
 	/**
 	 * Class name.
 	 */
@@ -54,6 +56,27 @@ WebbyJs.createClass({
 		
 		//init color
 		if (val) this.set(val);
+	},
+	
+	/**
+	 * Static members.
+	 */
+	statics: {
+		/**
+		 * Colors as hex by name table.
+		 * 
+		 * @memberof Color
+		 * @type {Object}
+		 */
+		HexByName: null,
+		
+		/**
+		 * Color names by hex table.
+		 * 
+		 * @memberof Color
+		 * @type {Object}
+		 */
+		NameByHex: null
 	},
 	
 	/**
@@ -333,27 +356,6 @@ WebbyJs.createClass({
 		toString: function() {
 	        return "[Color(" + this.hex() + ")]";
 	    }
-	},
-	
-	/**
-	 * Static members.
-	 */
-	statics: {
-		/**
-		 * Colors as hex by name table.
-		 * 
-		 * @memberof Color
-		 * @type {Object}
-		 */
-		HexByName: null,
-		
-		/**
-		 * Color names by hex table.
-		 * 
-		 * @memberof Color
-		 * @type {Object}
-		 */
-		NameByHex: null
 	}
 });
 

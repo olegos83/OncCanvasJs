@@ -7,9 +7,11 @@
  * Point is used in all geometry calculations and shapes.
  * 
  * @class Point
+ * @extends WObject
+ * 
  * @memberof WebbyJs
  */
-WebbyJs.createClass({
+WebbyJs.Class({
 	/**
 	 * Class name.
 	 */

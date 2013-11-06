@@ -10,9 +10,11 @@
  * Implements EventListener to support events.
  * 
  * @class Graphics
+ * @extends WObject
+ * 
  * @memberof WebbyJs
  */
-WebbyJs.createClass({
+WebbyJs.Class({
 	/**
 	 * Class name.
 	 */
@@ -115,6 +117,11 @@ WebbyJs.createClass({
 	},
 	
 	/**
+	 * Interfaces.
+	 */
+	implement: [WebbyJs.Geom, WebbyJs.DataProvider],
+	
+	/**
 	 * Prototype.
 	 */
 	proto: {
@@ -131,29 +138,6 @@ WebbyJs.createClass({
 	    	onChange: function(e) {},
 	    	onClear: function(e) {}
 	    },
-		
-		/**
-		 * GET/SET id of graphics object. Id must be uniq, otherwise it doesn't change.
-		 * 
-		 * @method id
-		 * @memberof Graphics.prototype
-		 * 
-		 * @param {String} id - id to set.
-		 * 
-		 * @returns {Graphics|String} current instance for chaining or current id, if called without arguments.
-		 */
-		id: function(id) {
-			if (!id) return this._id;
-			
-			if (!WebbyJs._idCache[id]) {
-				delete WebbyJs._idCache[this._id];
-				
-				this._id = id;
-				WebbyJs._idCache[id] = true;
-			}
-			
-		    return this;
-		},
 		
 		/**
 		 * Set object rendering style.
@@ -185,63 +169,6 @@ WebbyJs.createClass({
 		getChildById: function(id) {
 			return this._childrenById[id];
 		},
-		
-		/**
-		 * Set child graphics index.
-		 * 
-		 * @method setChildIndex
-		 * @memberof Graphics.prototype
-		 * 
-		 * @param {Graphics} child - child reference.
-		 * @param {Number} index - new index position.
-		 * 
-		 * @returns {Graphics} current instance for chaining.
-		 */
-		setChildIndex: WebbyJs.DataProvider.prototype.setItemIndex,
-		
-		/**
-		 * Get child graphics index.
-		 * 
-		 * @method getChildIndex
-		 * @memberof Graphics.prototype
-		 * 
-		 * @param {Graphics} child - child reference.
-		 * 
-		 * @returns {Number} - child index or -1 if child not found.
-		 */
-		getChildIndex: WebbyJs.DataProvider.prototype.indexOf,
-		
-		/**
-		 * Get child graphics at specified index.
-		 * 
-		 * @method getChildAt
-		 * @memberof Graphics.prototype
-		 * 
-		 * @param {Number} index - index to check.
-		 * 
-		 * @returns {Graphics} - child or null if child not found.
-		 */
-		getChildAt: WebbyJs.DataProvider.prototype.itemAt,
-		
-		/**
-		 * Remove all children from this graphics object.
-		 * 
-		 * @method removeAllChildren
-		 * @memberof Graphics.prototype
-		 * 
-		 * @returns {Graphics} current instance for chaining.
-		 */
-		removeAllChildren: WebbyJs.DataProvider.prototype.clear,
-		
-		/**
-		 * Get number of children in this graphics object.
-		 * 
-		 * @method numChildren
-		 * @memberof Graphics.prototype
-		 * 
-		 * @returns {Number} - number of children.
-		 */
-		numChildren: WebbyJs.DataProvider.prototype.length,
 		
 		/**
 		 * Get bounding rectangle of the object.
@@ -328,28 +255,6 @@ WebbyJs.createClass({
 		},
 		
 		/**
-		 * Dispose object - free objects resources, such as id and event listeners.
-		 * This method can be called to force memory clear and prevent leaks.
-		 * 
-		 * @method dispose
-		 * @memberof Graphics.prototype
-		 */
-		dispose: function() {
-			delete WebbyJs._idCache[this._id];
-			
-			this._events = null;
-			this._childrenById = null;
-			
-			this.dp_storage = null;
-			this.layer = null;
-			
-			this.matrix = null;
-			this.bounds = null;
-			
-			this.style = null;
-		},
-		
-		/**
 		 * Returns a string representation of this object.
 		 * 
 		 * @method toString
@@ -360,10 +265,5 @@ WebbyJs.createClass({
 		toString: function() {
 		    return "[Graphics(id:" + this._id + ")]";
 		}
-	},
-	
-	/**
-	 * Interfaces.
-	 */
-	interfaces: [WebbyJs.Geom, WebbyJs.DataProvider]
+	}
 });

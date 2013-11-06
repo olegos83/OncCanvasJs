@@ -47,7 +47,8 @@ var WebbyJs = {
 	_globals: {},
 	
 	/**
-	 * Global ids cache.
+	 * Global ids cache. Is needed to controll id uniquness.
+	 * this._idCache[id] = true; means that id is buisy allready.
 	 * 
 	 * @memberof WebbyJs
 	 * @type {Object}
@@ -168,7 +169,9 @@ var WebbyJs = {
 	},
 	
 	/**
-	 * Define member of WebbyJs.
+	 * Define member of WebbyJs. Each member is also cached gobaly with
+	 * '_w_' prefix to avoid namespace referencing on class instantiating
+	 * in other classes.
 	 * 
 	 * @method define
 	 * @memberof WebbyJs
@@ -214,6 +217,38 @@ var WebbyJs = {
 	},
 	
 	/**
+	 * Define new WebbyJs class, inherited from WObject.
+	 * 
+	 * @method Class
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Object} options - class definition options, like in example below.
+	 * 
+	 * 							  var options = {
+	 * 								  name: 'ClassName',
+	 * 								  extend: parentClassReference,
+	 * 								  construct: function ClassName(args) { ... },
+	 * 								  proto: { prototype },
+	 * 								  implement: [interfaceRferencesArr] || interfaceReference,
+	 * 								  statics: { static members },
+	 * 								  exportable: true || flase
+	 * 							  };
+	 * 
+	 * @returns {WObject} new defined class.
+	 */
+	Class: function(options) {
+		//validate class options
+		if (this.getClassName(options) !== 'Object') this.error('Class options must be passed as object');
+		
+		//setup constructor, static methods, extend from base class, then setup interfaces and prototype
+		return this.define(options.name, options.construct, { construct: true }).
+					addStatic(options.statics).
+					extend(options.extend || this.WObject).
+					implement(options.implement).
+					implement(options.proto);
+	},
+	
+	/**
 	 * Extract WebbyJs members to global scope.
 	 * 
 	 * @method exportToGlobalScope
@@ -246,6 +281,7 @@ var WebbyJs = {
 	 * @memberof WebbyJs
 	 */
 	init: function() {
+		//init WebbyJs shortcut
 		window._w_ = this;
 	}
 };

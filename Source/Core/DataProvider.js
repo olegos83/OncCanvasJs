@@ -24,15 +24,20 @@ WebbyJs.import({
  * 
  * Any class may be inherited or extend DataProvider to support data events.
  * In that case, EventListener is applied to that class too. Don`t forget to
- * declare 'dp_storage' array in class constructor.
+ * declare 'dp_storage' array in class constructor and you can alias 'dp_storage'
+ * with more convinient name, 'points' or 'children' for example:
+ * 
+ * 		this.children = this.dp_storage = [];
  * 
  * Event support can slow down items iteration, so you can directly use 'dp_storage' array
  * to get more iteration speed, but in that case, events must be processed manually.
  * 
  * @class DataProvider
+ * @extends WObject
+ * 
  * @memberof WebbyJs
  */
-WebbyJs.createClass({
+WebbyJs.Class({
 	/**
 	 * Class name.
 	 */
@@ -45,12 +50,12 @@ WebbyJs.createClass({
 		/**
 		 * Events hash, containing arrays of functions by event type as key.
 		 * 
-		 * @memberof DataProvider
+		 * @memberof EventListener
 		 * @type {Object}
 		 * 
 		 * @private
 		 */
-		this._events = {};
+		this._handlers = {};
 		
 		/**
 		 * Data array.
@@ -60,6 +65,11 @@ WebbyJs.createClass({
 		 */
 		this.dp_storage = [];
 	},
+	
+	/**
+	 * Interfaces.
+	 */
+	implement: WebbyJs.EventListener,
 	
 	/**
 	 * Prototype.
@@ -315,10 +325,5 @@ WebbyJs.createClass({
 			
 			return this;
 		}
-	},
-	
-	/**
-	 * Interfaces.
-	 */
-	interfaces: WebbyJs.EventListener
+	}
 });

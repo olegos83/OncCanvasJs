@@ -38,12 +38,14 @@ WebbyJs.import({
  * EventListener interface provides events processing support.
  * 
  * To add events support, inherit or extend class with EventListener
- * and declare '_events' object in its constructor.
+ * and declare '_handlers' object in its constructor.
  * 
  * @class EventListener
+ * @extends WObject
+ * 
  * @memberof WebbyJs
  */
-WebbyJs.createClass({
+WebbyJs.Class({
 	/**
 	 * Class name.
 	 */
@@ -61,7 +63,7 @@ WebbyJs.createClass({
 		 * 
 		 * @private
 		 */
-		this._events = {};
+		this._handlers = {};
 	},
 	
 	/**
@@ -80,10 +82,10 @@ WebbyJs.createClass({
 		 * @returns {EventListener} current instance for chaining.
 		 */
 		addEventListener: function(type, handler) {
-			if (!this._events[type]) {
-				this._events[type] = [handler];
+			if (!this._handlers[type]) {
+				this._handlers[type] = [handler];
 			} else {
-				var e = this._events[type], l = e.length, i;
+				var e = this._handlers[type], l = e.length, i;
 				
 				for (i = 0; i < l; i++) {
 					if (e[i] == handler) return this;
@@ -107,13 +109,13 @@ WebbyJs.createClass({
 		 * @returns {EventListener} current instance for chaining.
 		 */
 		removeEventListener: function(type, handler) {
-		    if (!handler || !this._events[type]) {
-		    	this._events[type] = [];
+		    if (!handler || !this._handlers[type]) {
+		    	this._handlers[type] = [];
 		    } else {
-		    	var e = this._events[type], l = e.length, i;
+		    	var e = this._handlers[type], l = e.length, i;
 		    	
 		    	for (i = 0; i < l; i++) {
-		    		if (e[i] == handler) { e.splice(i, 1); break; }
+		    		if (e[i] == handler) { e.splice(i, 1); return this; }
 		    	}
 		    }
 		    
@@ -131,12 +133,25 @@ WebbyJs.createClass({
 		 * @returns {EventListener} current instance for chaining.
 		 */
 		processEvent: function(evt) {
-		    if (this._events[evt.type]) {
-		    	var e = this._events[evt.type], l = e.length, i;
+		    if (this._handlers[evt.type]) {
+		    	var e = this._handlers[evt.type], l = e.length, i;
 		    	for (i = 0; i < l; i++) e[i].call(this, evt);
 		    }
 		    
 		    return this;
+		},
+		
+		/**
+		 * Clear all event handlers and reset EventListener to default state.
+		 * 
+		 * @method resetEvents
+		 * @memberof EventListener.prototype
+		 * 
+		 * @returns {EventListener} current instance for chaining.
+		 */
+		resetEvents: function(evt) {
+			this._handlers = {};
+			return this;
 		}
 	}
 });

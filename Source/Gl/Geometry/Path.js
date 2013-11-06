@@ -10,9 +10,11 @@
  * control points for curved segments and mv, if true, then point only is for moveTo without drawing.
  * 
  * @class Path
+ * @extends WObject
+ * 
  * @memberof WebbyJs
  */
-WebbyJs.createClass({
+WebbyJs.Class({
 	/**
 	 * Class name.
 	 */
@@ -31,7 +33,7 @@ WebbyJs.createClass({
 		 * @memberof Path
 		 * @type {Array}
 		 */
-		this.dp_storage = points || [];
+		this.points = this.dp_storage = points || [];
 		
 	    /**
 	     * Closed flag.
@@ -41,6 +43,11 @@ WebbyJs.createClass({
 	     */
 	    this.closed = closed || false;
 	},
+	
+	/**
+	 * Interfaces.
+	 */
+	implement: WebbyJs.Geom,
 	
 	/**
 	 * Prototype.
@@ -533,10 +540,5 @@ WebbyJs.createClass({
 		toContext: function(ctx) {
 			return this;
 		}
-	},
-	
-	/**
-	 * Interfaces.
-	 */
-	interfaces: WebbyJs.Geom
+	}
 });

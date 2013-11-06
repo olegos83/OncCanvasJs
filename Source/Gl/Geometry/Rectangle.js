@@ -7,9 +7,11 @@
  * Rectangle is very important in geometry and rendering calculations.
  * 
  * @class Rectangle
+ * @extends WObject
+ * 
  * @memberof WebbyJs
  */
-WebbyJs.createClass({
+WebbyJs.Class({
 	/**
 	 * Class name.
 	 */
@@ -38,6 +40,11 @@ WebbyJs.createClass({
 	     */
 		this.to = to || new WebbyJs.Point();
 	},
+	
+	/**
+	 * Interfaces.
+	 */
+	implement: WebbyJs.Geom,
 	
 	/**
 	 * Prototype.
@@ -256,10 +263,5 @@ WebbyJs.createClass({
 		toString: function() {
 		    return "[WebbyJs.Rectangle(from:" + this.from.toString() + ", to:" + this.to.toString() + ")]";
 		}
-	},
-	
-	/**
-	 * Interfaces.
-	 */
-	interfaces: WebbyJs.Geom
+	}
 });

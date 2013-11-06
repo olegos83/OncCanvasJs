@@ -7,9 +7,11 @@
  * Matrix is a 2d array, used in geometry calculations.
  * 
  * @class Matrix
+ * @extends WObject
+ * 
  * @memberof WebbyJs
  */
-WebbyJs.createClass({
+WebbyJs.Class({
 	/**
 	 * Class name.
 	 */

@@ -1,57 +1,29 @@
 /**
- * @file The implementation of WebbyJs class creation.
+ * @file The implementation of base WebbyJs class.
  * @author Olegos <olegos83@yandex.ru>
  */
 
 /**
- * Define new WebbyJs class, inherited from WObject.
- * 
- * @method Class
- * @memberof WebbyJs
- * 
- * @param {Object} options - class definition options, like in example below.
- * 
- * 							  var options = {
- * 								  name: 'ClassName',
- * 								  extend: parentClassReference,
- * 								  construct: function ClassName(args) { ... },
- * 								  proto: { prototype },
- * 								  implement: [interfaceRferencesArr] || interfaceReference,
- * 								  statics: { static members },
- * 								  exportable: true || flase
- * 							  };
- * 
- * @returns {WObject} new defined class.
- */
-WebbyJs.define('Class', function(options) {
-	//validate class options
-	if (this.getClassName(options) !== 'Object') this.error('Class options must be passed as object');
-	
-	//setup constructor, static methods, extend from base class, then setup interfaces and prototype
-	return this.define(options.name, options.construct, { construct: true }).
-				addStatic(options.statics).
-				extend(options.extend || this.WObject).
-				implement(options.implement).
-				implement(options.proto);
-}, { exportable: false });
-
-/**
- * Base class for all WebbyJs created classes.
- * All created classes are inherited from it.
+ * Base class for all WebbyJs created classes. All created classes are inherited from it.
+ * This class is created in a bit lower level to provide further classes work properly.
  * 
  * @class WObject
  * @memberof WebbyJs
  */
 WebbyJs.define('WObject', function WObject() {
 	/**
-	 * Uniq WebbyJs global id.
+	 * Uniq WebbyJs global id. It is optional but can be usefull
+	 * in some cases, for example for item by id fast indexing.
 	 * 
 	 * @memberof WObject
 	 * @type {String}
 	 * 
 	 * @private
 	 */
-	this._id = 'WObject_' + WebbyJs.getUniqId();
+	this._id = 'wo_' + WebbyJs.getUniqId();
+	
+	//save id to cache
+	WebbyJs._idCache[this._id] = true;
 }, { construct: true });
 
 /**
@@ -148,6 +120,44 @@ WebbyJs.WObject.addStatic({
  * Implement WObject prototype.
  */
 }).implement({
+	/**
+	 * Get/Set current instance id. If id is buisy, nothing changes.
+	 * 
+	 * @method id
+	 * @memberof WObject.prototype
+	 * 
+	 * @param {String} id - id to set.
+	 * 
+	 * @returns {String|WObject} object id or current instance for chaining.
+	 */
+	id: function(id) {
+		if (!id) return this._id;
+		
+		if (!WebbyJs._idCache[id]) {
+			this._id = id;
+			WebbyJs._idCache[id] = true;
+		}
+		
+		return this;
+	},
+	
+	/**
+	 * Force to free objects resources from memory.
+	 * 
+	 * It sets all properties to null, so object becomes unusable
+	 * after this action. Be carefull with this method.
+	 * 
+	 * @method free
+	 * @memberof WObject.prototype
+	 * 
+	 * @returns {WObject} current instance for chaining.
+	 */
+	free: function() {
+		if (this._id) WebbyJs._idCache[this._id] = null;
+		for (var p in this) if (this.hasOwnProperty(p)) this[p] = null;
+		return this;
+	},
+	
 	/**
 	 * Get class name of current instance.
 	 * 

@@ -8,9 +8,11 @@
  * implemented by all geometry shapes and renderable graphics classes.
  * 
  * @class Geom
+ * @extends WObject
+ * 
  * @memberof WebbyJs
  */
-WebbyJs.createClass({
+WebbyJs.Class({
 	/**
 	 * Class name.
 	 */
@@ -21,6 +23,69 @@ WebbyJs.createClass({
 	 */
 	construct: function Geom() {
 		//empty constructor
+	},
+	
+	/**
+	 * Static members.
+	 */
+	statics: {
+		/**
+		 * Translation matrix.
+		 * 
+		 * @memberof Geom
+		 * @type {Matrix}
+		 * 
+		 * @private
+		 */
+		_tm: new WebbyJs.Matrix(),
+		
+		/**
+		 * Scale matrix.
+		 * 
+		 * @memberof Geom
+		 * @type {Matrix}
+		 * 
+		 * @private
+		 */
+		_sm: new WebbyJs.Matrix(),
+		
+		/**
+		 * Rotation matrix.
+		 * 
+		 * @memberof Geom
+		 * @type {Matrix}
+		 * 
+		 * @private
+		 */
+		_rm: new WebbyJs.Matrix(),
+		
+		/**
+		 * Get radians from degrees.
+		 * 
+		 * @method rad
+		 * @memberof Geom
+		 * 
+		 * @param {Number} deg - degrees.
+		 * 
+		 * @returns {Number} radians.
+		 */
+		rad: function(deg) {
+			return deg * 3.14159 / 180;
+		},
+		
+		/**
+		 * Get degrees from radians.
+		 * 
+		 * @method deg
+		 * @memberof Geom
+		 * 
+		 * @param {Number} rad - radians.
+		 * 
+		 * @returns {Number} degrees.
+		 */
+		deg: function(rad) {
+			return rad * 180 / 3.14159;
+		}
 	},
 	
 	/**
@@ -373,69 +438,6 @@ WebbyJs.createClass({
 		 */
 		toContext: function(ctx) {
 			return this;
-		}
-	},
-	
-	/**
-	 * Static members.
-	 */
-	statics: {
-		/**
-		 * Translation matrix.
-		 * 
-		 * @memberof Geom
-		 * @type {Matrix}
-		 * 
-		 * @private
-		 */
-		_tm: new WebbyJs.Matrix(),
-		
-		/**
-		 * Scale matrix.
-		 * 
-		 * @memberof Geom
-		 * @type {Matrix}
-		 * 
-		 * @private
-		 */
-		_sm: new WebbyJs.Matrix(),
-		
-		/**
-		 * Rotation matrix.
-		 * 
-		 * @memberof Geom
-		 * @type {Matrix}
-		 * 
-		 * @private
-		 */
-		_rm: new WebbyJs.Matrix(),
-		
-		/**
-		 * Get radians from degrees.
-		 * 
-		 * @method rad
-		 * @memberof Geom
-		 * 
-		 * @param {Number} deg - degrees.
-		 * 
-		 * @returns {Number} radians.
-		 */
-		rad: function(deg) {
-			return deg * 3.14159 / 180;
-		},
-		
-		/**
-		 * Get degrees from radians.
-		 * 
-		 * @method deg
-		 * @memberof Geom
-		 * 
-		 * @param {Number} rad - radians.
-		 * 
-		 * @returns {Number} degrees.
-		 */
-		deg: function(rad) {
-			return rad * 180 / 3.14159;
 		}
 	}
 });
