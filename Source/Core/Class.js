@@ -2,125 +2,150 @@
  * @file The implementation of WebbyJs class creation.
  * @author Olegos <olegos83@yandex.ru>
  */
-WebbyJs.import({
+
+/**
+ * Base static methods for OOP, added to all WebbyJs classes.
+ * 
+ * @memberof WebbyJs
+ * @type {Object}
+ * 
+ * @private
+ */
+WebbyJs.define('_classBase', {
 	/**
-	 * Class prototype inheritance method.
+	 * This class prototype inheritance method.
 	 * 
 	 * @method extendClass
-	 * @memberof WebbyJs
+	 * @memberof _classBase
 	 * 
-	 * @param {Object} child - child class reference.
-	 * @param {Object} parent - parent class reference.
+	 * @param {Object} base - base class reference.
+	 * 
+	 * @returns {_classBase} current instance for chaining.
 	 */
-	extendClass: function(child, parent) {
-		if (child == parent) return;
-		if (this.getClassName(child) !== 'Function') this.throwError('Child class must be a function');
-		if (this.getClassName(parent) !== 'Function') this.throwError('Parent class must be a function');
+	extend: function(base) {
+		if (base == this) return this;
+		if (WebbyJs.getClassName(base) !== 'Function') this.error('Base class must be a constructor function');
 		
-		var proto = child.prototype = new parent();
+		var proto = this.prototype = new base();
 		for (var p in proto) if (proto.hasOwnProperty(p)) delete proto[p];
 		
-		proto.constructor = child;
-		proto.parentclass = parent.prototype;
+		proto.constructor = this;
+		this.baseClass = base.prototype;
+		
+		return this;
 	},
 	
 	/**
-	 * Extend class prototype with interfaces methods.
+	 * Extend this class prototype with methods from interfaces.
 	 * 
-	 * @method getClassName
-	 * @memberof WebbyJs
+	 * @method implement
+	 * @memberof _classBase
 	 * 
-	 * @param {Object} classRef - class reference.
 	 * @param {Object|Array} interfaces - single or array of interfaces.
+	 * 
+	 * @returns {_classBase} current instance for chaining.
 	 */
-	extendProto: function(classRef, interfaces) {
-		if (this.getClassName(classRef) !== 'Function') this.throwError('Class must be a function');
-		if (this.getClassName(interfaces) !== 'Array') interfaces = [interfaces];
+	implement: function(interfaces) {
+		if (interfaces == this) return this;
+		if (WebbyJs.getClassName(interfaces) !== 'Array') interfaces = [interfaces];
 		
-		var proto = classRef.prototype, l = interfaces.length;
+		var proto = this.prototype, l = interfaces.length;
 		
 		for (var i = 0; i < l; i++) {
-			var iface = interfaces[i], ifaceClass = this.getClassName(iface);
+			var iface = interfaces[i], ifaceClass = WebbyJs.getClassName(iface);
 			
 			if (ifaceClass !== 'Object' && ifaceClass !== 'Function') continue;
-			if (ifaceClass === 'Function') iface = iface.prototype;
+			if (ifaceClass === 'Function') { if (iface == this) continue; iface = iface.prototype; }
 			
 			for (var p in iface) if (iface.hasOwnProperty(p)) proto[p] = iface[p];
 		}
+		
+		return this;
 	},
 	
 	/**
-	 * Append static methods to class.
+	 * Append static methods to this class.
 	 * 
-	 * @method addStaticMembers
-	 * @memberof WebbyJs
+	 * @method addStatic
+	 * @memberof _classBase
 	 * 
-	 * @param {Object} classRef - class reference.
-	 * @param {Object} staticMembers - object with static members.
+	 * @param {Object} statics - object with static members.
+	 * 
+	 * @returns {_classBase} current instance for chaining.
 	 */
-	addStaticMembers: function(classRef, staticMembers) {
-		if (this.getClassName(classRef) !== 'Function') this.throwError('Class must be a function');
-		if (this.getClassName(staticMembers) !== 'Object') this.throwError('Static class members must be passed as object');
+	addStatic: function(statics) {
+		if (statics == this) return this;
+		if (WebbyJs.getClassName(statics) !== 'Object') this.error('Static class members must be passed as object');
 		
-		for (var p in staticMembers) if (staticMembers.hasOwnProperty(p)) classRef[p] = staticMembers[p];
-	},
-	
-	/**
-	 * Create new class.
-	 * 
-	 * @method createClass
-	 * @memberof WebbyJs
-	 * 
-	 * @param {Object} newClass - new class declaration object, like in example below.
-	 * 
-	 * 							  var newClassSample = {
-	 * 								  name: 'ClassName',
-	 * 								  parent: parentClassReference,
-	 * 								  construct: function ClassName(args) { ... },
-	 * 								  proto: { prototype },
-	 * 								  interfaces: [interfaceRferencesArr] || interfaceReference,
-	 * 								  statics: { static members }
-	 * 							  };
-	 */
-	createClass: function(newClass) {
-		//check input object, name and constructor
-		if (this.getClassName(newClass) !== 'Object') this.throwError('New class must be passed as object');
-		if (this.getClassName(newClass.construct) !== 'Function') this.throwError('Constructor must be a function');
-		this.checkNameValidity(newClass.name);
-		
-		//setup constructor
-		newClass.construct._w_className = newClass.name;
-		this[newClass.name] = newClass.construct;
-		this._globals.push(newClass.name);
-		
-		//extend class
-		if (!newClass.parent) newClass.parent = this.BaseWebbyJsClass;
-		this.extendClass(newClass.construct, newClass.parent);
-		
-		//setup static methods, interfaces and prototype
-		if (newClass.statics) this.addStaticMembers(newClass.construct, newClass.statics);
-		if (newClass.interfaces) this.extendProto(newClass.construct, newClass.interfaces);
-		if (newClass.proto) this.extendProto(newClass.construct, newClass.proto);
+		for (var p in statics) if (statics.hasOwnProperty(p)) this[p] = statics[p];
+		return this;
 	}
-}, true);
+}, { exportable: false });
+
+/**
+ * Define new WebbyJs class.
+ * 
+ * @method Class
+ * @memberof WebbyJs
+ * 
+ * @param {Object} options - class definition options, like in example below.
+ * 
+ * 							  var options = {
+ * 								  name: 'ClassName',
+ * 								  extend: parentClassReference,
+ * 								  construct: function ClassName(args) { ... },
+ * 								  proto: { prototype },
+ * 								  implement: [interfaceRferencesArr] || interfaceReference,
+ * 								  statics: { static members },
+ * 								  exportable: true || flase
+ * 							  };
+ * 
+ * @returns {WObject} new defined class.
+ */
+WebbyJs.define('Class', function(options) {
+	//validate class options
+	if (this.getClassName(options) !== 'Object') this.error('Class options must be passed as object');
+	
+	var name = options.name, construct = options.construct;
+	
+	if (this.getClassName(construct) !== 'Function') this.error('Class constructor must be a function');
+	this.validateName(name);
+	
+	//setup constructor
+	construct._w_className = name;
+	this[name] = window['_w_' + name] = construct;
+	
+	if (options.exportable !== false) this._globals[name] = construct;
+	
+	//setup static methods, extend from base class, setup interfaces and prototype
+	construct.addStatic = this._classBase.addStatic;
+	
+	construct.addStatic(this._classBase).
+			  addStatic(options.statics).
+			  extend(options.extend || this.WObject).
+			  implement(options.implement).
+			  implement(options.proto);
+	
+	return construct;
+}, { exportable: false });
 
 /**
  * Base class for all WebbyJs created classes.
  * All created classes are inherited from it.
  * 
- * @class BaseWebbyJsClass
+ * @class WObject
  * @memberof WebbyJs
  */
-WebbyJs.createClass({
+WebbyJs.Class({
 	/**
 	 * Class name.
 	 */
-	name: 'BaseWebbyJsClass',
+	name: 'WObject',
 	
 	/**
 	 * @constructor
 	 */
-	construct: function BaseWebbyJsClass() {
+	construct: function WObject() {
 		//empty constructor
 	},
 	
@@ -132,7 +157,7 @@ WebbyJs.createClass({
 		 * Get class name of current instance.
 		 * 
 		 * @method className
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @memberof WObject.prototype
 		 * 
 		 * @returns {String} class name of current instance.
 		 */
@@ -144,7 +169,7 @@ WebbyJs.createClass({
 		 * Get prototype of current instance.
 		 * 
 		 * @method getPrototype
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @memberof WObject.prototype
 		 * 
 		 * @returns {Object} prototype of current instance.
 		 */
@@ -153,10 +178,22 @@ WebbyJs.createClass({
 		},
 		
 		/**
+		 * Get base class of current instance.
+		 * 
+		 * @method getBaseClass
+		 * @memberof WObject.prototype
+		 * 
+		 * @returns {Object} base class of current instance or undefined if no base class.
+		 */
+		getBaseClass: function() {
+			return this.constructor.baseClass;
+		},
+		
+		/**
 		 * Get all properties of current instance.
 		 * 
 		 * @method properties
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @memberof WObject.prototype
 		 * 
 		 * @returns {Object} properties as object.
 		 */
@@ -174,7 +211,7 @@ WebbyJs.createClass({
 		 * Get current instance methods.
 		 * 
 		 * @method methods
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @memberof WObject.prototype
 		 * 
 		 * @returns {Object} methods as object.
 		 */
@@ -193,7 +230,7 @@ WebbyJs.createClass({
 		 * Default toString method.
 		 * 
 		 * @method toString
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @memberof WObject.prototype
 		 * 
 		 * @returns {String} current instance as string.
 		 */
@@ -202,22 +239,10 @@ WebbyJs.createClass({
 		},
 		
 		/**
-		 * Default valueOf method.
-		 * 
-		 * @method valueOf
-		 * @memberof BaseWebbyJsClass.prototype
-		 * 
-		 * @returns {String} value of current instance.
-		 */
-		valueOf: function() {
-			return this.className();
-		},
-		
-		/**
 		 * Convert current instance to object.
 		 * 
 		 * @method toObject
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @memberof WObject.prototype
 		 * 
 		 * @returns {Object} current instance as object.
 		 */
@@ -233,9 +258,9 @@ WebbyJs.createClass({
 		 * Dump current instance to browser console.
 		 * 
 		 * @method dump
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @memberof WObject.prototype
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returns {WObject} current instance for chaining.
 		 */
 		dump: function() {
 			console.log(this.toString());
@@ -251,12 +276,12 @@ WebbyJs.createClass({
 		 * Mixin object members to current instance.
 		 * 
 		 * @method mixin
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @memberof WObject.prototype
 		 * 
 		 * @param {Object} obj - source object reference.
 		 * @param {Boolean} safe - safety flag, if true - existing members are not overwritten.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returns {WObject} current instance for chaining.
 		 */
 		mixin: function(obj, safe) {
 			var p;
@@ -277,9 +302,9 @@ WebbyJs.createClass({
 		 * to clone themselves. Otherwise, they remaine shared behind original and cloned instances.
 		 * 
 		 * @method clone
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @memberof WObject.prototype
 		 * 
-		 * @returns {BaseWebbyJsClass} cloned instance.
+		 * @returns {WObject} cloned instance.
 		 */
 		clone: function() {
 			var clone = new this.constructor();
@@ -288,7 +313,7 @@ WebbyJs.createClass({
 				var o = this[p];
 				
 				if (o.clone) clone[p] = o.clone(); else {
-					clone[p] = (typeof o === 'object' ? WebbyJs.BaseWebbyJsClass.prototype.clone.call(o) : o);
+					clone[p] = (typeof o === 'object' ? WebbyJs.WObject.prototype.clone.call(o) : o);
 				}
 			}
 			
@@ -299,12 +324,12 @@ WebbyJs.createClass({
 		 * Invoke method with 'this' reference to current instance.
 		 * 
 		 * @method invoke
-		 * @memberof BaseWebbyJsClass.prototype
+		 * @memberof WObject.prototype
 		 * 
 		 * @param {Function} method - method to invoke.
 		 * @param {Array} args - method arguments.
 		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
+		 * @returns {WObject} current instance for chaining.
 		 */
 		invoke: function(method, args) {
 			method.apply(this, args);

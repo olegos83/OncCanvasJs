@@ -4,20 +4,47 @@
  */
 
 /**
- * WebbyJs base namespace and core methods.
+ * WebbyJs namespace and core methods.
  * 
  * @namespace
  */
 var WebbyJs = {
 	/**
-	 * All WebbyJs members, which can be globalized.
+	 * WebbyJs short description.
 	 * 
 	 * @memberof WebbyJs
-	 * @type {Array}
+	 * @type {Object}
 	 * 
 	 * @private
 	 */
-	_globals: [],
+	_about: {
+		name: 'WebbyJs',
+		version: '0.01 unstable',
+		shortcut: '_w_',
+		description: 'Multipurpose web frontend framework',
+		author: 'OlegoS',
+		license: 'MIT'
+	},
+	
+	/**
+	 * Show about info.
+	 * 
+	 * @method about
+	 * @memberof WebbyJs
+	 */
+	about: function() {
+		console.log(this._about);
+	},
+	
+	/**
+	 * All exportable to global scope WebbyJs members cached by name.
+	 * 
+	 * @memberof WebbyJs
+	 * @type {Object}
+	 * 
+	 * @private
+	 */
+	_globals: {},
 	
 	/**
 	 * Global ids cache.
@@ -70,35 +97,37 @@ var WebbyJs = {
 	}() ),
 	
 	/**
-	 * Invoke method with 'this' reference to WebbyJs.
-	 * 
-	 * @method invoke
-	 * @memberof WebbyJs
-	 * 
-	 * @param {Function} method - method to invoke.
-	 * @param {Array} args - method arguments.
-	 */
-	invoke: function(method, args) {
-		method.apply(this, args);
-	},
-	
-	/**
 	 * Throw an error exeption.
 	 * 
-	 * @method throwError
+	 * @method error
 	 * @memberof WebbyJs
 	 * 
 	 * @param {String} msg - error message.
 	 * @param {String} name - error name.
 	 */
-	throwError: function(msg, name) {
-		var err = new Error(msg || 'Something is going wrong');
+	error: function(msg, name) {
+		var err = new Error(msg || 'Unknown error');
 		err.name = name || 'WebbyJsError';
 		throw err;
 	},
 	
 	/**
-	 * Get class name. Use to check class for any instance.
+	 * Log warning to console.
+	 * 
+	 * @method warning
+	 * @memberof WebbyJs
+	 * 
+	 * @param {String} msg - warning message.
+	 * @param {String} name - warning name.
+	 */
+	warning: function(msg, name) {
+		if (!msg) msg = 'Unknown warning';
+		if (!name) name = 'WebbyJsWarning';
+		console.log(name  + ': ' + msg);
+	},
+	
+	/**
+	 * Get class name to check class for any instance.
 	 * 
 	 * @method getClassName
 	 * @memberof WebbyJs
@@ -113,52 +142,105 @@ var WebbyJs = {
 	},
 	
 	/**
+	 * Invoke method in WebbyJs scope.
+	 * 
+	 * @method invoke
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Function} method - method to invoke.
+	 * @param {Array} args - method arguments.
+	 */
+	invoke: function(method, args) {
+		method.apply(this, args);
+	},
+	
+	/**
 	 * Check name validity inside WebbyJs and throw error for invalid name.
 	 * 
-	 * @method checkNameValidity
+	 * @method validateName
 	 * @memberof WebbyJs
 	 * 
 	 * @param {String} name - name to check.
 	 */
-	checkNameValidity: function(name) {
-		if (name === '' || this.getClassName(name) !== 'String') this.throwError('Invalid name');
-		if (this.getClassName(this[name])) this.throwError(name + " allready exists");
+	validateName: function(name) {
+		if (name === '' || this.getClassName(name) !== 'String') this.error('Invalid name');
+		if (this[name]) this.error('WebbyJs.' + name + " allready exists");
 	},
 	
 	/**
-	 * Import members to WebbyJs. Imported members can be globalized later.
+	 * Define member in WebbyJs.
+	 * 
+	 * @method define
+	 * @memberof WebbyJs
+	 * 
+	 * @param {String} name - member name.
+	 * @param {Object} member - new member.
+	 * @param {Object} options - define options, for example exportability to global scope.
+	 * 
+	 * @returns {Object} new defined member.
+	 */
+	define: function(name, member, options) {
+		this.validateName(name);
+		if (this.getClassName(options) !== 'Object') this.error('Define options must be passed as an object');
+		
+		this[name] = window['_w_' + name] = member;
+		if (options && options.exportable !== false) this._globals[name] = member;
+		
+		return member;
+	},
+	
+	/**
+	 * Import many member definitions to WebbyJs. They must be passed as { name: member, ... , name: member }
 	 * 
 	 * @method import
 	 * @memberof WebbyJs
 	 * 
 	 * @param {Object} members - members object reference.
-	 * @param {Boolean} noGlobal - if true, globalization is canceled for current import.
+	 * @param {Object} options - define options, for example exportability to global scope.
 	 */
-	import: function(members, noGlobal) {
-		if (this.getClassName(members) !== 'Object') this.throwError('Members must be passed as an object');
+	import: function(members, options) {
+		if (this.getClassName(members) !== 'Object') this.error('Importing members must be passed as an object');
+		for (var name in members) if (members.hasOwnProperty(name)) this.define(name, members[name], options);
+	},
+	
+	/**
+	 * Extract WebbyJs members to global scope.
+	 * 
+	 * @method exportToGlobalScope
+	 * @memberof WebbyJs
+	 * 
+	 * @param {String} name - member name. If ommited - all members are extracted.
+	 * @param {Object} global - global object, window by default.
+	 */
+	exportToGlobalScope: function(name, global) {
+		if (!global) global = window;
 		
-		for (var m in members) {
-			this.checkNameValidity(m);
-			this[m] = members[m];
-			
-			if (!noGlobal) this._globals.push(m);
+		var exportable = this._globals;
+		
+		if (name) {
+			if (!exportable[name]) this.error(name + " does not exist or can not be exported to global scope");
+			if (global[name]) this.error(name + " allready exists in global scope");
+			global[name] = this[name];
+		} else {
+			for (name in exportable) if (exportable.hasOwnProperty(name)) {
+				if (global[name]) this.error(name + " allready exists in global scope");
+				global[name] = this[name];
+			}
 		}
 	},
 	
 	/**
-	 * Extract all added stuff to global scope.
+	 * Initialize WebbyJs.
 	 * 
-	 * @method globalize
+	 * @method init
 	 * @memberof WebbyJs
-	 * 
-	 * @param {Object} globe - global object, window by default.
 	 */
-	globalize: function(globe) {
-		var global = globe || window, l = this._globals.length;
-		
-		for (var i = 0, name; i < l; i++) {
-			name = this._globals[i];
-			global[name] = this[name];
-		}
+	init: function() {
+		window._w_ = this;
 	}
 };
+
+/**
+ * Initialize WebbyJs core.
+ */
+WebbyJs.init();
