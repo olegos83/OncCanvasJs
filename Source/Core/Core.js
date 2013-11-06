@@ -168,7 +168,7 @@ var WebbyJs = {
 	},
 	
 	/**
-	 * Define member in WebbyJs.
+	 * Define member of WebbyJs.
 	 * 
 	 * @method define
 	 * @memberof WebbyJs
@@ -183,9 +183,19 @@ var WebbyJs = {
 		this.validateName(name);
 		if (this.getClassName(options) !== 'Object') this.error('Define options must be passed as an object');
 		
-		this[name] = window['_w_' + name] = member;
-		if (options && options.exportable !== false) this._globals[name] = member;
+		if (options) {
+			if (options.construct) {
+				if (this.getClassName(member) !== 'Function') this.error('Class constructor must be a function');
+				member._w_className = name;
+				if (this.WObject) this.WObject.addStatic.call(member, this.WObject);
+			}
+			
+			if (options.exportable !== false) this._globals[name] = member;
+		} else {
+			this._globals[name] = member;
+		}
 		
+		this[name] = window['_w_' + name] = member;
 		return member;
 	},
 	
