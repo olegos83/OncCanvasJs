@@ -47,36 +47,25 @@ var WebbyJs = {
 	_globals: {},
 	
 	/**
-	 * Global ids cache. Is needed to controll id uniquness.
-	 * this._idCache[id] = true; means that id is buisy allready.
-	 * 
-	 * @memberof WebbyJs
-	 * @type {Object}
-	 * 
-	 * @private
-	 */
-	_idCache: {},
-	
-	/**
-	 * Unique global numeric id.
+	 * Unique number.
 	 * 
 	 * @memberof WebbyJs
 	 * @type {Number}
 	 * 
 	 * @private
 	 */
-	_uniqId: 0,
+	_un: 0,
 	
 	/**
-	 * Global unique id generator.
+	 * Get uniq integer number.
 	 * 
-	 * @method getUniqId
+	 * @method uniqNumber
 	 * @memberof WebbyJs
 	 * 
-	 * @returns {Number} global numeric id.
+	 * @returns {Number} uniq number.
 	 */
-	getUniqId: function() {
-		return this._uniqId++;
+	uniqNumber: function() {
+		return this._un++;
 	},
 	
 	/**
