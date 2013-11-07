@@ -11,19 +11,7 @@
  * @memberof WebbyJs
  */
 WebbyJs.define('WObject', function WObject() {
-	/**
-	 * Uniq WebbyJs global id. It is optional but can be usefull
-	 * in some cases, for example for item by id fast indexing.
-	 * 
-	 * @memberof WObject
-	 * @type {String}
-	 * 
-	 * @private
-	 */
-	this._id = 'wo_' + WebbyJs.getUniqId();
-	
-	//save id to cache
-	WebbyJs._idCache[this._id] = true;
+	//empty constructor
 }, { construct: true });
 
 /**
@@ -37,11 +25,7 @@ WebbyJs.define('WObject', function WObject() {
  * @returns {WObject} current instance for chaining.
  */
 WebbyJs.WObject.addStatic = function(statics) {
-	if (statics == this) return this;
-	
-	if (WebbyJs.getClassName(statics) !== 'Object' || WebbyJs.getClassName(statics) !== 'Function') {
-		this.error('Static class members must be passed as object or constructor function');
-	}
+	WebbyJs.validateClass(statics, 'Object, Function');
 	
 	for (var p in statics) if (statics.hasOwnProperty(p)) this[p] = statics[p];
 	return this;
@@ -59,7 +43,7 @@ WebbyJs.WObject.addStatic({
 	 * 
 	 * @param {Array} args - constructor arguments.
 	 * 
-	 * @returns {WObject} created class instance.
+	 * @returns {WObject} created instance.
 	 */
 	create: function(args) {
 		return new this(args);
@@ -77,10 +61,12 @@ WebbyJs.WObject.addStatic({
 	 */
 	extend: function(base) {
 		if (base == this) return this;
-		if (WebbyJs.getClassName(base) !== 'Function') this.error('Base class must be a constructor function');
+		
+		var p = WebbyJs.getClassName(base);
+		if (p !== 'Function') WebbyJs.error('Invalid argument type, ' + p);
 		
 		var proto = this.prototype = new base();
-		for (var p in proto) if (proto.hasOwnProperty(p)) delete proto[p];
+		for (p in proto) if (proto.hasOwnProperty(p)) delete proto[p];
 		
 		proto.constructor = this;
 		this.baseClass = base.prototype;
@@ -99,18 +85,17 @@ WebbyJs.WObject.addStatic({
 	 * @returns {WObject} current instance for chaining.
 	 */
 	implement: function(interfaces) {
-		if (interfaces == this) return this;
 		if (WebbyJs.getClassName(interfaces) !== 'Array') interfaces = [interfaces];
 		
 		var proto = this.prototype, l = interfaces.length;
 		
 		for (var i = 0; i < l; i++) {
-			var iface = interfaces[i], ifaceClass = WebbyJs.getClassName(iface);
+			var iface = interfaces[i], p = WebbyJs.getClassName(iface);
 			
-			if (ifaceClass !== 'Object' && ifaceClass !== 'Function') continue;
-			if (ifaceClass === 'Function') { if (iface == this) continue; iface = iface.prototype; }
+			if (p !== 'Object' && p !== 'Function') WebbyJs.error('Invalid argument type, ' + p);
+			if (p === 'Function') iface = iface.prototype;
 			
-			for (var p in iface) if (iface.hasOwnProperty(p)) proto[p] = iface[p];
+			for (p in iface) if (iface.hasOwnProperty(p)) proto[p] = iface[p];
 		}
 		
 		return this;
@@ -121,31 +106,10 @@ WebbyJs.WObject.addStatic({
  */
 }).implement({
 	/**
-	 * Get/Set current instance id. If id is buisy, nothing changes.
-	 * 
-	 * @method id
-	 * @memberof WObject.prototype
-	 * 
-	 * @param {String} id - id to set.
-	 * 
-	 * @returns {String|WObject} object id or current instance for chaining.
-	 */
-	id: function(id) {
-		if (!id) return this._id;
-		
-		if (!WebbyJs._idCache[id]) {
-			this._id = id;
-			WebbyJs._idCache[id] = true;
-		}
-		
-		return this;
-	},
-	
-	/**
 	 * Force to free objects resources from memory.
 	 * 
-	 * It sets all properties to null, so object becomes unusable
-	 * after this action. Be carefull with this method.
+	 * Be carefull with this method - it sets all properties
+	 * to null, so object becomes unusable after this action.
 	 * 
 	 * @method free
 	 * @memberof WObject.prototype
@@ -153,7 +117,6 @@ WebbyJs.WObject.addStatic({
 	 * @returns {WObject} current instance for chaining.
 	 */
 	free: function() {
-		if (this._id) WebbyJs._idCache[this._id] = null;
 		for (var p in this) if (this.hasOwnProperty(p)) this[p] = null;
 		return this;
 	},
@@ -167,68 +130,31 @@ WebbyJs.WObject.addStatic({
 	 * @returns {String} class name of current instance.
 	 */
 	className: function() {
-		return this.constructor._w_className;
+		return this.constructor.className;
 	},
 	
 	/**
 	 * Get prototype of current instance.
 	 * 
-	 * @method getPrototype
+	 * @method proto
 	 * @memberof WObject.prototype
 	 * 
 	 * @returns {Object} prototype of current instance.
 	 */
-	getPrototype: function() {
+	proto: function() {
 		return this.constructor.prototype;
 	},
 	
 	/**
 	 * Get base class of current instance.
 	 * 
-	 * @method getBaseClass
+	 * @method baseClass
 	 * @memberof WObject.prototype
 	 * 
 	 * @returns {WObject} base class of current instance or undefined if no base class.
 	 */
-	getBaseClass: function() {
+	baseClass: function() {
 		return this.constructor.baseClass;
-	},
-	
-	/**
-	 * Get all properties of current instance.
-	 * 
-	 * @method properties
-	 * @memberof WObject.prototype
-	 * 
-	 * @returns {Object} properties as object.
-	 */
-	properties: function() {
-		var props = {};
-		
-		for (var p in this) {
-			if (this.hasOwnProperty(p)) props[p] = this[p];
-		}
-		
-		return props;
-	},
-	
-	/**
-	 * Get current instance methods.
-	 * 
-	 * @method methods
-	 * @memberof WObject.prototype
-	 * 
-	 * @returns {Object} methods as object.
-	 */
-	methods: function() {
-		var methods = {}, proto = this.constructor.prototype;
-		
-		for (var m in proto) {
-			if (proto.hasOwnProperty(m)) methods[m] = proto[m];
-		}
-		
-		delete methods.constructor;
-		return methods;
 	},
 	
 	/**
@@ -240,11 +166,11 @@ WebbyJs.WObject.addStatic({
 	 * @returns {String} current instance as string.
 	 */
 	toString: function() {
-		return '[WebbyJs.' + this.className() + ']';
+		return '[WebbyJs.' + this.constructor.className + ']';
 	},
 	
 	/**
-	 * Convert current instance to object.
+	 * Get current instance as Object.
 	 * 
 	 * @method toObject
 	 * @memberof WObject.prototype
@@ -252,11 +178,9 @@ WebbyJs.WObject.addStatic({
 	 * @returns {Object} current instance as object.
 	 */
 	toObject: function() {
-		return {
-			name: this.className(),
-			properties: this.properties(),
-			methods: this.methods()
-		};
+		var obj = {};
+		for (var p in this) if (this.hasOwnProperty(p)) obj[p] = this[p];
+		return obj;
 	},
 	
 	/**
@@ -278,9 +202,9 @@ WebbyJs.WObject.addStatic({
 	},
 	
 	/**
-	 * Mixin object members to current instance.
+	 * Mix object members to current instance.
 	 * 
-	 * @method mixin
+	 * @method mix
 	 * @memberof WObject.prototype
 	 * 
 	 * @param {Object} obj - source object reference.
@@ -288,7 +212,7 @@ WebbyJs.WObject.addStatic({
 	 * 
 	 * @returns {WObject} current instance for chaining.
 	 */
-	mixin: function(obj, safe) {
+	mix: function(obj, safe) {
 		var p;
 		
 		if (safe) {
@@ -304,7 +228,7 @@ WebbyJs.WObject.addStatic({
 	 * Clone current instance.
 	 * 
 	 * All non-primitive members are stored as references, so they must have clone method
-	 * to clone themselves. Otherwise, they remaine shared behind original and cloned instances.
+	 * to clone themselves. Otherwise, they stay shared behind original and cloned instances.
 	 * 
 	 * @method clone
 	 * @memberof WObject.prototype
@@ -312,17 +236,17 @@ WebbyJs.WObject.addStatic({
 	 * @returns {WObject} cloned instance.
 	 */
 	clone: function() {
-		var clone = new this.constructor();
+		var cloned = new this.constructor(), clone = WebbyJs.WObject.prototype.clone;
 		
 		for (var p in this) if (this.hasOwnProperty(p)) {
 			var o = this[p];
 			
-			if (o.clone) clone[p] = o.clone(); else {
-				clone[p] = (typeof o === 'object' ? WebbyJs.WObject.prototype.clone.call(o) : o);
+			if (o.clone) cloned[p] = o.clone(); else {
+				cloned[p] = (typeof o === 'object' ? clone.call(o) : o);
 			}
 		}
 		
-		return clone;
+		return cloned;
 	},
 	
 	/**

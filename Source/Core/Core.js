@@ -162,7 +162,7 @@ var WebbyJs = {
 	 * @memberof WebbyJs
 	 * 
 	 * @param {Object} obj - object.
-	 * @param {String} allowed - comma separated string with allowed class names.
+	 * @param {String} allowed - string with allowed class names.
 	 */
 	validateClass: function(obj, allowed) {
 		var p = this.getClassName(obj) || 'null';
