@@ -37,14 +37,14 @@ var WebbyJs = {
 	},
 	
 	/**
-	 * All exportable to global scope WebbyJs members cached by name.
+	 * WebbyJs members, exportable to global scope, stored by name.
 	 * 
 	 * @memberof WebbyJs
 	 * @type {Object}
 	 * 
 	 * @private
 	 */
-	_globals: {},
+	_exportable: {},
 	
 	/**
 	 * Unique number.
@@ -73,8 +73,6 @@ var WebbyJs = {
 	 * 
 	 * @memberof WebbyJs
 	 * @type {String}
-	 * 
-	 * @returns {String} vendor of currently used browser.
 	 */
 	BROWSER: ( function() {
 		var nav = navigator.userAgent.toLowerCase();
@@ -84,6 +82,8 @@ var WebbyJs = {
 		
 		if (nav.indexOf('chrome') != -1) return 'chrome';
 		if (nav.indexOf('msie') != -1) return 'ie';
+		
+		return 'unknown';
 	}() ),
 	
 	/**
@@ -111,9 +111,7 @@ var WebbyJs = {
 	 * @param {String} name - warning name.
 	 */
 	warning: function(msg, name) {
-		if (!msg) msg = 'Unknown warning';
-		if (!name) name = 'WebbyJsWarning';
-		console.log(name  + ': ' + msg);
+		console.log( (name || 'WebbyJsWarning') + ': ' + (msg || 'Unknown warning') );
 	},
 	
 	/**
@@ -128,7 +126,7 @@ var WebbyJs = {
 	 */
 	getClassName: function(obj) {
 		if (obj === null || typeof obj === 'undefined') return '';
-		return obj.constructor.name || obj.constructor._w_className;
+		return obj.constructor.name || obj.constructor.className;
 	},
 	
 	/**
@@ -145,7 +143,7 @@ var WebbyJs = {
 	},
 	
 	/**
-	 * Check name validity inside WebbyJs and throw error for invalid name.
+	 * Check name validity inside WebbyJs and throw error for invalid.
 	 * 
 	 * @method validateName
 	 * @memberof WebbyJs
@@ -153,8 +151,22 @@ var WebbyJs = {
 	 * @param {String} name - name to check.
 	 */
 	validateName: function(name) {
-		if (name === '' || this.getClassName(name) !== 'String') this.error('Invalid name');
-		if (this[name]) this.error('WebbyJs.' + name + " allready exists");
+		if (name === '' || this.getClassName(name) !== 'String') this.error('Impossible to create WebbyJs.' + name);
+		if (this[name]) this.error('WebbyJs.' + name + ' allready exists');
+	},
+	
+	/**
+	 * Check class instance validity among allowed and throw error for invalid.
+	 * 
+	 * @method validateClass
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Object} obj - object.
+	 * @param {String} allowed - comma separated string with allowed class names.
+	 */
+	validateClass: function(obj, allowed) {
+		var p = this.getClassName(obj) || 'null';
+		if (allowed.indexOf(p) == -1) this.error('Invalid argument type, ' + p);
 	},
 	
 	/**
@@ -167,24 +179,25 @@ var WebbyJs = {
 	 * 
 	 * @param {String} name - member name.
 	 * @param {Object} member - new member.
-	 * @param {Object} options - define options, for example exportability to global scope.
+	 * @param {Object} options - define options.
 	 * 
 	 * @returns {Object} new defined member.
 	 */
 	define: function(name, member, options) {
 		this.validateName(name);
-		if (this.getClassName(options) !== 'Object') this.error('Define options must be passed as an object');
 		
 		if (options) {
+			this.validateClass(options, 'Object');
+			
 			if (options.construct) {
-				if (this.getClassName(member) !== 'Function') this.error('Class constructor must be a function');
-				member._w_className = name;
+				this.validateClass(member, 'Function');
 				if (this.WObject) this.WObject.addStatic.call(member, this.WObject);
+				member.className = name;
 			}
 			
-			if (options.exportable !== false) this._globals[name] = member;
+			if (options.exportable !== false) this._exportable[name] = member;
 		} else {
-			this._globals[name] = member;
+			this._exportable[name] = member;
 		}
 		
 		this[name] = window['_w_' + name] = member;
@@ -192,16 +205,16 @@ var WebbyJs = {
 	},
 	
 	/**
-	 * Import many member definitions to WebbyJs. They must be passed as { name: member, ... , name: member }
+	 * Import members to WebbyJs as { name: member, ... , name: member }.
 	 * 
 	 * @method import
 	 * @memberof WebbyJs
 	 * 
 	 * @param {Object} members - members object reference.
-	 * @param {Object} options - define options, for example exportability to global scope.
+	 * @param {Object} options - define options.
 	 */
 	import: function(members, options) {
-		if (this.getClassName(members) !== 'Object') this.error('Importing members must be passed as an object');
+		this.validateClass(members, 'Object');
 		for (var name in members) if (members.hasOwnProperty(name)) this.define(name, members[name], options);
 	},
 	
@@ -219,17 +232,14 @@ var WebbyJs = {
 	 * 								  construct: function ClassName(args) { ... },
 	 * 								  proto: { prototype },
 	 * 								  implement: [interfaceRferencesArr] || interfaceReference,
-	 * 								  statics: { static members },
-	 * 								  exportable: true || flase
+	 * 								  statics: { static members }
 	 * 							  };
 	 * 
 	 * @returns {WObject} new defined class.
 	 */
 	Class: function(options) {
-		//validate class options
-		if (this.getClassName(options) !== 'Object') this.error('Class options must be passed as object');
+		this.validateClass(options, 'Object');
 		
-		//setup constructor, static methods, extend from base class, then setup interfaces and prototype
 		return this.define(options.name, options.construct, { construct: true }).
 					addStatic(options.statics).
 					extend(options.extend || this.WObject).
@@ -238,18 +248,18 @@ var WebbyJs = {
 	},
 	
 	/**
-	 * Extract WebbyJs members to global scope.
+	 * Export WebbyJs members to global scope to make 'WebbyJs.Member' available as 'Member'.
 	 * 
-	 * @method exportToGlobalScope
+	 * @method toGlobal
 	 * @memberof WebbyJs
 	 * 
 	 * @param {String} name - member name. If ommited - all members are extracted.
 	 * @param {Object} global - global object, window by default.
 	 */
-	exportToGlobalScope: function(name, global) {
+	toGlobal: function(name, global) {
 		if (!global) global = window;
 		
-		var exportable = this._globals;
+		var exportable = this._exportable;
 		
 		if (name) {
 			if (!exportable[name]) this.error(name + " does not exist or can not be exported to global scope");
