@@ -17,14 +17,15 @@ WebbyJs.define('WObject', function WObject() {
 /**
  * Append static methods to this class.
  * 
- * @method addStatic
+ * @method statics
  * @memberof WObject
  * 
  * @param {Object} statics - object with static members.
  * 
  * @returns {WObject} current instance for chaining.
  */
-WebbyJs.WObject.addStatic = function(statics) {
+WebbyJs.WObject.statics = function(statics) {
+	if (!statics) return this;
 	WebbyJs.validateClass(statics, 'Object, Function');
 	
 	for (var p in statics) if (statics.hasOwnProperty(p)) this[p] = statics[p];
@@ -34,7 +35,7 @@ WebbyJs.WObject.addStatic = function(statics) {
 /**
  * Add WObject static members.
  */
-WebbyJs.WObject.addStatic({
+WebbyJs.WObject.statics({
 	/**
 	 * Create instance of this class.
 	 * 
@@ -60,16 +61,14 @@ WebbyJs.WObject.addStatic({
 	 * @returns {WObject} current instance for chaining.
 	 */
 	extend: function(base) {
-		if (base == this) return this;
-		
-		var p = WebbyJs.getClassName(base);
-		if (p !== 'Function') WebbyJs.error('Invalid argument type, ' + p);
+		if (!base) return this;
+		WebbyJs.validateClass(base, 'Function');
 		
 		var proto = this.prototype = new base();
-		for (p in proto) if (proto.hasOwnProperty(p)) delete proto[p];
+		for (var p in proto) if (proto.hasOwnProperty(p)) delete proto[p];
 		
 		proto.constructor = this;
-		this.baseClass = base.prototype;
+		this._w_base = base.prototype;
 		
 		return this;
 	},
@@ -85,17 +84,18 @@ WebbyJs.WObject.addStatic({
 	 * @returns {WObject} current instance for chaining.
 	 */
 	implement: function(interfaces) {
+		if (!interfaces) return this;
 		if (WebbyJs.getClassName(interfaces) !== 'Array') interfaces = [interfaces];
 		
 		var proto = this.prototype, l = interfaces.length;
 		
 		for (var i = 0; i < l; i++) {
-			var iface = interfaces[i], p = WebbyJs.getClassName(iface);
+			var iface = interfaces[i];
 			
-			if (p !== 'Object' && p !== 'Function') WebbyJs.error('Invalid argument type, ' + p);
-			if (p === 'Function') iface = iface.prototype;
+			WebbyJs.validateClass(iface, 'Object, Function');
+			if (WebbyJs.getClassName(iface) === 'Function') iface = iface.prototype;
 			
-			for (p in iface) if (iface.hasOwnProperty(p)) proto[p] = iface[p];
+			for (var p in iface) if (iface.hasOwnProperty(p)) proto[p] = iface[p];
 		}
 		
 		return this;
@@ -130,7 +130,7 @@ WebbyJs.WObject.addStatic({
 	 * @returns {String} class name of current instance.
 	 */
 	className: function() {
-		return this.constructor.className;
+		return this.constructor._w_class;
 	},
 	
 	/**
@@ -154,7 +154,7 @@ WebbyJs.WObject.addStatic({
 	 * @returns {WObject} base class of current instance or undefined if no base class.
 	 */
 	baseClass: function() {
-		return this.constructor.baseClass;
+		return this.constructor._w_base;
 	},
 	
 	/**
@@ -166,7 +166,7 @@ WebbyJs.WObject.addStatic({
 	 * @returns {String} current instance as string.
 	 */
 	toString: function() {
-		return '[WebbyJs.' + this.constructor.className + ']';
+		return '[WebbyJs.' + this.constructor._w_class + ']';
 	},
 	
 	/**

@@ -126,7 +126,7 @@ var WebbyJs = {
 	 */
 	getClassName: function(obj) {
 		if (obj === null || typeof obj === 'undefined') return '';
-		return obj.constructor.name || obj.constructor.className;
+		return obj.constructor.name || obj.constructor._w_class;
 	},
 	
 	/**
@@ -191,8 +191,9 @@ var WebbyJs = {
 			
 			if (options.construct) {
 				this.validateClass(member, 'Function');
-				if (this.WObject) this.WObject.addStatic.call(member, this.WObject);
-				member.className = name;
+				
+				if (this.WObject) this.WObject.statics.call(member, this.WObject);
+				member._w_class = name;
 			}
 			
 			if (options.exportable !== false) this._exportable[name] = member;
@@ -241,7 +242,7 @@ var WebbyJs = {
 		this.validateClass(options, 'Object');
 		
 		return this.define(options.name, options.construct, { construct: true }).
-					addStatic(options.statics).
+					statics(options.statics).
 					extend(options.extend || this.WObject).
 					implement(options.implement).
 					implement(options.proto);
