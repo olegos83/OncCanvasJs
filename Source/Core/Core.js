@@ -171,65 +171,64 @@ var WebbyJs = window.webbyjs = window._w_ = {
 	},
 	
 	/**
-	 * WebbyJs name and class validation. Throws an error for invalid result.
+	 * WebbyJs name or class validation. Throws an error for invalid result.
 	 * If 'allowed' argument present - it is a class validation, if not - name conflict test.
 	 * 
 	 * @method validate
 	 * @memberof WebbyJs
 	 * 
 	 * @param {String|Object} v - name to check or instance to validate class.
-	 * @param {String} allowed - allowed classes, for example 'Function, Object, String'.
-	 * 
-	 * @returns {String} validated name or class name.
+	 * @param {String} allowed - names of allowed classes, for example 'Function, Object, String'.
 	 */
 	validate: function(v, allowed) {
 		//class validation
 		if (allowed) {
 			v = this.getClassName(v) || 'null';
-			if (allowed.indexOf(v) == -1) this.error('Invalid argument type, ' + v);
+			if (allowed.indexOf(v) == -1) this.error('Invalid class - ' + v + ', expected ' + allowed);
 			
 		//name validation
 		} else {
 			if (v === '' || this.classOf(v) !== 'String') this.error('Impossible to create WebbyJs.' + v);
 			if (this[v]) this.error('WebbyJs.' + v + ' allready exists');
 		}
-		
-		return v;
 	},
 	
 	/**
-	 * Define member of WebbyJs. Each member is also cached globaly with
+	 * Define members of WebbyJs. Each member is also cached globaly with
 	 * '_w_' prefix to speed up class instantiating inside another lib class.
 	 * 
 	 * @method define
 	 * @memberof WebbyJs
 	 * 
-	 * @param {String} name - member name.
-	 * @param {Object} member - new member.
+	 * @param {Object} members - new member.
 	 * @param {Object} options - define options.
-	 * 
-	 * @returns {Object} new defined member.
 	 */
-	define: function(name, member, options) {
-		this.validateName(name);
+	define: function(members, options) {
+		this.validate(members, 'Object');
+		if (options) this.validate(options, 'Object');
+		
+		var exportable = null, newClass = false;
 		
 		if (options) {
-			this.validateClass(options, 'Object');
+			if (!options.noExport) exportable = this._exportable;
+			if (options.newClass) newClass = true;
+		}
+		
+		for (var name in members) if (members.hasOwnProperty(name)) {
+			this.validate(name);
 			
-			if (options.construct) {
-				this.validateClass(member, 'Function');
+			var member = members[name];
+			
+			if (newClass) {
+				this.validate(member, 'Function');
 				
 				if (this.WObject) this.WObject.statics.call(member, this.WObject);
 				member._w_class = name;
 			}
 			
-			if (options.noExport) this._exportable[name] = member;
-		} else {
-			this._exportable[name] = member;
+			this[name] = window['_w_' + name] = member;
+			if (exportable) exportable[name] = member;
 		}
-		
-		this[name] = window['_w_' + name] = member;
-		return member;
 	},
 	
 	/**
@@ -246,19 +245,22 @@ var WebbyJs = window.webbyjs = window._w_ = {
 	 * 	  construct: function ClassName(args) { ... },
 	 * 	  proto: { prototype },
 	 * 	  implement: [interfaceRferencesArr] || interfaceReference,
-	 * 	  statics: { static members }
+	 * 	  statics: { static members }.
+	 *    noExport: true || false
 	 * };
-	 * 
-	 * @returns {WObject} new defined class.
 	 */
 	Class: function(options) {
-		this.validateClass(options, 'Object');
+		this.validate(options, 'Object');
 		
-		return this.define(options.name, options.construct, { construct: true }).
-					statics(options.statics).
-					extend(options.extend || this.WObject).
-					implement(options.implement).
-					implement(options.proto);
+		var members = {}, opt = { newClass: true, noExport: options.noExport };
+		members[options.name] = options.construct;
+		
+		this.define(members, opt);
+		
+		this[options.name].statics(options.statics).
+						   extend(options.extend || this.WObject).
+						   implement(options.implement).
+						   implement(options.proto);
 	},
 	
 	/**
@@ -273,12 +275,13 @@ var WebbyJs = window.webbyjs = window._w_ = {
 		var exportable = this._exportable;
 		
 		if (name) {
-			if (!exportable[name]) this.error(name + " does not exist or can not be exported to global scope");
-			if (window[name]) this.error(name + " allready exists in global scope");
+			if (!exportable[name]) this.error(name + " does not exist or can not be exported");
+			if (window[name]) this.error(name + " allready exists in global object");
+			
 			window[name] = this[name];
 		} else {
 			for (name in exportable) if (exportable.hasOwnProperty(name)) {
-				if (window[name]) this.error(name + " allready exists in global scope");
+				if (window[name]) this.error(name + " allready exists in global object");
 				window[name] = this[name];
 			}
 		}

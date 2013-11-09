@@ -10,9 +10,11 @@
  * @class WObject
  * @memberof WebbyJs
  */
-WebbyJs.define('WObject', function WObject() {
-	//empty constructor
-}, { construct: true });
+WebbyJs.define({
+	WObject: function WObject() {
+		//empty constructor
+	}
+}, { newClass: true });
 
 /**
  * Append static methods to this class.
@@ -26,7 +28,7 @@ WebbyJs.define('WObject', function WObject() {
  */
 WebbyJs.WObject.statics = function(statics) {
 	if (!statics) return this;
-	WebbyJs.validateClass(statics, 'Object, Function');
+	WebbyJs.validate(statics, 'Object, Function');
 	
 	for (var p in statics) if (statics.hasOwnProperty(p)) this[p] = statics[p];
 	return this;
@@ -62,7 +64,7 @@ WebbyJs.WObject.statics({
 	 */
 	extend: function(base) {
 		if (!base) return this;
-		WebbyJs.validateClass(base, 'Function');
+		WebbyJs.validate(base, 'Function');
 		
 		var proto = this.prototype = new base();
 		for (var p in proto) if (proto.hasOwnProperty(p)) delete proto[p];
@@ -85,15 +87,15 @@ WebbyJs.WObject.statics({
 	 */
 	implement: function(interfaces) {
 		if (!interfaces) return this;
-		if (WebbyJs.getClassName(interfaces) !== 'Array') interfaces = [interfaces];
+		if (WebbyJs.classOf(interfaces) !== 'Array') interfaces = [interfaces];
 		
 		var proto = this.prototype, l = interfaces.length;
 		
 		for (var i = 0; i < l; i++) {
 			var iface = interfaces[i];
 			
-			WebbyJs.validateClass(iface, 'Object, Function');
-			if (WebbyJs.getClassName(iface) === 'Function') iface = iface.prototype;
+			WebbyJs.validate(iface, 'Object, Function');
+			if (WebbyJs.classOf(iface) === 'Function') iface = iface.prototype;
 			
 			for (var p in iface) if (iface.hasOwnProperty(p)) proto[p] = iface[p];
 		}

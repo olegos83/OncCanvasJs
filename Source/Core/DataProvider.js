@@ -2,7 +2,7 @@
  * @file A wrapper for array to manage event driven data.
  * @author Olegos <olegos83@yandex.ru>
  */
-WebbyJs.import({
+WebbyJs.define({
 	/**
 	 * Data event types.
 	 * 

@@ -2,7 +2,7 @@
  * @file WebbyJs events interface and basic event types.
  * @author Olegos <olegos83@yandex.ru>
  */
-WebbyJs.import({
+WebbyJs.define({
 	/**
 	 * Mouse event types.
 	 * 

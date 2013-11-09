@@ -4,50 +4,58 @@
  */
 
 /**
- * WebbyJs base namespace and core methods.
+ * Name conflicts test.
+ */
+if (window.WebbyJs || window.webbyjs || window._w_) throw new Error('WebbyJs initialization failed - name conflict');
+
+/**
+ * WebbyJs namespace declaration and basic methods implementation.
  * 
  * @namespace
  */
-var WebbyJs = {
+var WebbyJs = window.webbyjs = window._w_ = {
 	/**
-	 * All WebbyJs members, which can be globalized.
+	 * WebbyJs short description.
 	 * 
 	 * @memberof WebbyJs
-	 * @type {Array}
+	 * @type {Object}
 	 * 
 	 * @private
 	 */
-	_globals: [],
+	_about: {
+		name: 'WebbyJs',
+		version: '0.01 unstable',
+		shortcut: '_w_',
+		description: 'Multipurpose web frontend framework',
+		author: 'OlegoS',
+		license: 'MIT'
+	},
 	
 	/**
-	 * Unique global numeric id.
+	 * WebbyJs members, exportable to global scope, stored by name.
+	 * 
+	 * @memberof WebbyJs
+	 * @type {Object}
+	 * 
+	 * @private
+	 */
+	_exportable: {},
+	
+	/**
+	 * Unique number.
 	 * 
 	 * @memberof WebbyJs
 	 * @type {Number}
 	 * 
 	 * @private
 	 */
-	_uniqId: 0,
+	_un: 0,
 	
 	/**
-	 * Global unique id generator.
-	 * 
-	 * @method getUniqId
-	 * @memberof WebbyJs
-	 * 
-	 * @returns {Number} global numeric id.
-	 */
-	getUniqId: function() {
-		return this._uniqId++;
-	},
-	
-	/**
-	 * Browser information.
+	 * Browser short name.
 	 * 
 	 * @memberof WebbyJs
 	 * @type {String}
-	 * 
-	 * @returns {String} vendor of currently used browser.
 	 */
 	BROWSER: ( function() {
 		var nav = navigator.userAgent.toLowerCase();
@@ -57,10 +65,85 @@ var WebbyJs = {
 		
 		if (nav.indexOf('chrome') != -1) return 'chrome';
 		if (nav.indexOf('msie') != -1) return 'ie';
+		
+		return nav;
 	}() ),
 	
 	/**
-	 * Invoke method with 'this' reference to WebbyJs.
+	 * User defined log provider for WebbyJs messages.
+	 * It must be an object with 'log' method.
+	 * 
+	 * @memberof WebbyJs
+	 * @type {Object}
+	 */
+	logProvider: { native: true, log: function(msg) { console.log(msg); } },
+	
+	/**
+	 * Log message, using logProvider.
+	 * 
+	 * @method log
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Object} msg - message.
+	 */
+	log: function(msg) {
+		this.logProvider.log(msg);
+	},
+	
+	/**
+	 * Throw an error exeption and log it, but only to custom logProvider.
+	 * 
+	 * @method error
+	 * @memberof WebbyJs
+	 * 
+	 * @param {String} msg - error message.
+	 * @param {String} name - error name.
+	 */
+	error: function(msg, name) {
+		var err = new Error(msg || 'Unknown error');
+		err.name = name || 'WebbyJsError';
+		
+		if (!this.logProvider.native) this.log(err.name + ': ' + err.message);
+		throw err;
+	},
+	
+	/**
+	 * Log WebbyJs warning.
+	 * 
+	 * @method warning
+	 * @memberof WebbyJs
+	 * 
+	 * @param {String} msg - warning message.
+	 * @param {String} name - warning name.
+	 */
+	warning: function(msg, name) {
+		this.log( (name || 'WebbyJsWarning') + ': ' + (msg || 'Unknown warning') );
+	},
+	
+	/**
+	 * Show about info.
+	 * 
+	 * @method about
+	 * @memberof WebbyJs
+	 */
+	about: function() {
+		this.log(this._about);
+	},
+	
+	/**
+	 * Get uniq integer number.
+	 * 
+	 * @method uniqNumber
+	 * @memberof WebbyJs
+	 * 
+	 * @returns {Number} uniq number.
+	 */
+	uniqNumber: function() {
+		return this._un++;
+	},
+	
+	/**
+	 * Invoke method in WebbyJs scope.
 	 * 
 	 * @method invoke
 	 * @memberof WebbyJs
@@ -73,404 +156,411 @@ var WebbyJs = {
 	},
 	
 	/**
-	 * Throw an error exeption.
+	 * Get class name for any instance.
 	 * 
-	 * @method throwError
-	 * @memberof WebbyJs
-	 * 
-	 * @param {String} msg - error message.
-	 * @param {String} name - error name.
-	 */
-	throwError: function(msg, name) {
-		var err = new Error(msg || 'Something is going wrong');
-		err.name = name || 'WebbyJsError';
-		throw err;
-	},
-	
-	/**
-	 * Get class name. Use to check class for any instance.
-	 * 
-	 * @method getClassName
+	 * @method classOf
 	 * @memberof WebbyJs
 	 * 
 	 * @param {Object} obj - object.
 	 * 
 	 * @returns {String} objects class name or '' for undefined or null obj.
 	 */
-	getClassName: function(obj) {
+	classOf: function(obj) {
 		if (obj === null || typeof obj === 'undefined') return '';
-		return obj.constructor.name || obj.constructor._w_className;
+		return obj.constructor.name || obj.constructor._w_class;
 	},
 	
 	/**
-	 * Check name validity inside WebbyJs and throw error for invalid name.
+	 * WebbyJs name or class validation. Throws an error for invalid result.
+	 * If 'allowed' argument present - it is a class validation, if not - name conflict test.
 	 * 
-	 * @method checkNameValidity
+	 * @method validate
 	 * @memberof WebbyJs
 	 * 
-	 * @param {String} name - name to check.
+	 * @param {String|Object} v - name to check or instance to validate class.
+	 * @param {String} allowed - names of allowed classes, for example 'Function, Object, String'.
 	 */
-	checkNameValidity: function(name) {
-		if (name === '' || this.getClassName(name) !== 'String') this.throwError('Invalid name');
-		if (this.getClassName(this[name])) this.throwError(name + " allready exists");
-	},
-	
-	/**
-	 * Import members to WebbyJs. Imported members can be globalized later.
-	 * 
-	 * @method import
-	 * @memberof WebbyJs
-	 * 
-	 * @param {Object} members - members object reference.
-	 * @param {Boolean} noGlobal - if true, globalization is canceled for current import.
-	 */
-	import: function(members, noGlobal) {
-		if (this.getClassName(members) !== 'Object') this.throwError('Members must be passed as an object');
-		
-		for (var m in members) {
-			this.checkNameValidity(m);
-			this[m] = members[m];
+	validate: function(v, allowed) {
+		//class validation
+		if (allowed) {
+			v = this.getClassName(v) || 'null';
+			if (allowed.indexOf(v) == -1) this.error('Invalid class - ' + v + ', expected ' + allowed);
 			
-			if (!noGlobal) this._globals.push(m);
+		//name validation
+		} else {
+			if (v === '' || this.classOf(v) !== 'String') this.error('Impossible to create WebbyJs.' + v);
+			if (this[v]) this.error('WebbyJs.' + v + ' allready exists');
 		}
 	},
 	
 	/**
-	 * Extract all added stuff to global scope.
+	 * Define members of WebbyJs. Each member is also cached globaly with
+	 * '_w_' prefix to speed up class instantiating inside another lib class.
 	 * 
-	 * @method globalize
+	 * @method define
 	 * @memberof WebbyJs
 	 * 
-	 * @param {Object} globe - global object, window by default.
+	 * @param {Object} members - new member.
+	 * @param {Object} options - define options.
 	 */
-	globalize: function(globe) {
-		var global = globe || window, l = this._globals.length;
+	define: function(members, options) {
+		this.validate(members, 'Object');
+		if (options) this.validate(options, 'Object');
 		
-		for (var i = 0, name; i < l; i++) {
-			name = this._globals[i];
-			global[name] = this[name];
+		var exportable = null, newClass = false;
+		
+		if (options) {
+			if (!options.noExport) exportable = this._exportable;
+			if (options.newClass) newClass = true;
+		}
+		
+		for (var name in members) if (members.hasOwnProperty(name)) {
+			this.validate(name);
+			
+			var member = members[name];
+			
+			if (newClass) {
+				this.validate(member, 'Function');
+				
+				if (this.WObject) this.WObject.statics.call(member, this.WObject);
+				member._w_class = name;
+			}
+			
+			this[name] = window['_w_' + name] = member;
+			if (exportable) exportable[name] = member;
+		}
+	},
+	
+	/**
+	 * Define new WebbyJs class.
+	 * 
+	 * @method Class
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Object} options - class definition options.
+	 * 
+	 * var optionsExample = {
+	 *    name: 'ClassName',
+	 *    extend: parentClassReference,
+	 * 	  construct: function ClassName(args) { ... },
+	 * 	  proto: { prototype },
+	 * 	  implement: [interfaceRferencesArr] || interfaceReference,
+	 * 	  statics: { static members }.
+	 *    noExport: true || false
+	 * };
+	 */
+	Class: function(options) {
+		this.validate(options, 'Object');
+		
+		var members = {}, opt = { newClass: true, noExport: options.noExport };
+		members[options.name] = options.construct;
+		
+		this.define(members, opt);
+		
+		this[options.name].statics(options.statics).
+						   extend(options.extend || this.WObject).
+						   implement(options.implement).
+						   implement(options.proto);
+	},
+	
+	/**
+	 * Export WebbyJs members to global object - 'window' in browser.
+	 * 
+	 * @method export
+	 * @memberof WebbyJs
+	 * 
+	 * @param {String} name - member name. If ommited - all members are extracted.
+	 */
+	export: function(name) {
+		var exportable = this._exportable;
+		
+		if (name) {
+			if (!exportable[name]) this.error(name + " does not exist or can not be exported");
+			if (window[name]) this.error(name + " allready exists in global object");
+			
+			window[name] = this[name];
+		} else {
+			for (name in exportable) if (exportable.hasOwnProperty(name)) {
+				if (window[name]) this.error(name + " allready exists in global object");
+				window[name] = this[name];
+			}
 		}
 	}
 };
 /**
- * @file The implementation of WebbyJs class creation.
+ * @file The implementation of base WebbyJs class.
  * @author Olegos <olegos83@yandex.ru>
  */
-WebbyJs.import({
+
+/**
+ * Base class for all WebbyJs created classes. All created classes are inherited from it.
+ * This class is created in a bit lower level to provide further classes work properly.
+ * 
+ * @class WObject
+ * @memberof WebbyJs
+ */
+WebbyJs.define({
+	WObject: function WObject() {
+		//empty constructor
+	}
+}, { newClass: true });
+
+/**
+ * Append static methods to this class.
+ * 
+ * @method statics
+ * @memberof WObject
+ * 
+ * @param {Object} statics - object with static members.
+ * 
+ * @returns {WObject} current instance for chaining.
+ */
+WebbyJs.WObject.statics = function(statics) {
+	if (!statics) return this;
+	WebbyJs.validate(statics, 'Object, Function');
+	
+	for (var p in statics) if (statics.hasOwnProperty(p)) this[p] = statics[p];
+	return this;
+};
+
+/**
+ * Add WObject static members.
+ */
+WebbyJs.WObject.statics({
 	/**
-	 * Class prototype inheritance method.
+	 * Create instance of this class.
 	 * 
-	 * @method extendClass
-	 * @memberof WebbyJs
+	 * @method create
+	 * @memberof WObject
 	 * 
-	 * @param {Object} child - child class reference.
-	 * @param {Object} parent - parent class reference.
+	 * @param {Array} args - constructor arguments.
+	 * 
+	 * @returns {WObject} created instance.
 	 */
-	extendClass: function(child, parent) {
-		if (child == parent) return;
-		if (this.getClassName(child) !== 'Function') this.throwError('Child class must be a function');
-		if (this.getClassName(parent) !== 'Function') this.throwError('Parent class must be a function');
-		
-		var proto = child.prototype = new parent();
-		for (var p in proto) if (proto.hasOwnProperty(p)) delete proto[p];
-		
-		proto.constructor = child;
-		proto.parentclass = parent.prototype;
+	create: function(args) {
+		return new this(args);
 	},
 	
 	/**
-	 * Extend class prototype with interfaces methods.
+	 * Extend this class from base class using prototype inheritance.
 	 * 
-	 * @method getClassName
-	 * @memberof WebbyJs
+	 * @method extendClass
+	 * @memberof WObject
 	 * 
-	 * @param {Object} classRef - class reference.
-	 * @param {Object|Array} interfaces - single or array of interfaces.
+	 * @param {Object} base - base class reference.
+	 * 
+	 * @returns {WObject} current instance for chaining.
 	 */
-	extendProto: function(classRef, interfaces) {
-		if (this.getClassName(classRef) !== 'Function') this.throwError('Class must be a function');
-		if (this.getClassName(interfaces) !== 'Array') interfaces = [interfaces];
+	extend: function(base) {
+		if (!base) return this;
+		WebbyJs.validate(base, 'Function');
 		
-		var proto = classRef.prototype, l = interfaces.length;
+		var proto = this.prototype = new base();
+		for (var p in proto) if (proto.hasOwnProperty(p)) delete proto[p];
+		
+		proto.constructor = this;
+		this._w_base = base.prototype;
+		
+		return this;
+	},
+	
+	/**
+	 * Extend this class prototype with methods from interfaces.
+	 * 
+	 * @method implement
+	 * @memberof WObject
+	 * 
+	 * @param {Object|Array} interfaces - single or array of interfaces.
+	 * 
+	 * @returns {WObject} current instance for chaining.
+	 */
+	implement: function(interfaces) {
+		if (!interfaces) return this;
+		if (WebbyJs.classOf(interfaces) !== 'Array') interfaces = [interfaces];
+		
+		var proto = this.prototype, l = interfaces.length;
 		
 		for (var i = 0; i < l; i++) {
-			var iface = interfaces[i], ifaceClass = this.getClassName(iface);
+			var iface = interfaces[i];
 			
-			if (ifaceClass !== 'Object' && ifaceClass !== 'Function') continue;
-			if (ifaceClass === 'Function') iface = iface.prototype;
+			WebbyJs.validate(iface, 'Object, Function');
+			if (WebbyJs.classOf(iface) === 'Function') iface = iface.prototype;
 			
 			for (var p in iface) if (iface.hasOwnProperty(p)) proto[p] = iface[p];
 		}
-	},
-	
-	/**
-	 * Append static methods to class.
-	 * 
-	 * @method addStaticMembers
-	 * @memberof WebbyJs
-	 * 
-	 * @param {Object} classRef - class reference.
-	 * @param {Object} staticMembers - object with static members.
-	 */
-	addStaticMembers: function(classRef, staticMembers) {
-		if (this.getClassName(classRef) !== 'Function') this.throwError('Class must be a function');
-		if (this.getClassName(staticMembers) !== 'Object') this.throwError('Static class members must be passed as object');
 		
-		for (var p in staticMembers) if (staticMembers.hasOwnProperty(p)) classRef[p] = staticMembers[p];
-	},
-	
-	/**
-	 * Create new class.
-	 * 
-	 * @method createClass
-	 * @memberof WebbyJs
-	 * 
-	 * @param {Object} newClass - new class declaration object, like in example below.
-	 * 
-	 * 							  var newClassSample = {
-	 * 								  name: 'ClassName',
-	 * 								  parent: parentClassReference,
-	 * 								  construct: function ClassName(args) { ... },
-	 * 								  proto: { prototype },
-	 * 								  interfaces: [interfaceRferencesArr] || interfaceReference,
-	 * 								  statics: { static members }
-	 * 							  };
-	 */
-	createClass: function(newClass) {
-		//check input object, name and constructor
-		if (this.getClassName(newClass) !== 'Object') this.throwError('New class must be passed as object');
-		if (this.getClassName(newClass.construct) !== 'Function') this.throwError('Constructor must be a function');
-		this.checkNameValidity(newClass.name);
-		
-		//setup constructor
-		newClass.construct._w_className = newClass.name;
-		this[newClass.name] = newClass.construct;
-		this._globals.push(newClass.name);
-		
-		//extend class
-		if (!newClass.parent) newClass.parent = this.BaseWebbyJsClass;
-		this.extendClass(newClass.construct, newClass.parent);
-		
-		//setup static methods, interfaces and prototype
-		if (newClass.statics) this.addStaticMembers(newClass.construct, newClass.statics);
-		if (newClass.interfaces) this.extendProto(newClass.construct, newClass.interfaces);
-		if (newClass.proto) this.extendProto(newClass.construct, newClass.proto);
+		return this;
 	}
-}, true);
-
-/**
- * Base class for all WebbyJs created classes.
- * All created classes are inherited from it.
- * 
- * @class BaseWebbyJsClass
- * @memberof WebbyJs
- */
-WebbyJs.createClass({
-	/**
-	 * Class name.
-	 */
-	name: 'BaseWebbyJsClass',
 	
+/**
+ * Implement WObject prototype.
+ */
+}).implement({
 	/**
-	 * @constructor
+	 * Force to free objects resources from memory.
+	 * 
+	 * Be carefull with this method - it sets all properties
+	 * to null, so object becomes unusable after this action.
+	 * 
+	 * @method free
+	 * @memberof WObject.prototype
+	 * 
+	 * @returns {WObject} current instance for chaining.
 	 */
-	construct: function BaseWebbyJsClass() {
-		//empty constructor
+	free: function() {
+		for (var p in this) if (this.hasOwnProperty(p)) this[p] = null;
+		return this;
 	},
 	
 	/**
-	 * Prototype.
+	 * Get class name of current instance.
+	 * 
+	 * @method className
+	 * @memberof WObject.prototype
+	 * 
+	 * @returns {String} class name of current instance.
 	 */
-	proto: {
-		/**
-		 * Get class name of current instance.
-		 * 
-		 * @method className
-		 * @memberof BaseWebbyJsClass.prototype
-		 * 
-		 * @returns {String} class name of current instance.
-		 */
-		className: function() {
-			return this.constructor._w_className;
-		},
+	className: function() {
+		return this.constructor._w_class;
+	},
+	
+	/**
+	 * Get prototype of current instance.
+	 * 
+	 * @method proto
+	 * @memberof WObject.prototype
+	 * 
+	 * @returns {Object} prototype of current instance.
+	 */
+	proto: function() {
+		return this.constructor.prototype;
+	},
+	
+	/**
+	 * Get base class of current instance.
+	 * 
+	 * @method baseClass
+	 * @memberof WObject.prototype
+	 * 
+	 * @returns {WObject} base class of current instance or undefined if no base class.
+	 */
+	baseClass: function() {
+		return this.constructor._w_base;
+	},
+	
+	/**
+	 * Default toString method.
+	 * 
+	 * @method toString
+	 * @memberof WObject.prototype
+	 * 
+	 * @returns {String} current instance as string.
+	 */
+	toString: function() {
+		return '[WebbyJs.' + this.constructor._w_class + ']';
+	},
+	
+	/**
+	 * Get current instance as Object.
+	 * 
+	 * @method toObject
+	 * @memberof WObject.prototype
+	 * 
+	 * @returns {Object} current instance as object.
+	 */
+	toObject: function() {
+		var obj = {};
+		for (var p in this) if (this.hasOwnProperty(p)) obj[p] = this[p];
+		return obj;
+	},
+	
+	/**
+	 * Dump current instance to browser console.
+	 * 
+	 * @method dump
+	 * @memberof WObject.prototype
+	 * 
+	 * @returns {WObject} current instance for chaining.
+	 */
+	dump: function() {
+		console.log(this.toString());
 		
-		/**
-		 * Get prototype of current instance.
-		 * 
-		 * @method getPrototype
-		 * @memberof BaseWebbyJsClass.prototype
-		 * 
-		 * @returns {Object} prototype of current instance.
-		 */
-		getPrototype: function() {
-			return this.constructor.prototype;
-		},
-		
-		/**
-		 * Get all properties of current instance.
-		 * 
-		 * @method properties
-		 * @memberof BaseWebbyJsClass.prototype
-		 * 
-		 * @returns {Object} properties as object.
-		 */
-		properties: function() {
-			var props = {};
-			
-			for (var p in this) {
-				if (this.hasOwnProperty(p)) props[p] = this[p];
-			}
-			
-			return props;
-		},
-		
-		/**
-		 * Get current instance methods.
-		 * 
-		 * @method methods
-		 * @memberof BaseWebbyJsClass.prototype
-		 * 
-		 * @returns {Object} methods as object.
-		 */
-		methods: function() {
-			var methods = {}, proto = this.constructor.prototype;
-			
-			for (var m in proto) {
-				if (proto.hasOwnProperty(m)) methods[m] = proto[m];
-			}
-			
-			delete methods.constructor;
-			return methods;
-		},
-		
-		/**
-		 * Default toString method.
-		 * 
-		 * @method toString
-		 * @memberof BaseWebbyJsClass.prototype
-		 * 
-		 * @returns {String} current instance as string.
-		 */
-		toString: function() {
-			return '[WebbyJs.' + this.className() + ']';
-		},
-		
-		/**
-		 * Default valueOf method.
-		 * 
-		 * @method valueOf
-		 * @memberof BaseWebbyJsClass.prototype
-		 * 
-		 * @returns {String} value of current instance.
-		 */
-		valueOf: function() {
-			return this.className();
-		},
-		
-		/**
-		 * Convert current instance to object.
-		 * 
-		 * @method toObject
-		 * @memberof BaseWebbyJsClass.prototype
-		 * 
-		 * @returns {Object} current instance as object.
-		 */
-		toObject: function() {
-			return {
-				name: this.className(),
-				properties: this.properties(),
-				methods: this.methods()
-			};
-		},
-		
-		/**
-		 * Dump current instance to browser console.
-		 * 
-		 * @method dump
-		 * @memberof BaseWebbyJsClass.prototype
-		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
-		 */
-		dump: function() {
-			console.log(this.toString());
-			
-			for (var p in this) {
-				console.log(p + ":" + WebbyJs.getClassName(this[p]) + " = " + this[p]);
-			}
-			
-			return this;
-		},
-		
-		/**
-		 * Mixin object members to current instance.
-		 * 
-		 * @method mixin
-		 * @memberof BaseWebbyJsClass.prototype
-		 * 
-		 * @param {Object} obj - source object reference.
-		 * @param {Boolean} safe - safety flag, if true - existing members are not overwritten.
-		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
-		 */
-		mixin: function(obj, safe) {
-			var p;
-			
-			if (safe) {
-				for (p in obj) if (!this[p] && obj.hasOwnProperty(p)) this[p] = obj[p];
-			} else {
-				for (p in obj) if (obj.hasOwnProperty(p)) this[p] = obj[p];
-			}
-			
-			return this;
-		},
-		
-		/**
-		 * Clone current instance.
-		 * 
-		 * All non-primitive members are stored as references, so they must have clone method
-		 * to clone themselves. Otherwise, they remaine shared behind original and cloned instances.
-		 * 
-		 * @method clone
-		 * @memberof BaseWebbyJsClass.prototype
-		 * 
-		 * @returns {BaseWebbyJsClass} cloned instance.
-		 */
-		clone: function() {
-			var clone = new this.constructor();
-			
-			for (var p in this) if (this.hasOwnProperty(p)) {
-				var o = this[p];
-				
-				if (o.clone) clone[p] = o.clone(); else {
-					clone[p] = (typeof o === 'object' ? WebbyJs.BaseWebbyJsClass.prototype.clone.call(o) : o);
-				}
-			}
-			
-			return clone;
-		},
-		
-		/**
-		 * Invoke method with 'this' reference to current instance.
-		 * 
-		 * @method invoke
-		 * @memberof BaseWebbyJsClass.prototype
-		 * 
-		 * @param {Function} method - method to invoke.
-		 * @param {Array} args - method arguments.
-		 * 
-		 * @returns {BaseWebbyJsClass} current instance for chaining.
-		 */
-		invoke: function(method, args) {
-			method.apply(this, args);
-			return this;
+		for (var p in this) {
+			console.log(p + ":" + WebbyJs.getClassName(this[p]) + " = " + this[p]);
 		}
+		
+		return this;
+	},
+	
+	/**
+	 * Mix object members to current instance.
+	 * 
+	 * @method mix
+	 * @memberof WObject.prototype
+	 * 
+	 * @param {Object} obj - source object reference.
+	 * @param {Boolean} safe - safety flag, if true - existing members are not overwritten.
+	 * 
+	 * @returns {WObject} current instance for chaining.
+	 */
+	mix: function(obj, safe) {
+		var p;
+		
+		if (safe) {
+			for (p in obj) if (!this[p] && obj.hasOwnProperty(p)) this[p] = obj[p];
+		} else {
+			for (p in obj) if (obj.hasOwnProperty(p)) this[p] = obj[p];
+		}
+		
+		return this;
+	},
+	
+	/**
+	 * Clone current instance.
+	 * 
+	 * All non-primitive members are stored as references, so they must have clone method
+	 * to clone themselves. Otherwise, they stay shared behind original and cloned instances.
+	 * 
+	 * @method clone
+	 * @memberof WObject.prototype
+	 * 
+	 * @returns {WObject} cloned instance.
+	 */
+	clone: function() {
+		var cloned = new this.constructor(), clone = WebbyJs.WObject.prototype.clone;
+		
+		for (var p in this) if (this.hasOwnProperty(p)) {
+			var o = this[p];
+			
+			if (o.clone) cloned[p] = o.clone(); else {
+				cloned[p] = (typeof o === 'object' ? clone.call(o) : o);
+			}
+		}
+		
+		return cloned;
+	},
+	
+	/**
+	 * Invoke method with 'this' reference to current instance.
+	 * 
+	 * @method invoke
+	 * @memberof WObject.prototype
+	 * 
+	 * @param {Function} method - method to invoke.
+	 * @param {Array} args - method arguments.
+	 * 
+	 * @returns {WObject} current instance for chaining.
+	 */
+	invoke: function(method, args) {
+		method.apply(this, args);
+		return this;
 	}
 });
 /**
  * @file WebbyJs events interface and basic event types.
  * @author Olegos <olegos83@yandex.ru>
  */
-WebbyJs.import({
+WebbyJs.define({
 	/**
 	 * Mouse event types.
 	 * 
@@ -506,17 +596,19 @@ WebbyJs.import({
  * EventListener interface provides events processing support.
  * 
  * To add events support, inherit or extend class with EventListener
- * and declare '_events' object in its constructor.
+ * and declare '_handlers' object in its constructor.
  * 
  * @class EventListener
+ * @extends WObject
+ * 
  * @memberof WebbyJs
  */
-WebbyJs.createClass({
+WebbyJs.Class({
 	/**
 	 * Class name.
 	 */
 	name: 'EventListener',
-
+	
 	/**
 	 * @constructor
 	 */
@@ -529,7 +621,7 @@ WebbyJs.createClass({
 		 * 
 		 * @private
 		 */
-		this._events = {};
+		this._handlers = {};
 	},
 	
 	/**
@@ -548,10 +640,10 @@ WebbyJs.createClass({
 		 * @returns {EventListener} current instance for chaining.
 		 */
 		addEventListener: function(type, handler) {
-			if (!this._events[type]) {
-				this._events[type] = [handler];
+			if (!this._handlers[type]) {
+				this._handlers[type] = [handler];
 			} else {
-				var e = this._events[type], l = e.length, i;
+				var e = this._handlers[type], l = e.length, i;
 				
 				for (i = 0; i < l; i++) {
 					if (e[i] == handler) return this;
@@ -575,13 +667,13 @@ WebbyJs.createClass({
 		 * @returns {EventListener} current instance for chaining.
 		 */
 		removeEventListener: function(type, handler) {
-		    if (!handler || !this._events[type]) {
-		    	this._events[type] = [];
+		    if (!handler || !this._handlers[type]) {
+		    	this._handlers[type] = [];
 		    } else {
-		    	var e = this._events[type], l = e.length, i;
+		    	var e = this._handlers[type], l = e.length, i;
 		    	
 		    	for (i = 0; i < l; i++) {
-		    		if (e[i] == handler) { e.splice(i, 1); break; }
+		    		if (e[i] == handler) { e.splice(i, 1); return this; }
 		    	}
 		    }
 		    
@@ -599,12 +691,25 @@ WebbyJs.createClass({
 		 * @returns {EventListener} current instance for chaining.
 		 */
 		processEvent: function(evt) {
-		    if (this._events[evt.type]) {
-		    	var e = this._events[evt.type], l = e.length, i;
+		    if (this._handlers[evt.type]) {
+		    	var e = this._handlers[evt.type], l = e.length, i;
 		    	for (i = 0; i < l; i++) e[i].call(this, evt);
 		    }
 		    
 		    return this;
+		},
+		
+		/**
+		 * Clear all event handlers and reset EventListener to default state.
+		 * 
+		 * @method resetEvents
+		 * @memberof EventListener.prototype
+		 * 
+		 * @returns {EventListener} current instance for chaining.
+		 */
+		resetEvents: function(evt) {
+			this._handlers = {};
+			return this;
 		}
 	}
 });
@@ -612,7 +717,7 @@ WebbyJs.createClass({
  * @file A wrapper for array to manage event driven data.
  * @author Olegos <olegos83@yandex.ru>
  */
-WebbyJs.import({
+WebbyJs.define({
 	/**
 	 * Data event types.
 	 * 
@@ -634,15 +739,20 @@ WebbyJs.import({
  * 
  * Any class may be inherited or extend DataProvider to support data events.
  * In that case, EventListener is applied to that class too. Don`t forget to
- * declare 'dp_storage' array in class constructor.
+ * declare 'dp_storage' array in class constructor and you can alias 'dp_storage'
+ * with more convinient name, 'points' or 'children' for example:
+ * 
+ * 		this.children = this.dp_storage = [];
  * 
  * Event support can slow down items iteration, so you can directly use 'dp_storage' array
  * to get more iteration speed, but in that case, events must be processed manually.
  * 
  * @class DataProvider
+ * @extends WObject
+ * 
  * @memberof WebbyJs
  */
-WebbyJs.createClass({
+WebbyJs.Class({
 	/**
 	 * Class name.
 	 */
@@ -653,6 +763,16 @@ WebbyJs.createClass({
 	 */
 	construct: function DataProvider() {
 		/**
+		 * Events hash, containing arrays of functions by event type as key.
+		 * 
+		 * @memberof EventListener
+		 * @type {Object}
+		 * 
+		 * @private
+		 */
+		this._handlers = {};
+		
+		/**
 		 * Data array.
 		 * 
 		 * @memberof DataProvider
@@ -660,6 +780,11 @@ WebbyJs.createClass({
 		 */
 		this.dp_storage = [];
 	},
+	
+	/**
+	 * Interfaces.
+	 */
+	implement: WebbyJs.EventListener,
 	
 	/**
 	 * Prototype.
@@ -845,7 +970,7 @@ WebbyJs.createClass({
 		 * 
 		 * @param {Object} item - item reference.
 		 * 
-		 * @returns {Boolean} true, if item is in data provider or false othervise.
+		 * @returns {Boolean} true, if item is in data provider or false otherwise.
 		 */
 		contains: function(item) {
 			var data = this.dp_storage, l = data.length, i;
@@ -915,10 +1040,5 @@ WebbyJs.createClass({
 			
 			return this;
 		}
-	},
-	
-	/**
-	 * Interfaces.
-	 */
-	interfaces: WebbyJs.EventListener
+	}
 });

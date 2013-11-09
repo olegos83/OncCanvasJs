@@ -16,12 +16,6 @@
 				<file name="EventListener.js"/>
 				<file name="DataProvider.js"/>
 			</filelist>
-			
-			<filelist dir="Source/Gl/Geometry/">
-				<file name="Matrix.js"/>
-				<file name="Point.js"/>
-				<file name="Geom.js"/>
-			</filelist>
 		</concat>
 	</target>
 
