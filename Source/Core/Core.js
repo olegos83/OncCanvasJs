@@ -4,11 +4,16 @@
  */
 
 /**
- * WebbyJs namespace and core methods.
+ * Name conflicts test.
+ */
+if (window.WebbyJs || window.webbyjs || window._w_) throw new Error('WebbyJs initialization failed - name conflict');
+
+/**
+ * WebbyJs namespace declaration and basic methods implementation.
  * 
  * @namespace
  */
-var WebbyJs = {
+var WebbyJs = window.webbyjs = window._w_ = {
 	/**
 	 * WebbyJs short description.
 	 * 
@@ -24,16 +29,6 @@ var WebbyJs = {
 		description: 'Multipurpose web frontend framework',
 		author: 'OlegoS',
 		license: 'MIT'
-	},
-	
-	/**
-	 * Show about info.
-	 * 
-	 * @method about
-	 * @memberof WebbyJs
-	 */
-	about: function() {
-		console.log(this._about);
 	},
 	
 	/**
@@ -57,19 +52,7 @@ var WebbyJs = {
 	_un: 0,
 	
 	/**
-	 * Get uniq integer number.
-	 * 
-	 * @method uniqNumber
-	 * @memberof WebbyJs
-	 * 
-	 * @returns {Number} uniq number.
-	 */
-	uniqNumber: function() {
-		return this._un++;
-	},
-	
-	/**
-	 * Browser information.
+	 * Browser short name.
 	 * 
 	 * @memberof WebbyJs
 	 * @type {String}
@@ -83,11 +66,32 @@ var WebbyJs = {
 		if (nav.indexOf('chrome') != -1) return 'chrome';
 		if (nav.indexOf('msie') != -1) return 'ie';
 		
-		return 'unknown';
+		return nav;
 	}() ),
 	
 	/**
-	 * Throw an error exeption.
+	 * User defined log provider for WebbyJs messages.
+	 * It must be an object with 'log' method.
+	 * 
+	 * @memberof WebbyJs
+	 * @type {Object}
+	 */
+	logProvider: { native: true, log: function(msg) { console.log(msg); } },
+	
+	/**
+	 * Log message, using logProvider.
+	 * 
+	 * @method log
+	 * @memberof WebbyJs
+	 * 
+	 * @param {Object} msg - message.
+	 */
+	log: function(msg) {
+		this.logProvider.log(msg);
+	},
+	
+	/**
+	 * Throw an error exeption and log it, but only to custom logProvider.
 	 * 
 	 * @method error
 	 * @memberof WebbyJs
@@ -98,11 +102,13 @@ var WebbyJs = {
 	error: function(msg, name) {
 		var err = new Error(msg || 'Unknown error');
 		err.name = name || 'WebbyJsError';
+		
+		if (!this.logProvider.native) this.log(err.name + ': ' + err.message);
 		throw err;
 	},
 	
 	/**
-	 * Log warning to console.
+	 * Log WebbyJs warning.
 	 * 
 	 * @method warning
 	 * @memberof WebbyJs
@@ -111,22 +117,29 @@ var WebbyJs = {
 	 * @param {String} name - warning name.
 	 */
 	warning: function(msg, name) {
-		console.log( (name || 'WebbyJsWarning') + ': ' + (msg || 'Unknown warning') );
+		this.log( (name || 'WebbyJsWarning') + ': ' + (msg || 'Unknown warning') );
 	},
 	
 	/**
-	 * Get class name to check class for any instance.
+	 * Show about info.
 	 * 
-	 * @method getClassName
+	 * @method about
+	 * @memberof WebbyJs
+	 */
+	about: function() {
+		this.log(this._about);
+	},
+	
+	/**
+	 * Get uniq integer number.
+	 * 
+	 * @method uniqNumber
 	 * @memberof WebbyJs
 	 * 
-	 * @param {Object} obj - object.
-	 * 
-	 * @returns {String} objects class name or '' for undefined or null obj.
+	 * @returns {Number} uniq number.
 	 */
-	getClassName: function(obj) {
-		if (obj === null || typeof obj === 'undefined') return '';
-		return obj.constructor.name || obj.constructor._w_class;
+	uniqNumber: function() {
+		return this._un++;
 	},
 	
 	/**
@@ -143,36 +156,50 @@ var WebbyJs = {
 	},
 	
 	/**
-	 * Check name validity inside WebbyJs and throw error for invalid.
+	 * Get class name for any instance.
 	 * 
-	 * @method validateName
-	 * @memberof WebbyJs
-	 * 
-	 * @param {String} name - name to check.
-	 */
-	validateName: function(name) {
-		if (name === '' || this.getClassName(name) !== 'String') this.error('Impossible to create WebbyJs.' + name);
-		if (this[name]) this.error('WebbyJs.' + name + ' allready exists');
-	},
-	
-	/**
-	 * Check class instance validity among allowed and throw error for invalid.
-	 * 
-	 * @method validateClass
+	 * @method classOf
 	 * @memberof WebbyJs
 	 * 
 	 * @param {Object} obj - object.
-	 * @param {String} allowed - string with allowed class names.
+	 * 
+	 * @returns {String} objects class name or '' for undefined or null obj.
 	 */
-	validateClass: function(obj, allowed) {
-		var p = this.getClassName(obj) || 'null';
-		if (allowed.indexOf(p) == -1) this.error('Invalid argument type, ' + p);
+	classOf: function(obj) {
+		if (obj === null || typeof obj === 'undefined') return '';
+		return obj.constructor.name || obj.constructor._w_class;
 	},
 	
 	/**
-	 * Define member of WebbyJs. Each member is also cached gobaly with
-	 * '_w_' prefix to avoid namespace referencing on class instantiating
-	 * in other classes.
+	 * WebbyJs name and class validation. Throws an error for invalid result.
+	 * If 'allowed' argument present - it is a class validation, if not - name conflict test.
+	 * 
+	 * @method validate
+	 * @memberof WebbyJs
+	 * 
+	 * @param {String|Object} v - name to check or instance to validate class.
+	 * @param {String} allowed - allowed classes, for example 'Function, Object, String'.
+	 * 
+	 * @returns {String} validated name or class name.
+	 */
+	validate: function(v, allowed) {
+		//class validation
+		if (allowed) {
+			v = this.getClassName(v) || 'null';
+			if (allowed.indexOf(v) == -1) this.error('Invalid argument type, ' + v);
+			
+		//name validation
+		} else {
+			if (v === '' || this.classOf(v) !== 'String') this.error('Impossible to create WebbyJs.' + v);
+			if (this[v]) this.error('WebbyJs.' + v + ' allready exists');
+		}
+		
+		return v;
+	},
+	
+	/**
+	 * Define member of WebbyJs. Each member is also cached globaly with
+	 * '_w_' prefix to speed up class instantiating inside another lib class.
 	 * 
 	 * @method define
 	 * @memberof WebbyJs
@@ -196,7 +223,7 @@ var WebbyJs = {
 				member._w_class = name;
 			}
 			
-			if (options.exportable !== false) this._exportable[name] = member;
+			if (options.noExport) this._exportable[name] = member;
 		} else {
 			this._exportable[name] = member;
 		}
@@ -206,35 +233,21 @@ var WebbyJs = {
 	},
 	
 	/**
-	 * Import members to WebbyJs as { name: member, ... , name: member }.
-	 * 
-	 * @method import
-	 * @memberof WebbyJs
-	 * 
-	 * @param {Object} members - members object reference.
-	 * @param {Object} options - define options.
-	 */
-	import: function(members, options) {
-		this.validateClass(members, 'Object');
-		for (var name in members) if (members.hasOwnProperty(name)) this.define(name, members[name], options);
-	},
-	
-	/**
-	 * Define new WebbyJs class, inherited from WObject.
+	 * Define new WebbyJs class.
 	 * 
 	 * @method Class
 	 * @memberof WebbyJs
 	 * 
-	 * @param {Object} options - class definition options, like in example below.
+	 * @param {Object} options - class definition options.
 	 * 
-	 * 							  var options = {
-	 * 								  name: 'ClassName',
-	 * 								  extend: parentClassReference,
-	 * 								  construct: function ClassName(args) { ... },
-	 * 								  proto: { prototype },
-	 * 								  implement: [interfaceRferencesArr] || interfaceReference,
-	 * 								  statics: { static members }
-	 * 							  };
+	 * var optionsExample = {
+	 *    name: 'ClassName',
+	 *    extend: parentClassReference,
+	 * 	  construct: function ClassName(args) { ... },
+	 * 	  proto: { prototype },
+	 * 	  implement: [interfaceRferencesArr] || interfaceReference,
+	 * 	  statics: { static members }
+	 * };
 	 * 
 	 * @returns {WObject} new defined class.
 	 */
@@ -249,44 +262,25 @@ var WebbyJs = {
 	},
 	
 	/**
-	 * Export WebbyJs members to global scope to make 'WebbyJs.Member' available as 'Member'.
+	 * Export WebbyJs members to global object - 'window' in browser.
 	 * 
-	 * @method toGlobal
+	 * @method export
 	 * @memberof WebbyJs
 	 * 
 	 * @param {String} name - member name. If ommited - all members are extracted.
-	 * @param {Object} global - global object, window by default.
 	 */
-	toGlobal: function(name, global) {
-		if (!global) global = window;
-		
+	export: function(name) {
 		var exportable = this._exportable;
 		
 		if (name) {
 			if (!exportable[name]) this.error(name + " does not exist or can not be exported to global scope");
-			if (global[name]) this.error(name + " allready exists in global scope");
-			global[name] = this[name];
+			if (window[name]) this.error(name + " allready exists in global scope");
+			window[name] = this[name];
 		} else {
 			for (name in exportable) if (exportable.hasOwnProperty(name)) {
-				if (global[name]) this.error(name + " allready exists in global scope");
-				global[name] = this[name];
+				if (window[name]) this.error(name + " allready exists in global scope");
+				window[name] = this[name];
 			}
 		}
-	},
-	
-	/**
-	 * Initialize WebbyJs.
-	 * 
-	 * @method init
-	 * @memberof WebbyJs
-	 */
-	init: function() {
-		//init WebbyJs shortcut
-		window._w_ = this;
 	}
 };
-
-/**
- * Initialize WebbyJs core.
- */
-WebbyJs.init();
