@@ -485,7 +485,7 @@ WebbyJs.WObject.statics({
 		console.log(this.toString());
 		
 		for (var p in this) {
-			console.log(p + ":" + WebbyJs.getClassName(this[p]) + " = " + this[p]);
+			console.log(p + ":" + WebbyJs.classOf(this[p]) + " = " + this[p]);
 		}
 		
 		return this;

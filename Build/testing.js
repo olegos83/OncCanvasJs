@@ -25,8 +25,10 @@ WebbyJs.Class({
 	name: 'TTT',
 	
 	construct: function TTT() {
-		
-	}
+		this.ttt1 = 'tt1';
+	},
+	
+	extend: WebbyJs.TestClass
 });
 
 //test
@@ -35,5 +37,9 @@ var Test = {
 		_w_.export();
 		_w_.log(TTT);
 		_w_.log(webbyjs);
+		
+		var ttt = new TTT();
+		console.log(ttt);
+		console.log(TTT.create());
 	}
 };
