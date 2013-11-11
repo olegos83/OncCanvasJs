@@ -1,5 +1,5 @@
 //WebbyJs class tests
-WebbyJs.createClass({
+WebbyJs.Class({
 	name:'TestClass',
 	
 	construct:function TestClass(x, y, z) {
@@ -21,27 +21,19 @@ WebbyJs.createClass({
 	}
 });
 
-WebbyJs.createClass({name: 'CloneTester', construct: function CloneTester() {
-	this.test = 'original';
-}, proto: {
-	change: function(x) {
-		this.test = x;
+WebbyJs.Class({
+	name: 'TTT',
+	
+	construct: function TTT() {
+		
 	}
-}});
+});
 
 //test
 var Test = {
 	start: function() {
-		var dd2 = new WebbyJs.TestClass(111, 'old', new WebbyJs.CloneTester());
-		
-		var dd2_clone = dd2.clone();
-		
-		dd2_clone.prop1 = 222;
-		dd2_clone.prop2 = 'new';
-		dd2_clone.prop3.change('cloned');
-		dd2_clone.arrMember[0] = 777;
-		dd2_clone.objMember.xxx = 'xxx';
-		
-		console.log(dd2, dd2_clone);
+		_w_.export();
+		_w_.log(TTT);
+		_w_.log(webbyjs);
 	}
 };

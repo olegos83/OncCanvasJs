@@ -9,7 +9,7 @@ WebbyJs.define({
 	 * @memberof WebbyJs
 	 * @enum {String}
 	 */
-	MouseEvent: {
+	Mouse: {
 	    CLICK: 'click',
 	    DBLCLICK: 'dblclick',
 	    DOWN: 'mousedown',
@@ -28,9 +28,9 @@ WebbyJs.define({
 	 * @memberof WebbyJs
 	 * @enum {String}
 	 */
-	KeyEvent: {
-	    KEYDOWN: 'keydown',
-	    KEYUP: 'keyup'
+	Keyboard: {
+	    DOWN: 'keydown',
+	    UP: 'keyup'
 	}
 });
 

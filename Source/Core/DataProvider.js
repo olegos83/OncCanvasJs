@@ -9,7 +9,7 @@ WebbyJs.define({
 	 * @memberof WebbyJs
 	 * @enum {String}
 	 */
-	DataEvent: {
+	Data: {
 		ADD: 'add',
 	    REMOVE: 'remove',
 	    REPLACE: 'replace',

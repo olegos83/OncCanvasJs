@@ -44,12 +44,10 @@ WebbyJs.WObject.statics({
 	 * @method create
 	 * @memberof WObject
 	 * 
-	 * @param {Array} args - constructor arguments.
-	 * 
 	 * @returns {WObject} created instance.
 	 */
-	create: function(args) {
-		return new this(args);
+	create: function() {
+		return new this();
 	},
 	
 	/**

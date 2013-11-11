@@ -183,7 +183,7 @@ var WebbyJs = window.webbyjs = window._w_ = {
 	validate: function(v, allowed) {
 		//class validation
 		if (allowed) {
-			v = this.getClassName(v) || 'null';
+			v = this.classOf(v) || 'null';
 			if (allowed.indexOf(v) == -1) this.error('Invalid class - ' + v + ', expected ' + allowed);
 			
 		//name validation
@@ -207,10 +207,10 @@ var WebbyJs = window.webbyjs = window._w_ = {
 		this.validate(members, 'Object');
 		if (options) this.validate(options, 'Object');
 		
-		var exportable = null, newClass = false;
+		var exportable = this._exportable, newClass = false;
 		
 		if (options) {
-			if (!options.noExport) exportable = this._exportable;
+			if (options.noExport) exportable = null;
 			if (options.newClass) newClass = true;
 		}
 		
@@ -251,6 +251,7 @@ var WebbyJs = window.webbyjs = window._w_ = {
 	 */
 	Class: function(options) {
 		this.validate(options, 'Object');
+		this.validate(options.name);
 		
 		var members = {}, opt = { newClass: true, noExport: options.noExport };
 		members[options.name] = options.construct;
@@ -275,13 +276,13 @@ var WebbyJs = window.webbyjs = window._w_ = {
 		var exportable = this._exportable;
 		
 		if (name) {
-			if (!exportable[name]) this.error(name + " does not exist or can not be exported");
-			if (window[name]) this.error(name + " allready exists in global object");
+			if (!exportable[name]) this.error('WebbyJs.' + name + ' does not exist or can not be exported');
+			if (window[name]) this.error(name + ' allready exists in global object');
 			
 			window[name] = this[name];
 		} else {
 			for (name in exportable) if (exportable.hasOwnProperty(name)) {
-				if (window[name]) this.error(name + " allready exists in global object");
+				if (window[name]) this.error(name + ' allready exists in global object');
 				window[name] = this[name];
 			}
 		}
