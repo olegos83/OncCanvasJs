@@ -76,7 +76,7 @@ WebbyJs.Class({
 	 */
 	proto: {
 		/**
-		 * Append new item to the end and trigger DataEvent.ADD event.
+		 * Append new item to the end and trigger Data.ADD event.
 		 * 
 		 * @method append
 		 * @memberof DataProvider.prototype
@@ -87,13 +87,13 @@ WebbyJs.Class({
 		 */
 		append: function(item) {
 			this.dp_storage.push(item);
-			this.processEvent({ item: item, type: DataEvent.ADD });
+			this.processEvent({ item: item, type: _w_Data.ADD });
 			
 			return this;
 		},
 		
 		/**
-		 * Insert new item to specified index position and trigger DataEvent.ADD event.
+		 * Insert new item to specified index position and trigger Data.ADD event.
 		 * 
 		 * @method appendAt
 		 * @memberof DataProvider.prototype
@@ -105,13 +105,13 @@ WebbyJs.Class({
 		 */
 		appendAt: function(item, index) {
 		    this.dp_storage.splice(index, 0, item);
-		    this.processEvent({ item: item, index: index, type: WebbyJs.DataEvent.ADD });
+		    this.processEvent({ item: item, index: index, type: _w_Data.ADD });
 		    
 		    return this;
 		},
 		
 		/**
-		 * Remove item from data and trigger DataEvent.REMOVE event.
+		 * Remove item from data and trigger Data.REMOVE event.
 		 * 
 		 * @method remove
 		 * @memberof DataProvider.prototype
@@ -125,7 +125,7 @@ WebbyJs.Class({
 			
 			for (i = 0; i < l; i++) if (data[i] == item) {
 				data.splice(i, 1);
-				this.processEvent({ item: item, type: WebbyJs.DataEvent.REMOVE });
+				this.processEvent({ item: item, type: _w_Data.REMOVE });
 				
 				return this;
 			}
@@ -134,7 +134,7 @@ WebbyJs.Class({
 		},
 		
 		/**
-		 * Remove item from data at specified index position and trigger DataEvent.REMOVE event.
+		 * Remove item from data at specified index position and trigger Data.REMOVE event.
 		 * 
 		 * @method removeAt
 		 * @memberof DataProvider.prototype
@@ -144,7 +144,7 @@ WebbyJs.Class({
 		 * @returns {DataProvider} current instance for chaining.
 		 */
 		removeAt: function(index) {
-			var evt = { item: this.dp_storage[index], index: index, type: WebbyJs.DataEvent.REMOVE };
+			var evt = { item: this.dp_storage[index], index: index, type: _w_Data.REMOVE };
 			
 		    this.dp_storage.splice(index, 1);
 		    this.processEvent(evt);
@@ -153,7 +153,7 @@ WebbyJs.Class({
 		},
 		
 		/**
-		 * Replace item by another item and trigger DataEvent.REPLACE event.
+		 * Replace item by another item and trigger Data.REPLACE event.
 		 * 
 		 * @method replace
 		 * @memberof DataProvider.prototype
@@ -168,7 +168,7 @@ WebbyJs.Class({
 			
 			for (i = 0; i < l; i++) if (data[i] == item) {
 				data[i] = newItem;
-				this.processEvent({ oldItem: item, newItem: newItem, type: WebbyJs.DataEvent.REPLACE });
+				this.processEvent({ oldItem: item, newItem: newItem, type: _w_Data.REPLACE });
 				
 				return this;
 			}
@@ -177,7 +177,7 @@ WebbyJs.Class({
 		},
 		
 		/**
-		 * Replace item by another item at specified index position and trigger DataEvent.REPLACE event.
+		 * Replace item by another item at specified index position and trigger Data.REPLACE event.
 		 * 
 		 * @method replaceAt
 		 * @memberof DataProvider.prototype
@@ -188,7 +188,7 @@ WebbyJs.Class({
 		 * @returns {DataProvider} current instance for chaining.
 		 */
 		replaceAt: function(index, newItem) {
-			var evt = { oldItem: this.dp_storage[index], newItem: newItem, index: index, type: WebbyJs.DataEvent.REPLACE };
+			var evt = { oldItem: this.dp_storage[index], newItem: newItem, index: index, type: _w_Data.REPLACE };
 			
 		    this.dp_storage[index] = newItem;
 		    this.processEvent(evt);
@@ -197,7 +197,7 @@ WebbyJs.Class({
 		},
 		
 		/**
-		 * Remove all data and trigger DataEvent.CLEAR event.
+		 * Remove all data and trigger Data.CLEAR event.
 		 * 
 		 * @method clear
 		 * @memberof DataProvider.prototype
@@ -205,7 +205,7 @@ WebbyJs.Class({
 		 * @returns {DataProvider} current instance for chaining.
 		 */
 		clear: function() {
-			var evt = { data: [].concat(this.dp_storage), type: WebbyJs.DataEvent.CLEAR };
+			var evt = { data: [].concat(this.dp_storage), type: _w_Data.CLEAR };
 			
 		    this.dp_storage.length = 0;
 		    this.processEvent(evt);
@@ -268,7 +268,7 @@ WebbyJs.Class({
 		},
 		
 		/**
-		 * Change item index position and trigger DataEvent.CHANGE event.
+		 * Change item index position and trigger Data.CHANGE event.
 		 * 
 		 * @method setItemIndex
 		 * @memberof DataProvider.prototype
@@ -285,7 +285,7 @@ WebbyJs.Class({
 				data.splice(i, 1);
 			    data.splice(index, 0, item);
 			    
-			    this.processEvent({ item: item, oldIndex: i, newIndex: index, type: WebbyJs.DataEvent.CHANGE });
+			    this.processEvent({ item: item, oldIndex: i, newIndex: index, type: _w_Data.CHANGE });
 			    return this;
 		    }
 			
