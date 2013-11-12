@@ -106,6 +106,46 @@ WebbyJs.WObject.statics({
  */
 }).implement({
 	/**
+	 * Set this object properties equal to source object properties.
+	 * 
+	 * All non-primitive properties remain shared by reference between
+	 * this and source objects.
+	 * 
+	 * @method set
+	 * @memberof WObject.prototype
+	 * 
+	 * @param {WObject} src - source object.
+	 * 
+	 * @returns {WObject} current instance for chaining.
+	 */
+	set: function(src) {
+		for (var p in src) if (this.hasOwnProperty(p)) this[p] = src[p];
+		return this;
+	},
+	
+	/**
+	 * Check if this object is equal to source object by class and properties.
+	 * 
+	 * @method isEqual
+	 * @memberof WObject.prototype
+	 * 
+	 * @param {WObject} src - source object.
+	 * 
+	 * @returns {Boolean} true if this is equal to source or false otherwise.
+	 */
+	isEqual: function(src) {
+		if (this.constructor._w_class != src.constructor._w_class) return false;
+		
+		for (var p in this) {
+			if (this.hasOwnProperty(p) && src.hasOwnProperty(p)) {
+				if (this[p] != src[p]) return false;
+			} else return false;
+		}
+		
+		return true;
+	},
+	
+	/**
 	 * Reset all properties to their default values.
 	 * This is basic reset implementation. It resets:
 	 * 
@@ -186,12 +226,12 @@ WebbyJs.WObject.statics({
 	/**
 	 * Get base class of current instance.
 	 * 
-	 * @method baseClass
+	 * @method base
 	 * @memberof WObject.prototype
 	 * 
 	 * @returns {WObject} base class of current instance or undefined if no base class.
 	 */
-	baseClass: function() {
+	base: function() {
 		return this.constructor._w_base;
 	},
 	
