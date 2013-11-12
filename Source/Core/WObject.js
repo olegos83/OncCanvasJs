@@ -184,6 +184,80 @@ WebbyJs.WObject.statics({
 	},
 	
 	/**
+	 * Get/Set current instance in XML format.
+	 * 
+	 * @method xml
+	 * @memberof WObject.prototype
+	 * 
+	 * @param {String} data - XML source string.
+	 * 
+	 * @returns {WObject|String} XML string or current instance for chaining.
+	 */
+	xml: function(data) {
+		if (data) {
+			return this;
+		}
+		
+		for (var p in this) if (this.hasOwnProperty(p)) {
+			
+		}
+	},
+	
+	/**
+	 * Get/Set current instance in JSON format.
+	 * 
+	 * @method json
+	 * @memberof WObject.prototype
+	 * 
+	 * @param {String} data - JSON source string.
+	 * 
+	 * @returns {WObject|String} JSON string or current instance for chaining.
+	 */
+	json: function(data) {
+		if (data) {
+			return this;
+		}
+		
+		data = '{';
+		
+		var json = this.json, arrToJson = function(arr) {
+			var tmp = '[';
+			
+			for (var i = 0, l = arr.length; i < l; i++) {
+				var v = arr[i], t = WebbyJs.classOf(v);
+				
+				if (t == 'Function') continue;
+				if (t == 'Array') v = arrToJson(v);
+				
+				if (v.json) v = v.json(); else {
+					v = (t == 'Object' ? json.call(v) : '"' + v + '"');
+				}
+				
+				if (tmp.length > 1) tmp += ',';
+				tmp += v;
+			}
+			
+			return tmp + ']';
+		};
+		
+		for (var p in this) if (this.hasOwnProperty(p)) {
+			var val = this[p], type = WebbyJs.classOf(val);
+			
+			if (type == 'Function') continue;
+			if (type == 'Array') val = arrToJson(val);
+			
+			if (val.json) val = val.json(); else {
+				val = (type == 'Object' ? json.call(val) : '"' + val + '"');
+			}
+			
+			if (data.length > 1) data += ',';
+			data += '"' + p + '":' + val;
+		}
+		
+		return data + '}';
+	},
+	
+	/**
 	 * Dump current instance to browser console.
 	 * 
 	 * @method dump
@@ -236,7 +310,7 @@ WebbyJs.WObject.statics({
 	 * @returns {WObject} cloned instance.
 	 */
 	clone: function() {
-		var cloned = new this.constructor(), clone = WebbyJs.WObject.prototype.clone;
+		var cloned = new this.constructor(), clone = this.clone;
 		
 		for (var p in this) if (this.hasOwnProperty(p)) {
 			var o = this[p];
