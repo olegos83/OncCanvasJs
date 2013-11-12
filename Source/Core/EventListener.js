@@ -139,19 +139,6 @@ WebbyJs.Class({
 		    }
 		    
 		    return this;
-		},
-		
-		/**
-		 * Clear all event handlers and reset EventListener to default state.
-		 * 
-		 * @method resetEvents
-		 * @memberof EventListener.prototype
-		 * 
-		 * @returns {EventListener} current instance for chaining.
-		 */
-		resetEvents: function(evt) {
-			this._handlers = {};
-			return this;
 		}
 	}
 });

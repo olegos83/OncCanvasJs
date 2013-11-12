@@ -106,6 +106,44 @@ WebbyJs.WObject.statics({
  */
 }).implement({
 	/**
+	 * Reset all properties to their default values.
+	 * This is basic reset implementation. It resets:
+	 * 
+	 * 'Number' to 0,
+	 * 'String' to '',
+	 * 
+	 * 'Object' to {},
+	 * 'Array' to [],
+	 * 
+	 * 'Function' is skipped,
+	 * 'WObject' calls WObject.reset(),
+	 * 
+	 * 'null' and 'undefined' are skipped.
+	 * 
+	 * @method reset
+	 * @memberof WObject.prototype
+	 * 
+	 * @returns {WObject} current instance for chaining.
+	 */
+	reset: function() {
+		for (var p in this) if (this.hasOwnProperty(p)) {
+			var v = this[p], t = WebbyJs.classOf(v);
+			
+			if (!t || t == 'Function') continue;
+			
+			if (v.reset) { v.reset(); continue; }
+			
+			if (t == 'Number') { this[p] = 0; continue; }
+			if (t == 'String') { this[p] = ''; continue; }
+			
+			if (t == 'Object') { this[p] = {}; continue; }
+			if (t == 'Array') { this[p] = []; continue; }
+		}
+		
+		return this;
+	},
+	
+	/**
 	 * Force to free objects resources from memory.
 	 * 
 	 * Be carefull with this method - it sets all properties
