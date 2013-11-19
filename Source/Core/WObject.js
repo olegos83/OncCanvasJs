@@ -344,10 +344,10 @@ WebbyJs.WObject.statics({
 	 * @returns {WObject} current instance for chaining.
 	 */
 	dump: function() {
-		console.log(this.toString());
+		WebbyJs.log(this.toString());
 		
 		for (var p in this) {
-			console.log(p + ":" + WebbyJs.classOf(this[p]) + " = " + this[p]);
+			WebbyJs.log(p + ":" + WebbyJs.classOf(this[p]) + " = " + this[p]);
 		}
 		
 		return this;
