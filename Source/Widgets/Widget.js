@@ -5,13 +5,12 @@
 
 /**
  * Base widget class. All other widgets must be inherited from it.
- * Widget is a wrapper to DOM element and it can interract with other widgets.
  * 
- * Widget can be created dynamically or wrap existing DOM element and
- * it implements basic DOM manipulations.
+ * Widget is a wrapper to DOM element, it can interract with other widgets
+ * and implements basic DOM manipulations.
  * 
  * CSS is used to stylish the widget - all css classes are defined
- * in 'webbyjs.css' file. Default CSS classes prefix for WebbyJs widgets is '_w_'.
+ * in 'webbyjs.css' file with '_w_' prefix.
  * 
  * @class Widget
  * @extends WObject
@@ -31,6 +30,14 @@ WebbyJs.Class({
 	 */
 	construct: function Widget(tag) {
 		/**
+		 * Parent widget or DOM element.
+		 * 
+		 * @memberof Widget
+		 * @type {Widget|Element}
+		 */
+		this.parent = null;
+		
+		/**
 		 * Native DOM element.
 		 * 
 		 * @memberof Widget
@@ -38,67 +45,24 @@ WebbyJs.Class({
 		 */
 		this.element = null;
 		
-		/**
-		 * Parent widget.
-		 * 
-		 * @memberof Widget
-		 * @type {Widget}
-		 */
-		this.parent = null;
-		
-		/**
-		 * Top position inside parent widget.
-		 * 
-		 * @memberof Widget
-		 * @type {Number}
-		 * 
-		 * @private
-		 */
-		this._top = 0;
-		
-		/**
-		 * Left position inside parent widget.
-		 * 
-		 * @memberof Widget
-		 * @type {Number}
-		 * 
-		 * @private
-		 */
-		this._left = 0;
-		
-		/**
-		 * Widget full width, including padding and border.
-		 * 
-		 * @memberof Widget
-		 * @type {Number}
-		 * 
-		 * @private
-		 */
-		this._width = 0;
-		
-		/**
-		 * Widget full height, including padding and border.
-		 * 
-		 * @memberof Widget
-		 * @type {Number}
-		 * 
-		 * @private
-		 */
-		this._height = 0;
-		
-		/**
-		 * Widget CSS styles.
-		 * 
-		 * @memberof Widget
-		 * @type {Object}
-		 * 
-		 * @private
-		 */
-		this._css = {};
-		
 		//initialize widget
 		this.element = document.createElement(tag || 'div');
 		this.element.className = '_w_widget';
+	},
+	
+	/**
+	 * Static members.
+	 */
+	statics: {
+		/**
+		 * Widget metrics div.
+		 * 
+		 * @memberof Widget
+		 * @type {Element}
+		 * 
+		 * @private
+		 */
+		_metrics: null
 	},
 	
 	/**
@@ -106,52 +70,24 @@ WebbyJs.Class({
 	 */
 	proto: {
 		/**
-		 * Attach widget to existing DOM element.
-		 * 
-		 * @method attach
-		 * @memberof Widget.prototype
-		 * 
-		 * @param {Element} el - DOM element reference.
-		 * 
-		 * @returns {Widget} current instance for chaining.
-		 */
-		attach: function(el) {
-			return this;
-		},
-		
-		/**
-		 * Detach widget from DOM element.
-		 * 
-		 * @method detach
-		 * @memberof Widget.prototype
-		 * 
-		 * @returns {Widget} current instance for chaining.
-		 */
-		detach: function() {
-			return this;
-		},
-		
-		/**
-		 * Append this widget to another widget or html element.
+		 * Append this widget to another widget or DOM element.
 		 * 
 		 * @method appendTo
 		 * @memberof Widget.prototype
 		 * 
-		 * @param {Widget} w - parent widget.
+		 * @param {Widget|Element} w - parent widget.
 		 * 
 		 * @returns {Widget} current instance for chaining.
-		 **/
+		 */
 		appendTo: function(w) {
-			this.parent = w;
-			
-			if (w.html) w = w.html.content;
-			w.appendChild(this.html.container);
+			if (w.element) { this.parent = w; w = w.element; } else this.parent = w;
+			w.appendChild(this.element);
 			
 			return this;
 		},
 		
 		/**
-		 * Append child widget or html element to this widget.
+		 * Append child widget to this widget.
 		 * 
 		 * @method append
 		 * @memberof Widget.prototype
@@ -159,19 +95,16 @@ WebbyJs.Class({
 		 * @param {Widget} w - child widget.
 		 * 
 		 * @returns {Widget} current instance for chaining.
-		 **/
+		 */
 		append: function(w) {
-			if (w.html) {
-				w.parent = this;
-				w = w.html.container;
-			}
+			w.parent = this;
+			this.element.appendChild(w.element);
 			
-			this.html.content.appendChild(w);
 			return this;
 		},
 		
 		/**
-		 * Insert this widget to DOM before another widget or html element.
+		 * Insert this widget to DOM before another widget.
 		 * 
 		 * @method insertBefore
 		 * @memberof Widget.prototype
@@ -179,29 +112,18 @@ WebbyJs.Class({
 		 * @param {Widget} w - near widget.
 		 * 
 		 * @returns {Widget} current instance for chaining.
-		 **/
+		 */
 		insertBefore: function(w) {
-			var next;
+			var parent = this.parent = w.parent;
 			
-			if (w.html) {
-				next = w.html.container;
-				w = w.parent;
-			} else {
-				next = w;
-				w = w.parentNode;
-			}
-			
-			if (w) {
-				this.parent = w;
-				if (w.html) w = w.html.content;
-				w.insertBefore(this.html.container, next);
-			}
+			if (parent.element) parent = parent.element;
+			parent.insertBefore(this.element, w.element);
 			
 			return this;
 		},
 		
 		/**
-		 * Insert this widget to DOM after another widget or html element.
+		 * Insert this widget to DOM after another widget.
 		 * 
 		 * @method insertAfter
 		 * @memberof Widget.prototype
@@ -209,87 +131,61 @@ WebbyJs.Class({
 		 * @param {Widget} w - near widget.
 		 * 
 		 * @returns {Widget} current instance for chaining.
-		 **/
+		 */
 		insertAfter: function(w) {
-			var next;
+			var parent = this.parent = w.parent, next = w.element.nextSibling;
 			
-			if (w.html) {
-				next = w.html.container.nextSibling;
-				w = w.parent;
-			} else {
-				next = w.nextSibling;
-				w = w.parentNode;
-			}
-			
-			if (w) {
-				this.parent = w;
-				if (w.html) w = w.html.content;
-				if (next) w.insertBefore(this.html.container, next); else w.appendChild(this.html.container);
-			}
+			if (parent.element) parent = parent.element;
+			if (next) parent.insertBefore(this.element, next); else parent.appendChild(this.element);
 			
 			return this;
 		},
 		
 		/**
-		 * Remove this widget and its element from DOM.
+		 * Remove this widget from DOM.
 		 * 
 		 * @method remove
 		 * @memberof Widget.prototype
 		 * 
 		 * @returns {Widget} current instance for chaining.
-		 **/
+		 */
 		remove: function() {
-			var w = this.parent;
+			var parent = this.parent;
 			
-			if (w) {
-				var container = this.html.container;
-				
-				if (w.html) w = w.html.content;
-				w.removeChild(container);
-				
-				this.parent = null;
-			}
+			if (parent.element) parent = parent.element;
+			parent.removeChild(this.element);
 			
+			this.parent = null;
 			return this;
 		},
 		
 		/**
-		 * Get/Set widget's DOM properties.
-		 * 
-		 * @method prop
-		 * @memberof Widget.prototype
-		 * 
-		 * @param {Object} prop - properties object, { prop: value, ... }.
-		 * 
-		 * @returns {Widget} current instance for chaining.
-		 * @return {Object} this for chaining or container reference, when called without arguments.
-		 **/
-		prop: function(prop) {
-			if (!prop) return this.html.container;
-			
-			var container = this.html.container, p;
-			for (p in prop) container[p] = prop[p];
-			
-			return this;
-		},
-		
-		/**
-		 * Get/Set CSS rules for widget. Manipulations allways apply to html.container.style, but
-		 * if widget is inserted to DOM - computed style is returned, if not - html.container.style.
+		 * Get/Set CSS rules for widget. Manipulations allways apply to element.style, but
+		 * if widget is inserted to DOM - computed style is returned, if not - element.style.
 		 * 
 		 * @method css
 		 * @memberof Widget.prototype
 		 * 
-		 * @param {Object} css - css object, { style: value, ... }.
+		 * @param {Object|String} css - css object as { style: value, ... } or property name.
+		 * @param {String} val - css property value if style is set by name.
 		 * 
-		 * @returns {Widget} current instance for chaining.
-		 * @return {Object} this for chaining or css reference, when called without arguments.
-		 **/
-		css: function(css) {
-			if (!css) return (this.parent == null ? this.html.container.style : getComputedStyle(this.html.container, ''));
+		 * @returns {Widget|Object|String} current instance for chaining or css reference(value).
+		 */
+		css: function(css, val) {
+			if (!css) {
+				return (document.body.contains(this.element) ? getComputedStyle(this.element, '') : this.element.style);
+			}
 			
-			var style = this.html.container.style, p;
-			for (p in css) style[p] = css[p];
+			if (typeof css == 'string') {
+				if (val == null) {
+					return (document.body.contains(this.element) ? getComputedStyle(this.element, '')[css] : this.element.style[css]);
+				}
+				
+				this.element.style[css] = val;
+			} else {
+				var style = this.element.style;
+				for (var p in css) style[p] = css[p];
+			}
 			
 			return this;
 		},
@@ -303,11 +199,9 @@ WebbyJs.Class({
 		 * @param {String} name - class name.
 		 * 
 		 * @returns {Widget} current instance for chaining.
-		 **/
+		 */
 		addClass: function(name) {
-			var container = this.html.container;
-
-			if (container.className.indexOf(name) == -1) container.className += ' ' + name;
+			if (this.element.className.indexOf(name) == -1) this.element.className += ' ' + name;
 			return this;
 		},
 		
@@ -320,11 +214,9 @@ WebbyJs.Class({
 		 * @param {String} name - class name.
 		 * 
 		 * @returns {Widget} current instance for chaining.
-		 **/
+		 */
 		removeClass: function(name) {
-			var container = this.html.container;
-			
-			container.className = container.className.replace(name, "");
+			this.element.className = this.element.className.replace(name, '');
 			return this;
 		},
 		
@@ -337,9 +229,9 @@ WebbyJs.Class({
 		 * @param {String} name - class name.
 		 * 
 		 * @returns {Boolean} true if widget has class or false otherwise.
-		 **/
+		 */
 		hasClass: function(name) {
-			return (this.html.container.className.indexOf(name) != -1);
+			return (this.element.className.indexOf(name) != -1);
 		},
 		
 		/**
@@ -349,9 +241,9 @@ WebbyJs.Class({
 		 * @memberof Widget.prototype
 		 * 
 		 * @returns {Widget} current instance for chaining.
-		 **/
+		 */
 		show: function() {
-			return this.removeClass('owl_hidden').addClass('owl_visible');
+			return this.removeClass('_w_hidden').addClass('_w_visible');
 		},
 		
 		/**
@@ -361,9 +253,9 @@ WebbyJs.Class({
 		 * @memberof Widget.prototype
 		 * 
 		 * @returns {Widget} current instance for chaining.
-		 **/
+		 */
 		hide: function() {
-			return this.removeClass('owl_visible').addClass('owl_hidden');
+			return this.removeClass('_w_visible').addClass('_w_hidden');
 		},
 		
 		/**
@@ -374,13 +266,12 @@ WebbyJs.Class({
 		 * 
 		 * @param {String} html - html string.
 		 * 
-		 * @returns {Widget} current instance for chaining.
-		 * @return {Object} this for chaining or html content, if called without arguments.
-		 **/
+		 * @returns {Widget|String} current instance for chaining or html content, if called without arguments.
+		 */
 		html: function(html) {
-			if (arguments.length == 0) return this.html.content.innerHTML;
+			if (html == null) return this.element.innerHTML;
 			
-			this.html.content.innerHTML = html;
+			this.element.innerHTML = html;
 			return this;
 		},
 		
@@ -392,13 +283,12 @@ WebbyJs.Class({
 		 * 
 		 * @param {String} txt - text string.
 		 * 
-		 * @returns {Widget} current instance for chaining.
-		 * @return {Object} this for chaining or text content, if called without arguments.
-		 **/
+		 * @returns {Widget|String} current instance for chaining or text content, if called without arguments.
+		 */
 		text: function(txt) {
-			if (arguments.length == 0) return this.html.content.textContent;
+			if (txt == null) return this.element.textContent;
 			
-			this.html.content.textContent = txt;
+			this.element.textContent = txt;
 			return this;
 		},
 		
@@ -408,63 +298,59 @@ WebbyJs.Class({
 		 * @method pos
 		 * @memberof Widget.prototype
 		 * 
-		 * @param {Number} x - left coord.
-		 * @param {Number} y - top coord.
+		 * @param {Number} left - left coord.
+		 * @param {Number} top - top coord.
 		 * @param {String} type - positioning type, 'relative' or 'absolute'.
 		 * 
-		 * @returns {Widget} current instance for chaining.
-		 * @return {Object} this for chaining or position inside parent widget as { x: x, y: y }, when called without arguments.
-		 **/
-		pos: function(x, y, type) {
-			if (arguments.length < 2) return { x: this.html.container.offsetLeft, y: this.html.container.offsetTop };
+		 * @returns {Widget|Object} current instance for chaining or position inside parent widget as { x: x, y: y }, when called without arguments.
+		 */
+		pos: function(left, top, type) {
+			if (top == null) return { left: this.element.offsetLeft, top: this.element.offsetTop };
 			
-			var style = this.html.container.style;
+			var style = this.element.style;
 			
 			if (type == 'absolute' || type == 'relative') style.position = type;
-			style.left = x + 'px'; style.top = y + 'px';
+			style.left = left + 'px'; style.top = top + 'px';
 			
 			return this;
 		},
 		
 		/**
-		 * Get/Set x widget coord in pixels inside parent element.
+		 * Get/Set top widget coord in pixels inside parent element.
 		 * 
-		 * @method x
+		 * @method top
 		 * @memberof Widget.prototype
 		 * 
-		 * @param {Number} x - left coord.
+		 * @param {Number} top - top coord.
 		 * 
-		 * @returns {Widget} current instance for chaining.
-		 * @return {Object} this for chaining or current x coord inside parent widget, when called without arguments.
-		 **/
-		x: function(x) {
-			if (arguments.length == 0) return this.html.container.offsetLeft;
+		 * @returns {Widget|Number} current instance for chaining or top coord inside parent widget, when called without arguments.
+		 */
+		top: function(top) {
+			if (top == null) return this.element.offsetTop;
 			
-			this.html.container.style.left = x + 'px';
+			this.element.style.top = top + 'px';
 			return this;
 		},
 		
 		/**
-		 * Get/Set y widget coord in pixels inside parent element.
+		 * Get/Set left widget coord in pixels inside parent element.
 		 * 
-		 * @method y
+		 * @method left
 		 * @memberof Widget.prototype
 		 * 
-		 * @param {Number} y - top coord.
+		 * @param {Number} left - left coord.
 		 * 
-		 * @returns {Widget} current instance for chaining.
-		 * @return {Object} this for chaining or current y coord inside parent widget, when called without arguments.
-		 **/
-		y: function(y) {
-			if (arguments.length == 0) return this.html.container.offsetTop;
+		 * @returns {Widget|Number} current instance for chaining or left coord inside parent widget, when called without arguments.
+		 */
+		left: function(left) {
+			if (left == null) return this.element.offsetLeft;
 			
-			this.html.container.style.top = y + 'px';
+			this.element.style.left = left + 'px';
 			return this;
 		},
 		
 		/**
-		 * Get/Set widget size in pixels. This size is a full outer dimensions of the widget.
-		 * Correct size is returned only if widget exists in DOM.
+		 * Get/Set outer widget size in pixels.
 		 * 
 		 * @method size
 		 * @memberof Widget.prototype
@@ -472,91 +358,78 @@ WebbyJs.Class({
 		 * @param {Number} w - width.
 		 * @param {Number} h - height.
 		 * 
-		 * @returns {Widget} current instance for chaining.
-		 * @return {Object} this for chaining or widget size as { width: width, height: height }, when called without arguments.
-		 **/
+		 * @returns {Widget|Object} current instance for chaining or widget size as { width: width, height: height }, when called without arguments.
+		 */
 		size: function(w, h) {
-			var ctr = this.html.container;
-			if (arguments.length < 2) return { width: ctr.offsetWidth, height: ctr.offsetHeight };
+			var el = this.element, inDom = document.body.contains(el);
+			if (!inDom) _w_Widget._metrics.appendChild(el);
 			
-			var css;
-			
-			if ( document.body.contains(ctr) ) {
-				css = getComputedStyle(ctr, '');
-				ctr.style.width = w - (ctr.offsetWidth - parseInt(css.width)) + 'px';
-				ctr.style.height = h - (ctr.offsetHeight - parseInt(css.height)) + 'px';
-			} else {
-				this._metrics.appendChild(ctr);
-				
-				css = getComputedStyle(ctr, '');
-				ctr.style.width = w - (ctr.offsetWidth - parseInt(css.width)) + 'px';
-				ctr.style.height = h - (ctr.offsetHeight - parseInt(css.height)) + 'px';
-				
-				this._metrics.removeChild(ctr);
+			if (h == null) {
+				if (!inDom) _w_Widget._metrics.removeChild(el);
+				return { width: el.offsetWidth, height: el.offsetHeight };
 			}
 			
+			var css = getComputedStyle(el, '');
+			
+			el.style.width = w - (el.offsetWidth - parseInt(css.width)) + 'px';
+			el.style.height = h - (el.offsetHeight - parseInt(css.height)) + 'px';
+			
+			if (!inDom) _w_Widget._metrics.removeChild(el);
 			return this;
 		},
 		
 		/**
 		 * Get/Set outer widget width in pixels.
-		 * Correct width is returned only if widget exists in DOM.
 		 * 
 		 * @method width
 		 * @memberof Widget.prototype
 		 * 
 		 * @param {Number} w - width.
 		 * 
-		 * @returns {Widget} current instance for chaining.
-		 * @return {Object} this for chaining or current width, when called without arguments.
-		 **/
+		 * @returns {Widget|Number} current instance for chaining or width, when called without arguments.
+		 */
 		width: function(w) {
-			if (arguments.length == 0) return this.html.container.offsetWidth;
+			var el = this.element, inDom = document.body.contains(el);
+			if (!inDom) _w_Widget._metrics.appendChild(el);
 			
-			var ctr = this.html.container;
-			
-			if ( document.body.contains(ctr) ) {
-				ctr.style.width = w - (ctr.offsetWidth - parseInt(getComputedStyle(ctr, '').width)) + 'px';
-			} else {
-				this._metrics.appendChild(ctr);
-				ctr.style.width = w - (ctr.offsetWidth - parseInt(getComputedStyle(ctr, '').width)) + 'px';
-				this._metrics.removeChild(ctr);
+			if (w == null) {
+				if (!inDom) _w_Widget._metrics.removeChild(el);
+				return el.offsetWidth;
 			}
 			
+			el.style.width = w - (el.offsetWidth - parseInt(getComputedStyle(el, '').width)) + 'px';
+			
+			if (!inDom) _w_Widget._metrics.removeChild(el);
 			return this;
 		},
 		
 		/**
 		 * Get/Set outer widget height in pixels.
-		 * Correct height is returned only if widget exists in DOM.
 		 * 
 		 * @method height
 		 * @memberof Widget.prototype
 		 * 
 		 * @param {Number} h - height.
 		 * 
-		 * @returns {Widget} current instance for chaining.
-		 * @return {Object} this for chaining or current height, when called without arguments.
-		 **/
+		 * @returns {Widget|Number} current instance for chaining or height, when called without arguments.
+		 */
 		height: function(h) {
-			if (arguments.length == 0) return this.html.container.offsetHeight;
+			var el = this.element, inDom = document.body.contains(el);
+			if (!inDom) _w_Widget._metrics.appendChild(el);
 			
-			var ctr = this.html.container;
-			
-			if ( document.body.contains(ctr) ) {
-				ctr.style.height = h - (ctr.offsetHeight - parseInt(getComputedStyle(ctr, '').height)) + 'px';
-			} else {
-				this._metrics.appendChild(ctr);
-				ctr.style.height = h - (ctr.offsetHeight - parseInt(getComputedStyle(ctr, '').height)) + 'px';
-				this._metrics.removeChild(ctr);
+			if (h == null) {
+				if (!inDom) _w_Widget._metrics.removeChild(el);
+				return el.offsetHeight;
 			}
 			
+			el.style.height = h - (el.offsetHeight - parseInt(getComputedStyle(el, '').height)) + 'px';
+			
+			if (!inDom) _w_Widget._metrics.removeChild(el);
 			return this;
 		},
 		
 		/**
 		 * Add DOM event handler to widget.
-		 * Event is added to html.container. Use its _widget_ property to access widget.
 		 * 
 		 * @method addEvent
 		 * @memberof Widget.prototype
@@ -565,14 +438,14 @@ WebbyJs.Class({
 		 * @param {Function} handler - event handler.
 		 * 
 		 * @returns {Widget} current instance for chaining.
-		 **/
+		 */
 		addEvent: function(type, handler) {
-			this.html.container.addEventListener(type, handler, false);
+			this.element.addEventListener(type, handler, false);
 			return this;
 		},
 		
 		/**
-		 * Remove DOM event handler from widget.html.container.
+		 * Remove DOM event handler from widget.
 		 * 
 		 * @method removeEvent
 		 * @memberof Widget.prototype
@@ -581,10 +454,30 @@ WebbyJs.Class({
 		 * @param {Function} handler - event handler.
 		 * 
 		 * @returns {Widget} current instance for chaining.
-		 **/
+		 */
 		removeEvent: function(type, handler) {
-			this.html.container.removeEventListener(type, handler, false);
+			this.element.removeEventListener(type, handler, false);
 			return this;
 		}
 	}
+});
+
+/**
+ * Initialize widget metrics div.
+ */
+WebbyJs.invoke(function() {
+	function _addHD() {
+        var _metrics = document.createElement('div');
+        
+        _metrics.style.position = 'absolute';
+        _metrics.style.top = _metrics.style.left = '0';
+        _metrics.style.visibility = 'hidden';
+        
+        document.removeEventListener("DOMContentLoaded", _addHD, false);
+        document.body.appendChild(_metrics);
+        
+        WebbyJs.Widget._metrics = _metrics;
+	}
+	
+	document.addEventListener("DOMContentLoaded", _addHD, false);
 });
