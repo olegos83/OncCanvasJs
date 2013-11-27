@@ -6,14 +6,19 @@
 /**
  * Name conflicts test.
  */
-if (window.WebbyJs || window.webbyjs || window._w_) throw new Error('WebbyJs initialization failed - name conflict');
+if (WebbyJs || w) throw new Error('WebbyJs namespace declaration failed');
+
+/**
+ * WebbyJs shortcut - used for shortness and class caching.
+ */
+var w;
 
 /**
  * WebbyJs namespace declaration and basic methods implementation.
  * 
  * @namespace
  */
-var WebbyJs = window.webbyjs = window._w_ = {
+var WebbyJs = w = {
 	/**
 	 * WebbyJs short description.
 	 * 
@@ -25,7 +30,7 @@ var WebbyJs = window.webbyjs = window._w_ = {
 	_about: {
 		name: 'WebbyJs',
 		version: '0.01 unstable',
-		shortcut: '_w_',
+		shortcut: 'w',
 		description: 'Multipurpose web frontend framework',
 		author: 'OlegoS',
 		license: 'MIT'
@@ -40,16 +45,6 @@ var WebbyJs = window.webbyjs = window._w_ = {
 	 * @private
 	 */
 	_exportable: {},
-	
-	/**
-	 * Unique number.
-	 * 
-	 * @memberof WebbyJs
-	 * @type {Number}
-	 * 
-	 * @private
-	 */
-	_un: 0,
 	
 	/**
 	 * Browser short name.
@@ -138,9 +133,10 @@ var WebbyJs = window.webbyjs = window._w_ = {
 	 * 
 	 * @returns {Number} uniq number.
 	 */
-	uniqNumber: function() {
-		return this._un++;
-	},
+	uniqNumber: ( function() {
+		var n = 0;
+		return function() { return n++; };
+	}() ),
 	
 	/**
 	 * Invoke method in WebbyJs scope.
@@ -167,7 +163,7 @@ var WebbyJs = window.webbyjs = window._w_ = {
 	 */
 	classOf: function(obj) {
 		if (obj === null || typeof obj === 'undefined') return '';
-		return obj.constructor.name || obj.constructor._w_class;
+		return obj.constructor.name || obj.constructor.wclass;
 	},
 	
 	/**
@@ -194,8 +190,8 @@ var WebbyJs = window.webbyjs = window._w_ = {
 	},
 	
 	/**
-	 * Define members of WebbyJs. Each member is also cached globaly with
-	 * '_w_' prefix to speed up class instantiating inside another lib class.
+	 * Define WebbyJs members. Each member is also cached globaly with
+	 * 'w' prefix to speed up class instantiating inside other lib classes.
 	 * 
 	 * @method define
 	 * @memberof WebbyJs
@@ -221,12 +217,11 @@ var WebbyJs = window.webbyjs = window._w_ = {
 			
 			if (newClass) {
 				this.validate(member, 'Function');
-				
 				if (this.WObject) this.WObject.statics.call(member, this.WObject);
-				member._w_class = name;
+				member.wclass = name;
 			}
 			
-			this[name] = window['_w_' + name] = member;
+			this[name] = window['w' + name] = member;
 			if (exportable) exportable[name] = member;
 		}
 	},
@@ -278,7 +273,6 @@ var WebbyJs = window.webbyjs = window._w_ = {
 		if (name) {
 			if (!exportable[name]) this.error('WebbyJs.' + name + ' does not exist or can not be exported');
 			if (window[name]) this.error(name + ' allready exists in global object');
-			
 			window[name] = this[name];
 		} else {
 			for (name in exportable) if (exportable.hasOwnProperty(name)) {

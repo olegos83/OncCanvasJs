@@ -5,7 +5,7 @@
 
 /**
  * Base class for all WebbyJs created classes. All created classes are inherited from it.
- * This class is created in a bit lower level to provide further classes work properly.
+ * This class is created in a bit lower level to provide further classes correct work.
  * 
  * @class WObject
  * @memberof WebbyJs
@@ -68,7 +68,7 @@ WebbyJs.WObject.statics({
 		for (var p in proto) if (proto.hasOwnProperty(p)) delete proto[p];
 		
 		proto.constructor = this;
-		this._w_base = base.prototype;
+		this.wbase = base.prototype;
 		
 		return this;
 	},
@@ -134,7 +134,7 @@ WebbyJs.WObject.statics({
 	 * @returns {Boolean} true if this is equal to source or false otherwise.
 	 */
 	isEqual: function(src) {
-		if (this.constructor._w_class != src.constructor._w_class) return false;
+		if (this.constructor.wclass != src.constructor.wclass) return false;
 		
 		for (var p in this) {
 			if (this.hasOwnProperty(p) && src.hasOwnProperty(p)) {
@@ -208,7 +208,7 @@ WebbyJs.WObject.statics({
 	 * @returns {String} class name of current instance.
 	 */
 	className: function() {
-		return this.constructor._w_class;
+		return this.constructor.wclass;
 	},
 	
 	/**
@@ -232,7 +232,7 @@ WebbyJs.WObject.statics({
 	 * @returns {WObject} base class of current instance or undefined if no base class.
 	 */
 	base: function() {
-		return this.constructor._w_base;
+		return this.constructor.wbase;
 	},
 	
 	/**
@@ -244,7 +244,7 @@ WebbyJs.WObject.statics({
 	 * @returns {String} current instance as string.
 	 */
 	toString: function() {
-		return '[WebbyJs.' + this.constructor._w_class + ']';
+		return '[WebbyJs.' + this.constructor.wclass + ']';
 	},
 	
 	/**

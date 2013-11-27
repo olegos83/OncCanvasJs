@@ -87,7 +87,7 @@ WebbyJs.Class({
 		 */
 		append: function(item) {
 			this.dp_storage.push(item);
-			this.processEvent({ item: item, type: _w_Data.ADD });
+			this.processEvent({ item: item, type: wData.ADD });
 			
 			return this;
 		},
@@ -105,7 +105,7 @@ WebbyJs.Class({
 		 */
 		appendAt: function(item, index) {
 		    this.dp_storage.splice(index, 0, item);
-		    this.processEvent({ item: item, index: index, type: _w_Data.ADD });
+		    this.processEvent({ item: item, index: index, type: wData.ADD });
 		    
 		    return this;
 		},
@@ -125,7 +125,7 @@ WebbyJs.Class({
 			
 			for (i = 0; i < l; i++) if (data[i] == item) {
 				data.splice(i, 1);
-				this.processEvent({ item: item, type: _w_Data.REMOVE });
+				this.processEvent({ item: item, type: wData.REMOVE });
 				
 				return this;
 			}
@@ -144,7 +144,7 @@ WebbyJs.Class({
 		 * @returns {DataProvider} current instance for chaining.
 		 */
 		removeAt: function(index) {
-			var evt = { item: this.dp_storage[index], index: index, type: _w_Data.REMOVE };
+			var evt = { item: this.dp_storage[index], index: index, type: wData.REMOVE };
 			
 		    this.dp_storage.splice(index, 1);
 		    this.processEvent(evt);
@@ -168,7 +168,7 @@ WebbyJs.Class({
 			
 			for (i = 0; i < l; i++) if (data[i] == item) {
 				data[i] = newItem;
-				this.processEvent({ oldItem: item, newItem: newItem, type: _w_Data.REPLACE });
+				this.processEvent({ oldItem: item, newItem: newItem, type: wData.REPLACE });
 				
 				return this;
 			}
@@ -188,7 +188,7 @@ WebbyJs.Class({
 		 * @returns {DataProvider} current instance for chaining.
 		 */
 		replaceAt: function(index, newItem) {
-			var evt = { oldItem: this.dp_storage[index], newItem: newItem, index: index, type: _w_Data.REPLACE };
+			var evt = { oldItem: this.dp_storage[index], newItem: newItem, index: index, type: wData.REPLACE };
 			
 		    this.dp_storage[index] = newItem;
 		    this.processEvent(evt);
@@ -205,7 +205,7 @@ WebbyJs.Class({
 		 * @returns {DataProvider} current instance for chaining.
 		 */
 		clear: function() {
-			var evt = { data: [].concat(this.dp_storage), type: _w_Data.CLEAR };
+			var evt = { data: [].concat(this.dp_storage), type: wData.CLEAR };
 			
 		    this.dp_storage.length = 0;
 		    this.processEvent(evt);
@@ -285,7 +285,7 @@ WebbyJs.Class({
 				data.splice(i, 1);
 			    data.splice(index, 0, item);
 			    
-			    this.processEvent({ item: item, oldIndex: i, newIndex: index, type: _w_Data.CHANGE });
+			    this.processEvent({ item: item, oldIndex: i, newIndex: index, type: wData.CHANGE });
 			    return this;
 		    }
 			

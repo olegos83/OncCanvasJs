@@ -10,7 +10,7 @@
  * and implements basic DOM manipulations.
  * 
  * CSS is used to stylish the widget - all css classes are defined
- * in 'webbyjs.css' file with '_w_' prefix.
+ * in 'webbyjs.css' file with 'w_' prefix.
  * 
  * @class Widget
  * @extends WObject
@@ -47,7 +47,7 @@ WebbyJs.Class({
 		
 		//initialize widget
 		this.element = document.createElement(tag || 'div');
-		this.element.className = '_w_widget';
+		this.element.className = 'w_widget';
 	},
 	
 	/**
@@ -243,7 +243,7 @@ WebbyJs.Class({
 		 * @returns {Widget} current instance for chaining.
 		 */
 		show: function() {
-			return this.removeClass('_w_hidden').addClass('_w_visible');
+			return this.removeClass('w_hidden').addClass('w_visible');
 		},
 		
 		/**
@@ -255,7 +255,7 @@ WebbyJs.Class({
 		 * @returns {Widget} current instance for chaining.
 		 */
 		hide: function() {
-			return this.removeClass('_w_visible').addClass('_w_hidden');
+			return this.removeClass('w_visible').addClass('w_hidden');
 		},
 		
 		/**
@@ -362,10 +362,10 @@ WebbyJs.Class({
 		 */
 		size: function(w, h) {
 			var el = this.element, inDom = document.body.contains(el);
-			if (!inDom) _w_Widget._metrics.appendChild(el);
+			if (!inDom) wWidget._metrics.appendChild(el);
 			
 			if (h == null) {
-				if (!inDom) _w_Widget._metrics.removeChild(el);
+				if (!inDom) wWidget._metrics.removeChild(el);
 				return { width: el.offsetWidth, height: el.offsetHeight };
 			}
 			
@@ -374,7 +374,7 @@ WebbyJs.Class({
 			el.style.width = w - (el.offsetWidth - parseInt(css.width)) + 'px';
 			el.style.height = h - (el.offsetHeight - parseInt(css.height)) + 'px';
 			
-			if (!inDom) _w_Widget._metrics.removeChild(el);
+			if (!inDom) wWidget._metrics.removeChild(el);
 			return this;
 		},
 		
@@ -390,16 +390,16 @@ WebbyJs.Class({
 		 */
 		width: function(w) {
 			var el = this.element, inDom = document.body.contains(el);
-			if (!inDom) _w_Widget._metrics.appendChild(el);
+			if (!inDom) wWidget._metrics.appendChild(el);
 			
 			if (w == null) {
-				if (!inDom) _w_Widget._metrics.removeChild(el);
+				if (!inDom) wWidget._metrics.removeChild(el);
 				return el.offsetWidth;
 			}
 			
 			el.style.width = w - (el.offsetWidth - parseInt(getComputedStyle(el, '').width)) + 'px';
 			
-			if (!inDom) _w_Widget._metrics.removeChild(el);
+			if (!inDom) wWidget._metrics.removeChild(el);
 			return this;
 		},
 		
@@ -415,16 +415,16 @@ WebbyJs.Class({
 		 */
 		height: function(h) {
 			var el = this.element, inDom = document.body.contains(el);
-			if (!inDom) _w_Widget._metrics.appendChild(el);
+			if (!inDom) wWidget._metrics.appendChild(el);
 			
 			if (h == null) {
-				if (!inDom) _w_Widget._metrics.removeChild(el);
+				if (!inDom) wWidget._metrics.removeChild(el);
 				return el.offsetHeight;
 			}
 			
 			el.style.height = h - (el.offsetHeight - parseInt(getComputedStyle(el, '').height)) + 'px';
 			
-			if (!inDom) _w_Widget._metrics.removeChild(el);
+			if (!inDom) wWidget._metrics.removeChild(el);
 			return this;
 		},
 		
