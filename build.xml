@@ -6,13 +6,13 @@
 	</target>
 
 	<target name="concat-files">
-		<echo>Source code compilation...</echo>
-		
+		<echo>Compile...</echo>
+
 		<concat destfile="Build/webby.js">
 			<filelist dir="Source/Core/">
 				<file name="Core.js"/>
 				<file name="WObject.js"/>
-				
+
 				<file name="EventListener.js"/>
 				<file name="DataProvider.js"/>
 			</filelist>
@@ -20,7 +20,10 @@
 	</target>
 
 	<target name="minify">
-		<echo>Minifying compiled source...</echo>
+		<echo>Minify...</echo>
+
+		<replaceregexp file="Build/webby.js" match="\n*/\*[\s\S]*?\*/" replace="" flags="gm"/>
+		<replaceregexp file="Build/webby.js" match="\s+//.*" replace="" flags="g"/>
 	</target>
 
 </project>

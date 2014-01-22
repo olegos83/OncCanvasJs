@@ -15,13 +15,14 @@ indent_mode=3
 [project]
 name=WebbyJs
 base_path=/home/olezhonchikk/Coding/WebbyJs/
+description=
 
 [long line marker]
 long_line_behaviour=1
 long_line_column=120
 
 [files]
-current_page=0
+current_page=-1
 
 [VTE]
 last_dir=/home/olezhonchikk
