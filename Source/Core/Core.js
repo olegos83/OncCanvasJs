@@ -29,7 +29,7 @@ var w = {
 	},
 
 	/**
-	 * Core members hash, that can not be overriden.
+	 * Core members, that can not be overriden.
 	 *
 	 * @memberof w
 	 * @type {Object}
@@ -249,7 +249,7 @@ w.W.statics({
 	 * @method extendClass
 	 * @memberof W
 	 *
-	 * @param {Object} base - base class reference.
+	 * @param {Object|W} base - base class reference.
 	 *
 	 * @returns {W} current instance for chaining.
 	 */
@@ -297,10 +297,7 @@ w.W.statics({
  */
 }).implement({
 	/**
-	 * Set this object properties equal to source object properties.
-	 *
-	 * All non-primitive properties remain shared by reference between
-	 * this and source objects.
+	 * Set properties in current instance.
 	 *
 	 * @method set
 	 * @memberof W.prototype
@@ -325,7 +322,7 @@ w.W.statics({
 	 * @returns {Boolean} true if this is equal to source or false otherwise.
 	 */
 	isEqual: function(src) {
-		if (this.constructor.wclass != src.constructor.wclass) return false;
+		if (this.constructor != src.constructor) return false;
 
 		for (var p in this) {
 			if (this.hasOwnProperty(p) && src.hasOwnProperty(p)) {
@@ -337,8 +334,7 @@ w.W.statics({
 	},
 
 	/**
-	 * Reset all properties to their default values.
-	 * This is basic reset implementation. It resets:
+	 * Reset all properties. It resets:
 	 *
 	 * 'Number' to 0,
 	 * 'String' to '',
@@ -346,10 +342,7 @@ w.W.statics({
 	 * 'Object' to {},
 	 * 'Array' to [],
 	 *
-	 * 'Function' is skipped,
-	 * 'W' calls W.reset(),
-	 *
-	 * 'null' and 'undefined' are skipped.
+	 * 'W' calls W.reset() and 'Function', 'null' and 'undefined' are skipped.
 	 *
 	 * @method reset
 	 * @memberof W.prototype
@@ -358,27 +351,27 @@ w.W.statics({
 	 */
 	reset: function() {
 		for (var p in this) if (this.hasOwnProperty(p)) {
-			var v = this[p], t = WebbyJs.classOf(v);
+			var v = this[p];
 
-			if (!t || t == 'Function') continue;
+			if (v) {
+				var t = w.typeOf(v);
+				if (t == 'Function') continue;
 
-			if (v.reset) { v.reset(); continue; }
+				if (v.reset) v.reset();
 
-			if (t == 'Number') { this[p] = 0; continue; }
-			if (t == 'String') { this[p] = ''; continue; }
+				else if (t == 'Number') this[p] = 0;
+				else if (t == 'String') this[p] = '';
 
-			if (t == 'Object') { this[p] = {}; continue; }
-			if (t == 'Array') { this[p] = []; continue; }
+				else if (t == 'Object') this[p] = {};
+				else if (t == 'Array') this[p] = [];
+			}
 		}
 
 		return this;
 	},
 
 	/**
-	 * Force to free objects resources from memory.
-	 *
-	 * Be carefull with this method - it sets all properties
-	 * to null, so object becomes unusable after this action.
+	 * Free objects resources from memory.
 	 *
 	 * @method free
 	 * @memberof W.prototype
@@ -391,42 +384,6 @@ w.W.statics({
 	},
 
 	/**
-	 * Get class name of current instance.
-	 *
-	 * @method className
-	 * @memberof W.prototype
-	 *
-	 * @returns {String} class name of current instance.
-	 */
-	className: function() {
-		return this.constructor.wclass;
-	},
-
-	/**
-	 * Get prototype of current instance.
-	 *
-	 * @method proto
-	 * @memberof W.prototype
-	 *
-	 * @returns {Object} prototype of current instance.
-	 */
-	proto: function() {
-		return this.constructor.prototype;
-	},
-
-	/**
-	 * Get base class of current instance.
-	 *
-	 * @method base
-	 * @memberof W.prototype
-	 *
-	 * @returns {W} base class of current instance or undefined if no base class.
-	 */
-	base: function() {
-		return this.constructor.wbase;
-	},
-
-	/**
 	 * Default toString method.
 	 *
 	 * @method toString
@@ -435,7 +392,7 @@ w.W.statics({
 	 * @returns {String} current instance as string.
 	 */
 	toString: function() {
-		return '[WebbyJs.' + this.constructor.wclass + ']';
+		return '[' + this.constructor.name + ']';
 	},
 
 	/**
@@ -487,47 +444,13 @@ w.W.statics({
 			return this;
 		}
 
-		data = '{';
-
-		var json = this.json, arrToJson = function(arr) {
-			var tmp = '[';
-
-			for (var i = 0, l = arr.length; i < l; i++) {
-				var v = arr[i], t = WebbyJs.classOf(v);
-
-				if (t == 'Function') continue;
-				if (t == 'Array') v = arrToJson(v);
-
-				if (v.json) v = v.json(); else {
-					v = (t == 'Object' ? json.call(v) : '"' + v + '"');
-				}
-
-				if (tmp.length > 1) tmp += ',';
-				tmp += v;
-			}
-
-			return tmp + ']';
-		};
-
 		for (var p in this) if (this.hasOwnProperty(p)) {
-			var val = this[p], type = WebbyJs.classOf(val);
 
-			if (type == 'Function') continue;
-			if (type == 'Array') val = arrToJson(val);
-
-			if (val.json) val = val.json(); else {
-				val = (type == 'Object' ? json.call(val) : '"' + val + '"');
-			}
-
-			if (data.length > 1) data += ',';
-			data += '"' + p + '":' + val;
 		}
-
-		return data + '}';
 	},
 
 	/**
-	 * Dump current instance to browser console.
+	 * Dump current instance to log.
 	 *
 	 * @method dump
 	 * @memberof W.prototype
@@ -535,33 +458,10 @@ w.W.statics({
 	 * @returns {W} current instance for chaining.
 	 */
 	dump: function() {
-		WebbyJs.log(this.toString());
+		w.log(this.toString());
 
 		for (var p in this) {
-			WebbyJs.log(p + ":" + WebbyJs.classOf(this[p]) + " = " + this[p]);
-		}
-
-		return this;
-	},
-
-	/**
-	 * Mix object members to current instance.
-	 *
-	 * @method mix
-	 * @memberof W.prototype
-	 *
-	 * @param {Object} obj - source object reference.
-	 * @param {Boolean} safe - safety flag, if true - existing members are not overwritten.
-	 *
-	 * @returns {W} current instance for chaining.
-	 */
-	mix: function(obj, safe) {
-		var p;
-
-		if (safe) {
-			for (p in obj) if (!this[p] && obj.hasOwnProperty(p)) this[p] = obj[p];
-		} else {
-			for (p in obj) if (obj.hasOwnProperty(p)) this[p] = obj[p];
+			w.log(p + ":" + w.typeOf(this[p]) + " = " + this[p]);
 		}
 
 		return this;
@@ -570,22 +470,19 @@ w.W.statics({
 	/**
 	 * Clone current instance.
 	 *
-	 * All non-primitive members are stored as references, so they must have clone method
-	 * to clone themselves. Otherwise, they stay shared behind original and cloned instances.
-	 *
 	 * @method clone
 	 * @memberof W.prototype
 	 *
 	 * @returns {W} cloned instance.
 	 */
 	clone: function() {
-		var cloned = new this.constructor(), clone = this.clone;
+		var cloned = new this.constructor();
 
 		for (var p in this) if (this.hasOwnProperty(p)) {
 			var o = this[p];
 
 			if (o.clone) cloned[p] = o.clone(); else {
-				cloned[p] = (typeof o === 'object' ? clone.call(o) : o);
+				cloned[p] = (typeof o == 'object' ? this.clone.call(o) : o);
 			}
 		}
 
