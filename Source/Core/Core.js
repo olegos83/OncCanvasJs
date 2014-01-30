@@ -6,18 +6,18 @@
 /**
  * Name conflicts test.
  */
-if (WebbyJs || w) throw new Error('Failed to declare WebbyJs namespace');
+if (w) throw new Error("Failed to declare 'w' namespace");
 
 /**
  * WebbyJs namespace declaration and core methods implementation.
  *
  * @namespace
  */
-var WebbyJs = {
+var w = {
 	/**
 	 * General info about WebbyJs.
 	 *
-	 * @memberof WebbyJs
+	 * @memberof w
 	 * @type {Object}
 	 */
 	about: {
@@ -31,7 +31,7 @@ var WebbyJs = {
 	/**
 	 * Core members hash, that can not be overriden.
 	 *
-	 * @memberof WebbyJs
+	 * @memberof w
 	 * @type {Object}
 	 *
 	 * @private
@@ -39,19 +39,9 @@ var WebbyJs = {
 	_core: {},
 
 	/**
-	 * Init WebbyJs core.
-	 *
-	 * @method init
-	 * @memberof WebbyJs
-	 */
-	init: function() {
-		for (var member in this) this._core[member] = this.member;
-	},
-
-	/**
 	 * User agent info.
 	 *
-	 * @memberof WebbyJs
+	 * @memberof w
 	 * @type {String}
 	 */
 	navigator: ( function() {
@@ -69,7 +59,7 @@ var WebbyJs = {
 	 * Get uniq integer number.
 	 *
 	 * @method uniqNumber
-	 * @memberof WebbyJs
+	 * @memberof w
 	 *
 	 * @returns {Number} uniq number.
 	 */
@@ -81,20 +71,20 @@ var WebbyJs = {
 	/**
 	 * Default WebbyJs log provider.
 	 *
-	 * @memberof WebbyJs
+	 * @memberof w
 	 * @type {Object}
 	 */
 	logProvider: {
 		log: function(msg) { console.log(msg); },
-		warning: function(msg, name) { console.log( (name || 'WebbyJsWarning') + ': ' + (msg || '...') ); },
-		error: function(msg, name) { var err = new Error(msg || '...'); err.name = name || 'WebbyJsError'; throw err; }
+		warn: function(msg, name) { console.log( (name || 'WebbyJsWarning') + ': ' + (msg || '...') ); },
+		err: function(msg, name) { var err = new Error(msg || '...'); err.name = name || 'WebbyJsError'; throw err; }
 	},
 
 	/**
 	 * Log message, using logProvider.
 	 *
 	 * @method log
-	 * @memberof WebbyJs
+	 * @memberof w
 	 *
 	 * @param {Object} msg - message.
 	 */
@@ -103,36 +93,36 @@ var WebbyJs = {
 	},
 
 	/**
-	 * Log WebbyJs warning.
+	 * Log WebbyJs warn.
 	 *
-	 * @method warning
-	 * @memberof WebbyJs
+	 * @method warn
+	 * @memberof w
 	 *
 	 * @param {String} msg - warning message.
 	 * @param {String} name - warning name.
 	 */
-	warning: function(msg, name) {
-		this.logProvider.warning(msg, name);
+	warn: function(msg, name) {
+		this.logProvider.warn(msg, name);
 	},
 
 	/**
 	 * Throw error exeption.
 	 *
-	 * @method error
-	 * @memberof WebbyJs
+	 * @method err
+	 * @memberof w
 	 *
 	 * @param {String} msg - error message.
 	 * @param {String} name - error name.
 	 */
-	error: function(msg, name) {
-		this.logProvider.error(msg, name);
+	err: function(msg, name) {
+		this.logProvider.err(msg, name);
 	},
 
 	/**
 	 * Invoke method in WebbyJs scope.
 	 *
 	 * @method invoke
-	 * @memberof WebbyJs
+	 * @memberof w
 	 *
 	 * @param {Function} method - method to invoke.
 	 * @param {Array} args - method arguments.
@@ -145,7 +135,7 @@ var WebbyJs = {
 	 * Get class name of any instance.
 	 *
 	 * @method typeOf
-	 * @memberof WebbyJs
+	 * @memberof w
 	 *
 	 * @param {Object} obj - object.
 	 *
@@ -159,15 +149,15 @@ var WebbyJs = {
 	 * Define members inside WebbyJs.
 	 *
 	 * @method define
-	 * @memberof WebbyJs
+	 * @memberof w
 	 *
 	 * @param {Object} members - members hash.
 	 */
 	define: function(members) {
-		if (this.typeOf(members) != 'Object') this.error('Failed to define members');
+		if (this.typeOf(members) != 'Object') this.err('Failed to define members');
 
 		for (var name in members) {
-			if (this._core[name]) this.error('Failed to override core member: ' + name);
+			if (this._core[name]) this.err('Failed to override core member: ' + name);
 			this[name] = members[name];
 		}
 	},
@@ -176,11 +166,11 @@ var WebbyJs = {
 	 * Create new class inside WebbyJs.
 	 *
 	 * @method create
-	 * @memberof WebbyJs
+	 * @memberof w
 	 *
-	 * @param {Object} options - new class options.
+	 * @param {Object} opt - creation options.
 	 *
-	 * optionsExample = {
+	 * options = {
 	 * 	  construct: function ClassName(args) { ... },
 	 *    base: baseClassReference,
 	 *    statics: { static members },
@@ -188,21 +178,21 @@ var WebbyJs = {
 	 * 	  proto: { prototype members },
 	 * };
 	 *
-	 * @returns {Object} created class.
+	 * @returns {W} created class.
 	 */
-	create: function(options) {
-		var construct = options.construct, name = construct.name, base = options.base || this.W;
+	create: function(opt) {
+		if (this.typeOf(opt) != 'Object') this.err('Invalid class options');
+		if (this.typeOf(opt.construct) != 'Function') this.err('Invalid constructor');
 
-		if (this.typeOf(construct) != 'Function') this.error('Invalid constructor');
-		if (this.typeOf(name) != 'String' || name == '') this.error('Invalid class name');
-		//if (typeof base != 'function' || base.extend == null) throw new Error('Failed to extend class');
+		var name = opt.construct.name;
+		if (name == '' || this.typeOf(name) != 'String') this.err('Invalid class name');
 
-		var created = base.extend(construct), def = {};
+		var def = {}, created = def[name] = opt.construct;
 
-		def[name] = created;
 		this.define(def);
+		this.W.statics.call(created, this.W);
 
-		return created.statics(options.statics).extend(extends).implement([options.implements, options.proto]);
+		return created.statics(opt.statics).extend(opt.extends).implement(opt.implements, opt.proto);
 	}
 };
 
@@ -210,9 +200,9 @@ var WebbyJs = {
  * Base class for all WebbyJs created classes.
  *
  * @class W
- * @memberof WebbyJs
+ * @memberof w
  */
-WebbyJs.define({
+w.define({
 	/**
 	 * @constructor
 	 */
@@ -229,16 +219,18 @@ WebbyJs.define({
  *
  * @returns {W} current instance for chaining.
  */
-WebbyJs.W.statics = function(statics) {
-	if (!statics) return this;
-	for (var p in statics) if (statics.hasOwnProperty(p)) this[p] = statics[p];
+w.W.statics = function(statics) {
+	if (statics) {
+		for (var p in statics) if (statics.hasOwnProperty(p)) this[p] = statics[p];
+	}
+
 	return this;
 };
 
 /**
  * Add W static members.
  */
-WebbyJs.W.statics({
+w.W.statics({
 	/**
 	 * Create instance of this class.
 	 *
@@ -262,14 +254,14 @@ WebbyJs.W.statics({
 	 * @returns {W} current instance for chaining.
 	 */
 	extend: function(base) {
-		if (!base) return this;
-		WebbyJs.validate(base, 'Function');
+		if (base) {
+			if (w.typeOf(base) != 'Function') w.err('Invalid base class');
 
-		var proto = this.prototype = new base();
-		for (var p in proto) if (proto.hasOwnProperty(p)) delete proto[p];
+			var proto = this.prototype = new base();
 
-		proto.constructor = this;
-		this.wbase = base.prototype;
+			for (var p in proto) if (proto.hasOwnProperty(p)) delete proto[p];
+			proto.constructor = this;
+		}
 
 		return this;
 	},
@@ -280,23 +272,21 @@ WebbyJs.W.statics({
 	 * @method implement
 	 * @memberof W
 	 *
-	 * @param {Object|Array} interfaces - single or array of interfaces.
+	 * @param {Object|Array} ifaces - interfaces.
 	 *
 	 * @returns {W} current instance for chaining.
 	 */
-	implement: function(interfaces) {
-		if (!interfaces) return this;
-		if (WebbyJs.classOf(interfaces) !== 'Array') interfaces = [interfaces];
+	implement: function(ifaces) {
+		for (var i = 0, l = arguments.length; i < l; i++) {
+			var o = arguments[i], t = w.typeOf(o);
 
-		var proto = this.prototype, l = interfaces.length;
-
-		for (var i = 0; i < l; i++) {
-			var iface = interfaces[i];
-
-			WebbyJs.validate(iface, 'Object, Function');
-			if (WebbyJs.classOf(iface) === 'Function') iface = iface.prototype;
-
-			for (var p in iface) if (iface.hasOwnProperty(p)) proto[p] = iface[p];
+			if (t == 'Object') {
+				for (var p in o) if (o.hasOwnProperty(p)) this.prototype[p] = o[p];
+			} else if (t == 'Function') {
+				this.implement(o.prototype);
+			} else if (t == 'Array') {
+				this.implement.apply(this, o);
+			}
 		}
 
 		return this;
@@ -620,6 +610,8 @@ WebbyJs.W.statics({
 });
 
 /**
- * Init WebbyJs core and shortcut.
+ * Init WebbyJs core.
  */
-var w = WebbyJs.init();
+w.invoke(function() {
+	for (var member in this) this._core[member] = this[member];
+});
