@@ -174,7 +174,7 @@ var w = {
 	 * 	  construct: function ClassName(args) { ... },
 	 *    base: baseClassReference,
 	 *    statics: { static members },
-	 *    implements: [interfaceRferencesArr] || interfaceReference,
+	 *    implements: interfaceReference,
 	 * 	  proto: { prototype members },
 	 * };
 	 *
@@ -187,12 +187,18 @@ var w = {
 		var name = opt.construct.name;
 		if (name == '' || this.typeOf(name) != 'String') this.err('Invalid class name');
 
-		var def = {}, created = def[name] = opt.construct;
-
+		var def = {}, created = def[name] = opt.construct, statics = opt.statics;
 		this.define(def);
-		this.W.statics.call(created, this.W);
 
-		return created.statics(opt.statics).extend(opt.extends).implement(opt.implements, opt.proto);
+		if (!statics) statics = { create: this.W.create };
+		else if (!statics.create) statics.create = this.W.create;
+
+		statics.statics = this.W.statics;
+		statics.extend = this.W.extend;
+		statics.implement = this.W.implement;
+
+		this.W.statics.call(created, statics);
+		return created.extend(opt.base).implement(opt.implements, opt.proto);
 	}
 };
 
