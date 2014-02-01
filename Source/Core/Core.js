@@ -29,7 +29,7 @@ var w = {
 	},
 
 	/**
-	 * Core members, that can not be overriden.
+	 * Hash of core members, that can not be overriden.
 	 *
 	 * @memberof w
 	 * @type {Object}
@@ -37,6 +37,16 @@ var w = {
 	 * @private
 	 */
 	_core: {},
+
+	/**
+	 * Hash of created classes.
+	 *
+	 * @memberof w
+	 * @type {Object}
+	 *
+	 * @private
+	 */
+	_classes: {},
 
 	/**
 	 * User agent info.
@@ -63,10 +73,7 @@ var w = {
 	 *
 	 * @returns {Number} uniq number.
 	 */
-	uniqNumber: ( function() {
-		var n = 0;
-		return function() { return n++; };
-	}() ),
+	uniqNumber: ( function() { var n = 0; return function() { return n++; }; }() ),
 
 	/**
 	 * Default WebbyJs log provider.
@@ -119,7 +126,7 @@ var w = {
 	},
 
 	/**
-	 * Invoke method in WebbyJs scope.
+	 * Invoke method with execution context set to WebbyJs core.
 	 *
 	 * @method invoke
 	 * @memberof w
@@ -146,21 +153,85 @@ var w = {
 	},
 
 	/**
-	 * Define members inside WebbyJs.
+	 * Define source members inside WebbyJs.
 	 *
 	 * @method define
 	 * @memberof w
 	 *
-	 * @param {Object} members - members hash.
+	 * @param {Object} src - members source.
 	 */
-	define: function(members) {
-		if (this.typeOf(members) != 'Object') this.err('Failed to define members');
+	define: function(src) {
+		if (this.typeOf(src) != 'Object') this.err('Failed to define members');
 
-		for (var name in members) {
-			if (this._core[name]) this.err('Failed to override core member: ' + name);
-			this[name] = members[name];
+		for (var m in src) {
+			if (this._core[m]) this.err('Failed to override core member: ' + m);
+			this[m] = src[m];
 		}
 	},
+
+	/**
+	 * Copy members from source object to destination object.
+	 *
+	 * @method copy
+	 * @memberof w
+	 *
+	 * @param {Object} src - source object.
+	 * @param {Object} dst - destination object.
+	 */
+	copy: function(src, dst) {
+		for (var m in src) if (src.hasOwnProperty(m)) dst[m] = src[m];
+	},
+
+	/**
+	 * Delete all members from target object.
+	 *
+	 * @method empty
+	 * @memberof w
+	 *
+	 * @param {Object} target - target object.
+	 */
+	empty: function(target) {
+		for (var m in target) if (target.hasOwnProperty(m)) delete target[m];
+	},
+
+	/**
+	 * Inherit cild class from base class using prototype inheritance.
+	 *
+	 * @method inherit
+	 * @memberof w
+	 *
+	 * @param {Function} child - child class reference.
+	 * @param {Function} base - base class reference.
+	 */
+	inherit: function(child, base) {
+		if (this.typeOf(child) != 'Function') this.err('Invalid child class');
+		if (this.typeOf(base) != 'Function') this.err('Invalid base class');
+
+		child.prototype = new base();
+		w.empty(child.prototype);
+
+		child.prototype.constructor = child;
+	},
+
+	/**
+	 * Implement interfaces inside target class prototype.
+	 *
+	 * @method implement
+	 * @memberof w
+	 *
+	 * @param {Function} target - target class reference.
+	 * @param {Object|Function} ... - single or more interfaces.
+	 */
+	implement: function(target) {
+		if (this.typeOf(target) != 'Function') this.err('Invalid implementation target');
+
+		for (var i = 1, l = arguments.length; i < l; i++) {
+			var o = arguments[i], t = w.typeOf(o);
+
+			if (t == 'Function') w.copy(o.prototype, target.prototype);
+			else if (t == 'Object') w.copy(o, target.prototype);
+		}
+	}
 
 	/**
 	 * Create new class inside WebbyJs.
@@ -187,18 +258,12 @@ var w = {
 		var name = opt.construct.name;
 		if (name == '' || this.typeOf(name) != 'String') this.err('Invalid class name');
 
-		var def = {}, created = def[name] = opt.construct, statics = opt.statics;
+		var def = {}; def[name] = opt.construct;
+
 		this.define(def);
+		this.W.statics.call(created, this.W);
 
-		if (!statics) statics = { create: this.W.create };
-		else if (!statics.create) statics.create = this.W.create;
-
-		statics.statics = this.W.statics;
-		statics.extend = this.W.extend;
-		statics.implement = this.W.implement;
-
-		this.W.statics.call(created, statics);
-		return created.extend(opt.base).implement(opt.implements, opt.proto);
+		return opt.construct.statics(opt.statics).extend(opt.base).implement(opt.implements, opt.proto);
 	}
 };
 
@@ -215,23 +280,7 @@ w.define({
 	W: function W() {}
 });
 
-/**
- * Append static members to this class.
- *
- * @method statics
- * @memberof W
- *
- * @param {Object} statics - object with static members.
- *
- * @returns {W} current instance for chaining.
- */
-w.W.statics = function(statics) {
-	if (statics) {
-		for (var p in statics) if (statics.hasOwnProperty(p)) this[p] = statics[p];
-	}
 
-	return this;
-};
 
 /**
  * Add W static members.
@@ -247,56 +296,9 @@ w.W.statics({
 	 */
 	create: function() {
 		return new this();
-	},
-
-	/**
-	 * Extend this class from base class using prototype inheritance.
-	 *
-	 * @method extendClass
-	 * @memberof W
-	 *
-	 * @param {Object|W} base - base class reference.
-	 *
-	 * @returns {W} current instance for chaining.
-	 */
-	extend: function(base) {
-		if (base) {
-			if (w.typeOf(base) != 'Function') w.err('Invalid base class');
-
-			var proto = this.prototype = new base();
-
-			for (var p in proto) if (proto.hasOwnProperty(p)) delete proto[p];
-			proto.constructor = this;
-		}
-
-		return this;
-	},
-
-	/**
-	 * Extend this class prototype with methods from interfaces.
-	 *
-	 * @method implement
-	 * @memberof W
-	 *
-	 * @param {Object|Array} ifaces - interfaces.
-	 *
-	 * @returns {W} current instance for chaining.
-	 */
-	implement: function(ifaces) {
-		for (var i = 0, l = arguments.length; i < l; i++) {
-			var o = arguments[i], t = w.typeOf(o);
-
-			if (t == 'Object') {
-				for (var p in o) if (o.hasOwnProperty(p)) this.prototype[p] = o[p];
-			} else if (t == 'Function') {
-				this.implement(o.prototype);
-			} else if (t == 'Array') {
-				this.implement.apply(this, o);
-			}
-		}
-
-		return this;
 	}
+
+
 
 /**
  * Implement W prototype.
@@ -430,9 +432,7 @@ w.W.statics({
 			return this;
 		}
 
-		for (var p in this) if (this.hasOwnProperty(p)) {
-
-		}
+		return '<xml><empty /></xml>';
 	},
 
 	/**
@@ -450,9 +450,7 @@ w.W.statics({
 			return this;
 		}
 
-		for (var p in this) if (this.hasOwnProperty(p)) {
-
-		}
+		return '{ "json": "empty" }';
 	},
 
 	/**
@@ -496,7 +494,7 @@ w.W.statics({
 	},
 
 	/**
-	 * Invoke method with 'this' reference to current instance.
+	 * Invoke method with execution context set to current instance.
 	 *
 	 * @method invoke
 	 * @memberof W.prototype
@@ -516,5 +514,6 @@ w.W.statics({
  * Init WebbyJs core.
  */
 w.invoke(function() {
-	for (var member in this) this._core[member] = this[member];
+	//secure core members from overriding
+	this.copy(this, this._core);
 });

@@ -11,10 +11,6 @@
 		<concat destfile="Build/webby.js">
 			<filelist dir="Source/Core/">
 				<file name="Core.js"/>
-				<file name="WObject.js"/>
-
-				<file name="EventListener.js"/>
-				<file name="DataProvider.js"/>
 			</filelist>
 		</concat>
 	</target>
