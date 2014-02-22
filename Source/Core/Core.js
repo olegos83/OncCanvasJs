@@ -68,12 +68,12 @@ var w = {
 	/**
 	 * Get uniq integer number.
 	 *
-	 * @method uniqNumber
+	 * @method un
 	 * @memberof w
 	 *
 	 * @returns {Number} uniq number.
 	 */
-	uniqNumber: ( function() { var n = 0; return function() { return n++; }; }() ),
+	un: ( function() { var n = 0; return function() { return n++; }; }() ),
 
 	/**
 	 * Default WebbyJs log provider.
@@ -139,12 +139,31 @@ var w = {
 	},
 
 	/**
+	 * Check if object is primitive.
+	 *
+	 * @method primitive
+	 * @memberof w
+	 *
+	 * @param {Object} obj - object reference.
+	 *
+	 * @returns {Boolean} true if object is primitive or false otherwise.
+	 */
+	primitive: function(obj) {
+		if (obj == null) return true;
+
+		var t = typeof obj;
+		if (t == 'number' || t == 'string' || t == 'boolean') return true;
+
+		return false;
+	},
+
+	/**
 	 * Get class name of any instance.
 	 *
 	 * @method typeOf
 	 * @memberof w
 	 *
-	 * @param {Object} obj - object.
+	 * @param {Object} obj - object reference.
 	 *
 	 * @returns {String} objects class name or '' for undefined or null.
 	 */
@@ -153,42 +172,45 @@ var w = {
 	},
 
 	/**
-	 * Define members inside WebbyJs.
-	 *
-	 * @method define
-	 * @memberof w
-	 *
-	 * @param {String|Object} m - member name or multiply members hash.
-	 * @param {*} v - reference to single member.
-	 * @param {Boolean} c - class definition flag.
-	 */
-	define: function(m, v, c) {
-		var t = this.typeOf(m);
-
-		if (t == 'Object') {
-			for (var p in m) {
-				if (this._core[p]) this.err('Failed to override core member: ' + p);
-				this[p] = m[p];
-			}
-		} else if (t == 'String') {
-			if (this._core[m]) this.err('Failed to override core member: ' + m);
-			if (c) this._classes[m] = v;
-			this[m] = v;
-		}
-		else this.err('Failed to define members');
-	},
-
-	/**
-	 * Copy members from source object to destination object.
+	 * Copy members from source object to destination object by reference.
 	 *
 	 * @method copy
 	 * @memberof w
 	 *
-	 * @param {Object} src - source object.
-	 * @param {Object} dst - destination object.
+	 * @param {Object} src - source object reference.
+	 * @param {Object} dst - destination object reference.
 	 */
 	copy: function(src, dst) {
-		for (var m in src) if (src.hasOwnProperty(m)) dst[m] = src[m];
+		if (this.typeOf(src) == 'Array') {
+			for (var i = 0, l = src.length; i < l; i++) dst[i] = src[i];
+		}
+		else {
+			for (var m in src) if (src.hasOwnProperty(m)) dst[m] = src[m];
+		}
+	},
+
+	/**
+	 * Clone source object recursively, cloning none-primitives.
+	 *
+	 * @method clone
+	 * @memberof w
+	 *
+	 * @param {Object} src - source object reference.
+	 *
+	 * @returns {Object} cloned object reference.
+	 */
+	clone: function(src) {
+		if (this.primitive(src)) return src;
+
+		if (this.typeOf(src) == 'Array') {
+			for (var arr = [], l = src.length, i = 0; i < l; i++) arr[i] = this.clone(src[i]);
+			return arr;
+		}
+
+		var dst = new src.constructor();
+
+		for (var m in src) if (src.hasOwnProperty(m)) dst[m] = this.clone(src[m]);
+		return dst;
 	},
 
 	/**
@@ -197,7 +219,7 @@ var w = {
 	 * @method empty
 	 * @memberof w
 	 *
-	 * @param {Object} target - target object.
+	 * @param {Object} target - target object reference.
 	 */
 	empty: function(target) {
 		for (var m in target) if (target.hasOwnProperty(m)) delete target[m];
@@ -252,6 +274,33 @@ var w = {
 	},
 
 	/**
+	 * Define members inside WebbyJs.
+	 *
+	 * @method define
+	 * @memberof w
+	 *
+	 * @param {String|Object} m - member name or multiply members hash.
+	 * @param {*|Boolean} v - reference to single member or 'c' argument.
+	 * @param {Boolean} c - class definition flag.
+	 */
+	define: function(m, v, c) {
+		var t = this.typeOf(m);
+
+		if (t == 'Object') {
+			for (var p in m) {
+				if (this._core[p]) this.err('Failed to override core member: ' + p);
+				if (v) this._classes[p] = m[p];
+				this[p] = m[p];
+			}
+		} else if (t == 'String') {
+			if (this._core[m]) this.err('Failed to override core member: ' + m);
+			if (c) this._classes[m] = v;
+			this[m] = v;
+		}
+		else this.err('Failed to define members');
+	},
+
+	/**
 	 * Create new class inside WebbyJs.
 	 *
 	 * @method create
@@ -270,16 +319,16 @@ var w = {
 	create: function(opt) {
 		if (this.typeOf(opt) != 'Object') this.err('Invalid class options');
 
-		var construct = opt.construct, base = opt.base || this.W, name = construct.name;
+		var construct = opt.construct, base = opt.base || this.WObject, name = construct.name;
 
-		if (base instanceof this.W) {
+		if (base instanceof this.WObject) {
 			if (this.typeOf(construct) != 'Function') this.err('Invalid constructor');
 			if (name == '' || this.typeOf(name) != 'String') this.err('Invalid class name');
 
 			this.define(name, construct, true);
 			construct.prototype.classname = name;
 
-			construct.create = this.W.create;
+			construct.create = this.WObject.create;
 			if (this.typeOf(opt.statics) == 'Object') this.copy(opt.statics, construct);
 
 			this.inherit(construct, base);
@@ -288,299 +337,3 @@ var w = {
 		else this.err('Base class is not WebbyJs compatible');
 	}
 };
-
-/**
- * Init WebbyJs core.
- */
-w.invoke(function() {
-	/**
-	 * Base class for all WebbyJs created classes.
-	 *
-	 * @constructor
-	 * @memberof w
-	 *
-	 * @param {Object} opt - creation options.
-	 */
-	function W(opt) {
-		this.set(opt);
-	}
-
-	this.define('W', W, true);
-
-	/**
-	 * Set factory method to create instances.
-	 *
-	 * @method create
-	 * @memberof W
-	 *
-	 * @param {*} ... - constructor arguments.
-	 *
-	 * @returns {W} created instance.
-	 */
-	this.W.create = function() {
-		if (arguments.length == 0) return new this();
-
-		var o = new this();
-		this.apply(o, arguments);
-
-		return o;
-	};
-
-	/**
-	 * Implement W.prototype.
-	 */
-	this.implement(this.W, {
-		/**
-		 * Class name.
-		 *
-		 * @memberof W.prototype
-		 * @type {String}
-		 */
-		classname: 'W',
-
-		/**
-		 * Superclass prototype reference.
-		 *
-		 * @memberof W.prototype
-		 * @type {Object}
-		 */
-		superclass: this.W,
-
-		/**
-		 * Set one or more properties in current instance.
-		 *
-		 * @method set
-		 * @memberof W.prototype
-		 *
-		 * @param {String|Object} m - property name or multiply properties hash.
-		 * @param {*} v - value for single property.
-		 *
-		 * @returns {W} current instance for chaining.
-		 */
-		set: function(m, v) {
-			if (m) {
-				var t = typeof m;
-
-				if (t == 'object') for (var p in m) this[p] = m[p];
-				else if (t == 'string') this[m] = v;
-			}
-
-			return this;
-		},
-
-		/**
-		 * Unset one or more object properties.
-		 *
-		 * @method unset
-		 * @memberof W.prototype
-		 *
-		 * @param {String|Array|Object} ... - property name, array of names or multiply properties hash.
-		 *
-		 * @returns {W} current instance for chaining.
-		 */
-		unset: function() {
-			for (var i = 0, l = arguments.length; i < l; i++) {
-				var arg = arguments[i], t = w.typeOf(arg);
-
-				if (t == 'String') delete this[arg];
-				else if (t == 'Object') for (var p in arg) if (arg.hasOwnProperty(p)) delete this[p];
-				else if (t == 'Array') for (var j = 0, jl = arg.length; j < jl; j++) delete this[arg[j]];
-			}
-
-			return this;
-		},
-
-		/**
-		 * Reset all native properties to their default values.
-		 *
-		 * @method reset
-		 * @memberof W.prototype
-		 *
-		 * @returns {W} current instance for chaining.
-		 */
-		reset: function() {
-			this.constructor.call(this);
-			return this;
-		},
-
-		/**
-		 * Empty object - delete all its properties.
-		 *
-		 * @method empty
-		 * @memberof W.prototype
-		 *
-		 * @returns {W} current instance for chaining.
-		 */
-		empty: function() {
-			for (var p in this) if (this.hasOwnProperty(p)) delete this[p];
-			return this;
-		},
-
-		/**
-		 * Clean current instance - delete all non-native properties.
-		 *
-		 * @method clean
-		 * @memberof W.prototype
-		 *
-		 * @returns {W} current instance for chaining.
-		 */
-		clean: function() {
-			var c = new this.constructor();
-			for (var p in this) if (c.hasOwnProperty(p) == false) delete this[p];
-			return this;
-		},
-
-		/**
-		 * Compare current instance to target object.
-		 * If deep flag is set - all non-primitive properties are recursivly checked to be equal.
-		 *
-		 * @method equals
-		 * @memberof W.prototype
-		 *
-		 * @param {Object} target - target  reference.
-		 * @param {Boolean} deep - deep flag.
-		 *
-		 * @returns {Boolean} true if all its properties are equal to corresponding ones in target.
-		 */
-		equals: function(target, deep) {
-			return false;
-		},
-
-		/**
-		 * Get all property names from current instance.
-		 *
-		 * @method props
-		 * @memberof W.prototype
-		 *
-		 * @returns {Array} array of property names.
-		 */
-		props: function() {
-			var a = [];
-			for (var p in this) if (this.hasOwnProperty(p)) a.push(p);
-			return a;
-		},
-
-		/**
-		 * Default toString method.
-		 *
-		 * @method toString
-		 * @memberof W.prototype
-		 *
-		 * @returns {String} current instance as string.
-		 */
-		toString: function() {
-			return '[' + this.classname + ']';
-		},
-
-		/**
-		 * Get current instance as Object.
-		 *
-		 * @method toObject
-		 * @memberof W.prototype
-		 *
-		 * @returns {Object} current instance as object.
-		 */
-		toObject: function() {
-			var obj = {};
-			for (var p in this) if (this.hasOwnProperty(p)) obj[p] = this[p];
-			return obj;
-		},
-
-		/**
-		 * Get/Set current instance in XML format.
-		 *
-		 * @method xml
-		 * @memberof W.prototype
-		 *
-		 * @param {String} data - XML source string.
-		 *
-		 * @returns {W|String} XML string or current instance for chaining.
-		 */
-		xml: function(data) {
-			if (data) {
-				return this;
-			}
-
-			return '<xml><empty /></xml>';
-		},
-
-		/**
-		 * Get/Set current instance in JSON format.
-		 *
-		 * @method json
-		 * @memberof W.prototype
-		 *
-		 * @param {String} data - JSON source string.
-		 *
-		 * @returns {W|String} JSON string or current instance for chaining.
-		 */
-		json: function(data) {
-			if (data) {
-				return this;
-			}
-
-			return '{ "json": "empty" }';
-		},
-
-		/**
-		 * Dump current instance to log.
-		 *
-		 * @method dump
-		 * @memberof W.prototype
-		 *
-		 * @returns {W} current instance for chaining.
-		 */
-		dump: function() {
-			w.log(this.toString());
-
-			for (var p in this) {
-				w.log(p + ":" + w.typeOf(this[p]) + " = " + this[p]);
-			}
-
-			return this;
-		},
-
-		/**
-		 * Clone current instance.
-		 *
-		 * @method clone
-		 * @memberof W.prototype
-		 *
-		 * @returns {W} cloned instance.
-		 */
-		clone: function() {
-			var cloned = new this.constructor();
-
-			for (var p in this) if (this.hasOwnProperty(p)) {
-				var o = this[p];
-
-				if (o.clone) cloned[p] = o.clone(); else {
-					cloned[p] = (typeof o == 'object' ? this.clone.call(o) : o);
-				}
-			}
-
-			return cloned;
-		},
-
-		/**
-		 * Invoke method with execution context set to current instance.
-		 *
-		 * @method invoke
-		 * @memberof W.prototype
-		 *
-		 * @param {Function} method - method to invoke.
-		 * @param {*} ... - method arguments.
-		 *
-		 * @returns {W} current instance for chaining.
-		 */
-		invoke: function(method) {
-			Array.prototype.shift.call(arguments).apply(this, arguments);
-			return this;
-		}
-	});
-
-	/**
-	 * Secure core members from being overrided.
-	 */
-	this.copy(this, this._core);
-});

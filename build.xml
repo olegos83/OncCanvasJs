@@ -11,6 +11,7 @@
 		<concat destfile="Build/webby.js">
 			<filelist dir="Source/Core/">
 				<file name="Core.js"/>
+				<file name="WObject.js"/>
 			</filelist>
 		</concat>
 	</target>
