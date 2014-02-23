@@ -72,12 +72,10 @@ w.invoke(function() {
 		 * @returns {WObject} current instance for chaining.
 		 */
 		set: function(m, v) {
-			if (m) {
-				var t = typeof m;
+			var t = typeof m;
 
-				if (t == 'object') for (var p in m) this[p] = m[p];
-				else if (t == 'string') this[m] = v;
-			}
+			if (t == 'object') for (var p in m) this[p] = m[p];
+			else if (t == 'string') this[m] = v;
 
 			return this;
 		},
@@ -305,6 +303,105 @@ w.invoke(function() {
 		invoke: function(method) {
 			Array.prototype.shift.call(arguments).apply(this, arguments);
 			return this;
+		},
+
+		/**
+		 * Enable events processing for current instance.
+		 *
+		 * @method enableEvents
+		 * @memberof WObject.prototype
+		 *
+		 * @returns {WObject} current instance for chaining.
+		 */
+		enableEvents: function() {
+			if (this._eventHandlers == null) this._eventHandlers = {};
+			return this;
+		},
+
+		/**
+		 * Add event handler for specified event type.
+		 *
+		 * @method addEventListener
+		 * @memberof WObject.prototype
+		 *
+		 * @param {String} type - event type.
+		 * @param {Function} handler - handler reference.
+		 *
+		 * @returns {WObject} current instance for chaining.
+		 */
+		addEventListener: function(type, handler) {
+			if (this._eventHandlers[type] == null) this._eventHandlers[type] = [handler];
+			else if (this.hasEventListener(type, handler) == false) this._eventHandlers[type].push(handler);
+			return this;
+		},
+
+		/**
+		 * Remove event handler for specified event type.
+		 *
+		 * @method removeEventListener
+		 * @memberof WObject.prototype
+		 *
+		 * @param {String} type - event type.
+		 * @param {Function} handler - handler reference.
+		 *
+		 * @returns {WObject} current instance for chaining.
+		 */
+		removeEventListener: function(type, handler) {
+			var handlers = this._eventHandlers[type];
+
+			if (handlers && handlers.length) {
+				if (handler == null) { handlers.length = 0; return this; }
+
+				for (var i = 0, l = handlers.length; i < l; i++) {
+					if (handlers[i] == handler) { handlers.splice(i, 1); return this; }
+				}
+			}
+
+			return this;
+		},
+
+		/**
+		 * Check if handler is allready added for specified event type.
+		 *
+		 * @method hasEventListener
+		 * @memberof WObject.prototype
+		 *
+		 * @param {String} type - event type.
+		 * @param {Function} handler - event handler.
+		 *
+		 * @returns {Boolean} true if handler is added or false otherwise.
+		 */
+		hasEventListener: function(type, handler) {
+			var handlers = this._eventHandlers[type];
+
+			if (handlers && handlers.length) {
+				for (var i = 0, l = handlers.length; i < l; i++) if (handlers[i] == handler) return true;
+			}
+
+			return false;
+		},
+
+		/**
+		 * Call handlers for specified event type.
+		 *
+		 * @method processEvent
+		 * @memberof WObject.prototype
+		 *
+		 * @param {Object} e - event object.
+		 *
+		 * @returns {WObject} current instance for chaining.
+		 */
+		processEvent: function(e) {
+			var handlers = this._eventHandlers[e.type];
+
+			if (handlers && handlers.length) {
+				e.lastTarget = e.target;
+				e.target = this;
+
+				for (var i = 0, l = handlers.length; i < l; i++) handlers[i].call(this, e);
+			}
+
+			return this;
 		}
 	});
 
@@ -313,3 +410,19 @@ w.invoke(function() {
 	*/
 	this.copy(this, this._core);
 });
+
+/**
+ * Mouse event types.
+ **/
+w.Mouse = {
+	CLICK: 'click',
+	DBLCLICK: 'dblclick',
+	DOWN: 'mousedown',
+	MOVE: 'mousemove',
+	UP: 'mouseup',
+	OVER: 'mouseover',
+	OUT: 'mouseout',
+	DRAGSTART: 'dragstart',
+	DRAG: 'drag',
+	DRAGEND: 'dragend'
+};
