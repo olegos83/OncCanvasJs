@@ -410,19 +410,3 @@ w.invoke(function() {
 	*/
 	this.copy(this, this._core);
 });
-
-/**
- * Mouse event types.
- **/
-w.Mouse = {
-	CLICK: 'click',
-	DBLCLICK: 'dblclick',
-	DOWN: 'mousedown',
-	MOVE: 'mousemove',
-	UP: 'mouseup',
-	OVER: 'mouseover',
-	OUT: 'mouseout',
-	DRAGSTART: 'dragstart',
-	DRAG: 'drag',
-	DRAGEND: 'dragend'
-};
