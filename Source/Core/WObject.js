@@ -306,15 +306,15 @@ w.invoke(function() {
 		},
 
 		/**
-		 * Enable events processing for current instance.
+		 * Initialize or reset events processing for current instance.
 		 *
-		 * @method enableEvents
+		 * @method initEvents
 		 * @memberof WObject.prototype
 		 *
 		 * @returns {WObject} current instance for chaining.
 		 */
-		enableEvents: function() {
-			if (this._eventHandlers == null) this._eventHandlers = {};
+		initEvents: function() {
+			this._eventHandlers = {};
 			return this;
 		},
 

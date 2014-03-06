@@ -9,6 +9,20 @@
 if (w) throw new Error("Failed to declare 'w' namespace");
 
 /**
+ * Fix Function.name property for IE9+.
+ */
+if (!(function f() {}).name) {
+	Object.defineProperty(Function.prototype, 'name', {
+		get: function() {
+			var name = this.toString().match(/^\s*function\s*(\S*)\s*\(/)[1];
+
+			Object.defineProperty(this, 'name', { value: name });
+			return name;
+		}
+	});
+}
+
+/**
  * WebbyJs namespace declaration and core methods implementation.
  *
  * @namespace
