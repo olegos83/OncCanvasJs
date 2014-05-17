@@ -9,7 +9,7 @@ Font::TypefaceJS - Generate fonts for use with typeface.js
 
 use Font::TypefaceJS;
 
-my $typeface = Font::TypefaceJS->new( 
+my $typeface = Font::TypefaceJS->new(
 	input_filename => "truetype_font.ttf",
 	export_unicode_range_names => ['Basic Latin', 'Latin-1 Supplement'],
 );
@@ -19,11 +19,11 @@ $typeface->write_file( output_filename => 'font.typeface.js' );
 =head1 DESCRIPTION
 
 Font::TypefaceJS converts truetype fonts to a format that typeface.js can read.  typeface.js is
-a javascript library that uses web browsers' vector drawing capability (<canvas> and VML) to 
-draw text in HTML documents. See http://typeface.neocracy.org.  
+a javascript library that uses web browsers' vector drawing capability (<canvas> and VML) to
+draw text in HTML documents. See http://typeface.neocracy.org.
 
-Many font vendors specifically prohibit embedding fonts in documents, and this module attempts 
-to honor those restrictions.  
+Many font vendors specifically prohibit embedding fonts in documents, and this module attempts
+to honor those restrictions.
 
 =head1 METHODS
 
@@ -31,8 +31,8 @@ Methods take named parameters.
 
 =item new()
 
-Takes an C<input_filename> which should be a truetype font file, and optional arrayref of 
-C<unicode_range_names> to support.  If no range names are specified it is assumed we want all 
+Takes an C<input_filename> which should be a truetype font file, and optional arrayref of
+C<unicode_range_names> to support.  If no range names are specified it is assumed we want all
 that are supported by the font.  See F<Unicode::UCD>.  Specify a true value for C<verbose>
 to see more output.
 
@@ -44,19 +44,19 @@ flag is in effect.  See http://www.microsoft.com/typography/tt/ttf_spec/ttch02.d
 
 =item get_unicode_range_counts()
 
-Returns a hashref containing information about which characters and which unicode ranges are 
+Returns a hashref containing information about which characters and which unicode ranges are
 supported within this font.  See F<Unicode::UCD>.
 
 =item get_json_data()
 
-Returns the JSON data structure used by typeface.js.  This contains glyph outline information as 
+Returns the JSON data structure used by typeface.js.  This contains glyph outline information as
 selected font metadata.
 
 =item write_file()
 
-Writes the font in typeface.js format, composed of javascript and JSON.  Takes an optional 
-C<output_filename> parameter which defaults to reasonable name if not specified.  Returns the 
-output filename on success, whether it was specified or derived.  Returns undef on failure. 
+Writes the font in typeface.js format, composed of javascript and JSON.  Takes an optional
+C<output_filename> parameter which defaults to reasonable name if not specified.  Returns the
+output filename on success, whether it was specified or derived.  Returns undef on failure.
 
 =head1 AUTHOR
 
@@ -88,7 +88,7 @@ use Unicode::UCD;
 our $VERSION = 0.11;
 
 sub new {
-	
+
 	my $self = shift;
 	my %args = @_;
 
@@ -106,7 +106,7 @@ sub new {
 	my $font_style = $freetype_face->style_name;
 
 	(my $output_filename = lc "${family_name}_$font_style.typeface.js") =~ s/\s+/_/g;
-	
+
 	my $charblocks = Unicode::UCD::charblocks;
 	my %export_unicode_range_names = map { $_ => 1 } @{ $args{export_unicode_range_names} || [ keys %{ $charblocks } ] };
 
@@ -131,10 +131,10 @@ sub new {
 }
 
 sub check_embed_license {
-	
+
 	my $self = shift;
 
-	my $truetype_font = $self->{truetype_font};	
+	my $truetype_font = $self->{truetype_font};
 
 	if (!defined $truetype_font->{'OS/2'}->{fsType} || $truetype_font->{'OS/2'}->{fsType} == 0x0002) {
 
@@ -196,7 +196,7 @@ sub _convert_font {
 	my @ttf_name_table_names = qw(
 		copyright
 		font_family_name
-		font_sub_family_name 
+		font_sub_family_name
 		unique_font_identifier
 		full_font_name
 		version_string
@@ -229,9 +229,12 @@ sub _convert_font {
 		underlinePosition => $face->underline_position,
 		original_font_information => $original_name_table,
 	};
-	
+
 	# $self->{js_name} = lc($typeface->{familyName}."_".$typeface->{cssFontWeight}."_".$typeface->{cssFontStyle}.".js");
 	$self->{js_name} = lc($original_name_table->{full_font_name}.".js");
+
+	# { family: 'arial narrow', weight: 'bold', style: 'italic', postscript: 'arialnarrow-bolditalic', file: 'arial narrow bold italic.js' }
+	$self->{js_cfg_str} = "{ family: '".$typeface->{familyName}."', weight: '".$typeface->{cssFontWeight}."', style: '".$typeface->{cssFontStyle}."', postscript: '".$original_name_table->{postscript_name}."', file: '".$self->{js_name}."' }";
 
 	my $unicode_range_counts;
 
@@ -248,10 +251,10 @@ sub _convert_font {
 		push @{ $unicode_range->{characters} }, $character;
 
 		return unless $self->{export_unicode_range_names}->{$unicode_range_name};
-		
+
 		if (
-			keys %{ $self->{export_subset_characters} } 
-			&& ! $self->{export_subset_characters}->{ $character } 
+			keys %{ $self->{export_subset_characters} }
+			&& ! $self->{export_subset_characters}->{ $character }
 		) {
 			return;
 		}
@@ -261,23 +264,23 @@ sub _convert_font {
 		my $bbox;
 		($bbox->{xMin}, $bbox->{yMin}, $bbox->{xMax}, $bbox->{yMax}) = $glyph->outline_bbox();
 
-		$typeface->{glyphs}->{$character}->{x_min} = $bbox->{xMin}; 
-		$typeface->{glyphs}->{$character}->{x_max} = $bbox->{xMax}; 
-		
+		$typeface->{glyphs}->{$character}->{x_min} = $bbox->{xMin};
+		$typeface->{glyphs}->{$character}->{x_max} = $bbox->{xMax};
+
 		# d is for dimension
 		for my $d (qw(xMax yMax)) {
 			$typeface->{boundingBox}->{$d} ||= $bbox->{$d} || 0;
-			$typeface->{boundingBox}->{$d} = 
-				($bbox->{$d} > $typeface->{boundingBox}->{$d}) ? 
-					$bbox->{$d} : 
+			$typeface->{boundingBox}->{$d} =
+				($bbox->{$d} > $typeface->{boundingBox}->{$d}) ?
+					$bbox->{$d} :
 					$typeface->{boundingBox}->{$d};
 		}
 
 		for my $d (qw(xMin yMin)) {
 			$typeface->{boundingBox}->{$d} ||= $bbox->{$d} || 0;
-			$typeface->{boundingBox}->{$d} = 
-				($bbox->{$d} < $typeface->{boundingBox}->{$d}) ? 
-					$bbox->{$d} : 
+			$typeface->{boundingBox}->{$d} =
+				($bbox->{$d} < $typeface->{boundingBox}->{$d}) ?
+					$bbox->{$d} :
 					$typeface->{boundingBox}->{$d};
 		}
 
@@ -287,7 +290,7 @@ sub _convert_font {
 			conic_to => 'q',
 			cubic_to => 'b',
 		};
-			
+
 		my $callbacks;
 		while (my ($callback_name, $op_abbreviation) = each %$callback_abbreviations) {
 			$callbacks->{$callback_name} = sub {
